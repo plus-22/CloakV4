@@ -31,6 +31,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/keycode.h"
 #include "client/renderingengine.h"
 #include "util/numeric.h"
+#include "gettext.h"
+#include "IGUIStaticText.h"
+#include "IGUIFont.h"
+#include <IrrlichtDevice.h>
 #include <ISceneCollisionManager.h>
 
 #include <iostream>
