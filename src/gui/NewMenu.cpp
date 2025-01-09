@@ -12,26 +12,14 @@ NewMenu::NewMenu(gui::IGUIEnvironment* env,
     m_client(client), m_rectsCreated(false) 
 {    
     infostream << "[NEWMENU] Successfully created" << std::endl;
-    this->env = env;
-    form = core::rect<s32>(200, 200, 600, 300);
 }
 
 NewMenu::~NewMenu()
 {
-    delete customEditBox; 
 }
 
 void NewMenu::create()
 {
-
-    std::vector<std::wstring> texts; 
-
-    if (!customEditBox) {
-        customEditBox = new CustomEditBox(env, L"Test", texts, rect<s32>(form.UpperLeftCorner.X + 10, form.UpperLeftCorner.Y + 10, form.LowerRightCorner.X - 10, form.UpperLeftCorner.Y + 40));
-    }
-
-    customEditBox->open();
-
     GET_SCRIPT_POINTER
 
     if (script->m_cheat_categories.empty()) {
@@ -67,7 +55,6 @@ void NewMenu::create()
 
 void NewMenu::close()
 {   
-    customEditBox->close();
     Environment->removeFocus(this);
     m_menumgr->deletingMenu(this);
     IGUIElement::setVisible(false);
@@ -84,9 +71,6 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
         return false;
     }
 
-    customEditBox->Event(event, isDragging, lastMousePos, form);
-    customEditBox->handleInput(event);
-
     GET_SCRIPT_POINTER_BOOL  
     if (event.EventType == irr::EET_KEY_INPUT_EVENT)
     {
@@ -96,7 +80,6 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
             return true; 
         }
     } 
-
     if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
         if (event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
             for (size_t i =  0; i < categoryRects.size(); ++i) {
@@ -180,8 +163,6 @@ void NewMenu::draw()
     gui::IGUIFont* font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_HD);
 
     if (m_is_open) {
-        if (customEditBox) 
-            driver->draw2DRectangle(video::SColor(255, 0, 255, 0), form);
         for (size_t i = 0; i < categoryRects.size(); ++i) {
             const auto& rect = categoryRects[i];
             video::SColor color = selectedCategory[i] ? video::SColor(210, 53, 118, 189) : video::SColor(173, 43, 55, 69);
