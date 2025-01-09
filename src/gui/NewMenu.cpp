@@ -186,8 +186,8 @@ void NewMenu::draw()
             video::SColor color = selectedCategory[i] ? video::SColor(210, 53, 118, 189) : video::SColor(173, 43, 55, 69);
             driver->draw2DRectangle(color, rect);
 
-           //video::SColor outlineColor(255, 255, 255, 255); 
-           // driver->draw2DRectangleOutline(core::rect<s32>(rect.UpperLeftCorner.X - 1, rect.UpperLeftCorner.Y - 1, rect.LowerRightCorner.X + 1, rect.LowerRightCorner.Y + 1), outlineColor);
+           video::SColor outlineColor(255, 255, 255, 255); 
+           driver->draw2DRectangleOutline(core::rect<s32>(rect.UpperLeftCorner.X - 1, rect.UpperLeftCorner.Y - 1, rect.LowerRightCorner.X + 1, rect.LowerRightCorner.Y + 1), outlineColor);
 
             const std::string& categoryName = script->m_cheat_categories[i]->m_name;
             std::wstring wCategoryName = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(categoryName);
@@ -206,7 +206,7 @@ void NewMenu::draw()
                 for (size_t j = 0; j < subCategoryRects[i].size(); ++j) {
                     const auto& subRect = subCategoryRects[i][j];
                     driver->draw2DRectangle(subCategoryColors[i][j], subRect);
-                  //  driver->draw2DRectangleOutline(core::rect<s32>(subRect.UpperLeftCorner.X - 1, subRect.UpperLeftCorner.Y - 1, subRect.LowerRightCorner.X + 1, subRect.LowerRightCorner.Y + 1), outlineColor);
+                    driver->draw2DRectangleOutline(core::rect<s32>(subRect.UpperLeftCorner.X - 1, subRect.UpperLeftCorner.Y - 1, subRect.LowerRightCorner.X + 1, subRect.LowerRightCorner.Y + 1), outlineColor);
 
                     const auto& functionName = script->m_cheat_categories[i]->m_cheats[j]->m_name;
                     std::wstring wFunctionName = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(functionName);   

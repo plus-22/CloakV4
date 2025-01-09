@@ -55,7 +55,6 @@ public:
 
 	void drawHUD(video::IVideoDriver *driver, double dtime);
 
-	void draw2DRectangleOutline(video::IVideoDriver *driver, const core::recti& pos, video::SColor color);
 
 	void drawEntry(video::IVideoDriver *driver, std::string name, int number,
 			bool selected, bool active,

@@ -739,7 +739,7 @@ bool Game::initGui()
 		return false;
 	}
 
-new_menu = new NewMenu(guienv, guienv->getRootGUIElement(), -1, &g_menumgr, client);
+	new_menu = new NewMenu(guienv, guienv->getRootGUIElement(), -1, &g_menumgr, client);
 
 	if (!new_menu) {
 		*error_message = "Could not allocate memory for cheat menu";
