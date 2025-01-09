@@ -18,9 +18,9 @@
 -- https://github.com/orgs/minetest/teams/engine/members
 
 local client_core_developers = {
-	"ProunceDev <unknown email> [Project founder]",
-	"Plus-22 <unknown email>", 
-	"Pl608 <unknown email>",
+	"ProunceDev <prouncedev@gmail.com> [Project founder]",
+	"Plus-22", 
+	"Pl608 <pl608@outlook.com>",
 	"Maintainer_ (FoxLoveFire) <ivanskatov672@gmail.com>",
 }
 

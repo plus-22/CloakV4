@@ -1,5 +1,4 @@
 /*
-Dragonfire
 Copyright (C) 2020 Maintainer_(Ivan Shkatov) <ivanskatov672@gmail.com>
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -73,7 +72,8 @@ private:
     bool m_rectsCreated = false;
     core::vector2d<s32> lastMousePos;
     core::rect<s32> form;
-    
+    gui::IGUIEnvironment* env;
+    CustomEditBox *customEditBox = nullptr;
     video::SColor outlineColor = video::SColor(255, 255, 255, 255);
 };
 
