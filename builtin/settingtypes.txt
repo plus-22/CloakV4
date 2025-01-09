@@ -91,13 +91,35 @@ randomize_version (Randomize version) bool false
 
 [*Cheats]
 
+[**Xray]
 xray (XRay) bool false
 
 xray_nodes (XRay Nodes) string default:stone,mcl_core:stone
 
+[**Node ESP]
+
 enable_node_esp (NodeESP) bool false
 
-node_esp_nodes (NodeESP Nodes) string
+node_esp_nodes (NodeESP Nodes) string 
+
+[**Entities]
+
+enable_entity_esp (Entity ESP) bool false
+
+enable_entity_tracers (Entity tracers) bool false
+
+entity_esp_color (Entity ESP color) string (255, 255, 255)
+
+[**Players]
+
+enable_player_esp (Player ESP) bool false
+
+enable_player_tracers (Player tracers) bool false
+
+friend_esp_color (Friends ESP color) string (255, 0, 255)
+
+enemy_esp_color (Enemy ESP color) string (255, 0, 0)
+
 
 noweather (NoWeather) bool false
 

@@ -137,19 +137,26 @@ void RenderingCore::drawTracersAndESP()
 	draw_tunnel_esp = g_settings->getBool("enable_tunnel_esp");
 	draw_tunnel_tracers = g_settings->getBool("enable_tunnel_tracers");
 
-	entity_esp_color = video::SColor(255, 255, 255, 255);
-	friend_esp_color = video::SColor(255, 0, 255, 0);
-	enemy_esp_color = video::SColor(255, 255, 0, 0);
+	v3f entity_color = g_settings->getV3F("entity_esp_color");
+	v3f friend_color = g_settings->getV3F("friend_esp_color");
+	v3f enemy_color = g_settings->getV3F("enemy_esp_color");
+
+	entity_esp_color = video::SColor(255, entity_color.X, entity_color.Y, entity_color.Z);
+	friend_esp_color = video::SColor(255, friend_color.X, friend_color.Y, friend_color.Z);
+	enemy_esp_color = video::SColor(255, enemy_color.X, enemy_color.Y, enemy_color.Z);
 
 	int playerDT = g_settings->getU32("esp.player.drawType");
 	int playerEO = g_settings->getU32("esp.player.edgeOpacity");
 	int playerFO = g_settings->getU32("esp.player.faceOpacity");
+
 	int entityDT = g_settings->getU32("esp.entity.drawType");
 	int entityEO = g_settings->getU32("esp.entity.edgeOpacity");
 	int entityFO = g_settings->getU32("esp.entity.faceOpacity");
+
 	int nodeDT = g_settings->getU32("esp.node.drawType");
 	int nodeEO = g_settings->getU32("esp.node.edgeOpacity");
 	int nodeFO = g_settings->getU32("esp.node.faceOpacity");
+
 	int tunnelDT = g_settings->getU32("esp.tunnel.drawType");
 	int tunnelEO = g_settings->getU32("esp.tunnel.edgeOpacity");
 	int tunnelFO = g_settings->getU32("esp.tunnel.faceOpacity");

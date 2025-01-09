@@ -17,6 +17,13 @@
 
 -- https://github.com/orgs/minetest/teams/engine/members
 
+local client_core_developers = {
+	"ProunceDev <unknown email> [Project founder]",
+	"Plus-22 <unknown email>", 
+	"Pl608 <unknown email>",
+	"Maintainer_ (FoxLoveFire) <ivanskatov672@gmail.com>",
+}
+
 local core_developers = {
 	"Perttu Ahola (celeron55) <celeron55@gmail.com> [Project founder]",
 	"sfan5 <sfan5@live.de>",
@@ -132,6 +139,11 @@ return {
 			"<tag name=heading color=#ff0>",
 			"<tag name=gray color=#aaa>",
 		}
+
+		table.insert_all(hypertext, {
+			"<heading>", fgettext_ne("Team Acedia"), "</heading>\n",
+		})
+		prepare_credits(hypertext, client_core_developers)
 
 		table.insert_all(hypertext, {
 			"<heading>", fgettext_ne("Core Developers"), "</heading>\n",

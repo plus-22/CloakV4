@@ -151,7 +151,7 @@ void set_default_settings()
     settings->setDefault("use_old_menu", "false");
     settings->setDefault("newmenu_draw_type_full", "false");
     settings->setDefault("newmenu_draw_type_small", "false");
-    settings->setDefault("newmenu_draw_type_meteor", "true");
+    settings->setDefault("newmenu_draw_type_meteor", "false");
 
 	// Cheats
 	settings->setDefault("xray", "false");
@@ -225,6 +225,10 @@ void set_default_settings()
 	settings->setDefault("esp.tunnel.edgeOpacity", "255");
 	settings->setDefault("esp.tunnel.faceOpacity", "150");
 
+	settings->setDefault("entity_esp_color", "(255, 255, 255)");
+	settings->setDefault("friend_esp_color", "(255, 0, 255)");
+	settings->setDefault("enemy_esp_color", "(255, 0, 0)");
+	
 	settings->setDefault("silence", "false");
 
 	// Keymap
