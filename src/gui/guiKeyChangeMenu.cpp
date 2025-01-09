@@ -81,7 +81,7 @@ enum
 	// cheats
 	GUI_ID_KEY_FREECAM_BUTTON,
 	GUI_ID_KEY_KILLAURA_BUTTON,
-	GUI_ID_KEY_CRYSTALSPAM_BUTTON,
+	GUI_ID_KEY_AUTOAIM_BUTTON,
 
 	GUI_ID_KEY_SELECT_UP_BUTTON,
 	GUI_ID_KEY_SELECT_DOWN_BUTTON,
@@ -435,7 +435,7 @@ void GUIKeyChangeMenu::init_keys()
 	// cheats
 	this->add_key(GUI_ID_KEY_FREECAM_BUTTON,        wstrgettext("Freecam"),          "keymap_toggle_freecam");
 	this->add_key(GUI_ID_KEY_KILLAURA_BUTTON,       wstrgettext("Killaura"),         "keymap_toggle_killaura");
-	this->add_key(GUI_ID_KEY_CRYSTALSPAM_BUTTON,       wstrgettext("Crystalspam"),         "keymap_toggle_crystalspam");
+	this->add_key(GUI_ID_KEY_AUTOAIM_BUTTON,       wstrgettext("Autoaim"),         "keymap_toggle_autoaim");
 
 	this->add_key(GUI_ID_KEY_SELECT_UP_BUTTON,      wstrgettext("C. Menu Up"),       "keymap_select_up");
 	this->add_key(GUI_ID_KEY_SELECT_DOWN_BUTTON,    wstrgettext("C. Menu Down"),     "keymap_select_down");

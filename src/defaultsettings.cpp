@@ -205,7 +205,7 @@ void set_default_settings()
     settings->setDefault("dont_point_nodes", "false");
 	settings->setDefault("small_post_effect_color", "false");
     settings->setDefault("no_hurt_cam", "false");
-    settings->setDefault("crystalspam", "false");
+    settings->setDefault("autoaim", "false");
     settings->setDefault("no_force_rotate", "false");
     settings->setDefault("no_night", "false");
 
@@ -254,7 +254,7 @@ void set_default_settings()
 	
 	settings->setDefault("keymap_toggle_freecam", "KEY_KEY_G");
 	settings->setDefault("keymap_toggle_killaura", "KEY_KEY_X");
-	settings->setDefault("keymap_toggle_crystalspam", "KEY_KEY_N");
+	settings->setDefault("keymap_toggle_autoaim", "KEY_KEY_N");
 
 	settings->setDefault("keymap_select_up", "KEY_UP");
 	settings->setDefault("keymap_select_down", "KEY_DOWN");

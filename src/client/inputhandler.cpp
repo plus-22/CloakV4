@@ -86,7 +86,7 @@ void KeyCache::populate()
 	// cheats
 	key[KeyType::FREECAM] = getKeySetting("keymap_toggle_freecam");
 	key[KeyType::KILLAURA] = getKeySetting("keymap_toggle_killaura");
-    key[KeyType::CRYSTALSPAM] = getKeySetting("keymap_toggle_crystalspam");
+    key[KeyType::AUTOAIM] = getKeySetting("keymap_toggle_autoaim");
 
 	key[KeyType::QUICKTUNE_NEXT] = getKeySetting("keymap_quicktune_next");
 	key[KeyType::QUICKTUNE_PREV] = getKeySetting("keymap_quicktune_prev");

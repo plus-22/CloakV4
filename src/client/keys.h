@@ -87,7 +87,7 @@ public:
 		// cheats
 		KILLAURA,
 		FREECAM,
-        CRYSTALSPAM,
+        AUTOAIM,
 
 		// hotbar
 		SLOT_1,

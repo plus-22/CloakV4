@@ -769,7 +769,7 @@ public:
 
 	void toggleFreecam();
 	void toggleKillaura();
-    void toggleCrystalspam();
+    void toggleAutoaim();
 
 	void toggleMinimap(bool shift_pressed);
 	void toggleFog();

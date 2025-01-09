@@ -1281,8 +1281,8 @@ if (g_settings->getBool("use_old_menu")) {
 		toggleFreecam();
 	} else if (wasKeyDown(KeyType::KILLAURA)) {
 		toggleKillaura();
-    } else if (wasKeyDown(KeyType::CRYSTALSPAM)) {
-		toggleCrystalspam();
+    } else if (wasKeyDown(KeyType::AUTOAIM)) {
+		toggleAutoaim();
 #if USE_SOUND
 	} else if (wasKeyDown(KeyType::MUTE)) {
 		if (g_settings->getBool("enable_sound")) {
@@ -1618,19 +1618,19 @@ void Game::toggleKillaura()
 	}
 }
 
-void Game::toggleCrystalspam()
+void Game::toggleAutoaim()
 {
-	bool crystalspam_players = ! g_settings->getBool("crystalspam");
-	g_settings->set("crystalspam", bool_to_cstr(crystalspam_players));
+	bool autoaim_players = ! g_settings->getBool("autoaim");
+	g_settings->set("autoaim", bool_to_cstr(autoaim_players));
 
-	if (!crystalspam_players) {
-		g_settings->set("crystalspam", bool_to_cstr(false));
+	if (!autoaim_players) {
+		g_settings->set("autoaim", bool_to_cstr(false));
 	}
 
-	if (crystalspam_players) {
-		m_game_ui->showTranslatedStatusText("CrystalSpam enabled");
+	if (autoaim_players) {
+		m_game_ui->showTranslatedStatusText("Autoaim enabled");
 	} else {
-		m_game_ui->showTranslatedStatusText("CrystalSpam disabled");
+		m_game_ui->showTranslatedStatusText("Autoaim disabled");
 	}
 }
 
