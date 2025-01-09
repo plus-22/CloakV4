@@ -151,7 +151,7 @@ void set_default_settings()
     settings->setDefault("use_old_menu", "false");
     settings->setDefault("newmenu_draw_type_full", "false");
     settings->setDefault("newmenu_draw_type_small", "false");
-    settings->setDefault("newmenu_draw_type_meteor", "false");
+    settings->setDefault("newmenu_draw_type_meteor", "true");
 
 	// Cheats
 	settings->setDefault("xray", "false");
