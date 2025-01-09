@@ -255,6 +255,9 @@ void Client::loadMods()
 	// Initialize cheats
 	m_script->init_cheats();
 
+	// Initialize info texts
+	m_script->update_infotexts();
+
 	// Create objects if they're ready
 	if (m_state == LC_Ready)
 		m_script->on_client_ready(m_env.getLocalPlayer());

@@ -64,7 +64,21 @@ core.cheats = {
 	}
 }
 
+core.infotexts = {}
+
 function core.register_cheat(cheatname, category, func)
 	core.cheats[category] = core.cheats[category] or {}
 	core.cheats[category][cheatname] = func
+end
+
+function core.register_cheat_with_infotext(cheatname, category, func, infotext)
+	core.infotexts[category] = core.infotexts[category] or {}
+	core.infotexts[category][cheatname] = infotext
+	core.register_cheat(cheatname, category, func)
+end
+
+function core.update_infotext(cheatname, category, func, infotext)
+	core.infotexts[category] = core.infotexts[category] or {}
+	core.infotexts[category][cheatname] = infotext
+	core.update_infotexts()
 end

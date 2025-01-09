@@ -19,4 +19,4 @@ minetest.register_globalstep(function()
     end
 end)
 
-minetest.register_cheat("Autoaim", "Combat", "autoaim")
+minetest.register_cheat_with_infotext("Autoaim", "Combat", "autoaim", "Nearest")

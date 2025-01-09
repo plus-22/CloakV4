@@ -25,24 +25,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 
 ScriptApiCheatsCheat::ScriptApiCheatsCheat(
-		const std::string &name, const std::string &setting) :
+		const std::string &name, const std::string &setting, const std::string &info_text = "") :
 		m_name(name),
-		m_setting(setting), m_function_ref(0)
+		m_setting(setting), m_function_ref(0),
+		m_info_text(info_text)
 {
 }
 
-ScriptApiCheatsCheat::ScriptApiCheatsCheat(const std::string &name, const int &function) :
+ScriptApiCheatsCheat::ScriptApiCheatsCheat(const std::string &name, const int &function, const std::string &info_text = "") :
 		m_name(name), m_setting(""), m_function_ref(function)
 {
 }
 
-/*void ScriptApiCheatsCheat::set_info_text(std::string infoText) {
+void ScriptApiCheatsCheat::set_info_text(std::string infoText) {
 	m_info_text = infoText;
 }
 
 std::string ScriptApiCheatsCheat::get_info_text() {
 	return m_info_text;
-}*/
+}
 
 bool ScriptApiCheatsCheat::is_enabled()
 {
@@ -113,6 +114,41 @@ ScriptApiCheats::~ScriptApiCheats()
 {
 	for (auto i = m_cheat_categories.begin(); i != m_cheat_categories.end(); i++)
 		delete *i;
+}
+
+
+void ScriptApiCheats::update_infotexts()
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+    lua_getglobal(L, "core");
+
+	// Fetch 'core.infotexts'
+	lua_getfield(L, -1, "infotexts");
+	if (!lua_istable(L, -1)) {
+		lua_pop(L, 2); // Pop 'core.infotexts' and 'core'
+		return;
+	}
+
+	// Update info texts for existing cheats
+	for (ScriptApiCheatsCategory *category : m_cheat_categories) {
+		lua_getfield(L, -1, category->m_name.c_str()); // Fetch category table
+		if (lua_istable(L, -1)) {
+			for (auto &cheat : category->m_cheats) {
+				lua_getfield(L, -1, cheat->m_name.c_str()); // Fetch cheat info text
+				if (lua_isstring(L, -1)) {
+					cheat->set_info_text(lua_tostring(L, -1)); // Update info text
+				}
+
+				lua_pop(L, 1); // Pop cheat info text
+			}
+		}
+		lua_pop(L, 1); // Pop category table
+	}
+
+	lua_pop(L, 2); // Pop 'core.infotexts' and 'core'
+
+
 }
 
 void ScriptApiCheats::init_cheats()

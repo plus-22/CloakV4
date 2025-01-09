@@ -968,6 +968,13 @@ int ModApiClient::l_send_nodemeta_fields(lua_State *L)
 	return 0;
 }
 
+// update_infotexts()
+int ModApiClient::l_update_infotexts(lua_State *L)
+{
+	getClient(L)->getScript()->update_infotexts();
+	lua_pushboolean(L, true);
+	return 1;
+}
 
 void ModApiClient::Initialize(lua_State *L, int top)
 {
@@ -1015,4 +1022,5 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(print_esp_colors);
 	API_FCT(send_inventory_fields);
 	API_FCT(send_nodemeta_fields);
+	API_FCT(update_infotexts);
 }

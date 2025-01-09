@@ -26,12 +26,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ScriptApiCheatsCheat
 {
 public:
-	ScriptApiCheatsCheat(const std::string &name, const std::string &setting);
-	ScriptApiCheatsCheat(const std::string &name, const int &function);
+	ScriptApiCheatsCheat(const std::string &name, const std::string &setting, const std::string &info_text);
+	ScriptApiCheatsCheat(const std::string &name, const int &function, const std::string &info_text);
 	std::string m_name;
-	//std::string m_info_text;
-	//void set_info_text(std::string infoText);
-	//std::string get_info_text();
+	std::string m_info_text;
+	void set_info_text(std::string infoText);
+	std::string get_info_text();
 	bool is_enabled();
 	void toggle(lua_State *L, int error_handler);
 
@@ -56,6 +56,7 @@ class ScriptApiCheats : virtual public ScriptApiBase
 public:
 	virtual ~ScriptApiCheats();
 	void init_cheats();
+	void update_infotexts();
 	void toggle_cheat(ScriptApiCheatsCheat *cheat);
 	bool m_cheats_loaded = false;
 	std::vector<ScriptApiCheatsCategory *> m_cheat_categories;
