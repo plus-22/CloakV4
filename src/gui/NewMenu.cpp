@@ -1,22 +1,6 @@
-/*
-Dragonfire
-Copyright (C) 2020 Maintainer_(Ivan Shkatov) <ivanskatov672@gmail.com>
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
 #include "NewMenu.h"
 #include "settings.h"
 #include <iostream>
-
 
 NewMenu::NewMenu(gui::IGUIEnvironment* env, 
     gui::IGUIElement* parent, 
@@ -27,7 +11,6 @@ NewMenu::NewMenu(gui::IGUIEnvironment* env,
     m_menumgr(menumgr), isDragging(false), draggedRectIndex(-1),
     m_client(client), m_rectsCreated(false) 
 {    
-
     infostream << "[NEWMENU] Successfully created" << std::endl;
 }
 
@@ -71,7 +54,7 @@ void NewMenu::create()
 }
 
 void NewMenu::close()
-{
+{   
     Environment->removeFocus(this);
     m_menumgr->deletingMenu(this);
     IGUIElement::setVisible(false);
@@ -99,7 +82,7 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
     } 
     if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
         if (event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
-            for (size_t i = 0; i < categoryRects.size(); ++i) {
+            for (size_t i =  0; i < categoryRects.size(); ++i) {
                 if (categoryRects[i].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
                     isDragging = true;
                     draggedRectIndex = i;
@@ -130,13 +113,12 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
                 }
             }
             return false; 
-        }
-        else if (event.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
+
+        } else if (event.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
             isDragging = false;
             draggedRectIndex = -1;
             return true;
-        }
-        else if (event.MouseInput.Event == irr::EMIE_MOUSE_MOVED && isDragging && draggedRectIndex != -1) {
+        } else if (event.MouseInput.Event == irr::EMIE_MOUSE_MOVED && isDragging && draggedRectIndex != -1) {
             s32 screenWidth = Environment->getVideoDriver()->getScreenSize().Width;
             s32 screenHeight = Environment->getVideoDriver()->getScreenSize().Height;
 
@@ -163,7 +145,7 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
             for (size_t j = 0; j < subCategoryRects[draggedRectIndex].size(); ++j) {
                 subCategoryRects[draggedRectIndex][j].UpperLeftCorner.X = categoryRects[draggedRectIndex].UpperLeftCorner.X;
                 subCategoryRects[draggedRectIndex][j].UpperLeftCorner.Y = categoryRects[draggedRectIndex].LowerRightCorner.Y + j * (rectHeight);
-                subCategoryRects[ draggedRectIndex][j].LowerRightCorner.X = subCategoryRects[draggedRectIndex][j].UpperLeftCorner.X + rectWidth;
+                subCategoryRects[draggedRectIndex][j].LowerRightCorner.X = subCategoryRects[draggedRectIndex][j].UpperLeftCorner.X + rectWidth;
                 subCategoryRects[draggedRectIndex][j].LowerRightCorner.Y = subCategoryRects[draggedRectIndex][j].UpperLeftCorner.Y + rectHeight;
             }
             return true;
@@ -186,8 +168,8 @@ void NewMenu::draw()
             video::SColor color = selectedCategory[i] ? video::SColor(210, 53, 118, 189) : video::SColor(173, 43, 55, 69);
             driver->draw2DRectangle(color, rect);
 
-           video::SColor outlineColor(255, 255, 255, 255); 
-           driver->draw2DRectangleOutline(core::rect<s32>(rect.UpperLeftCorner.X - 1, rect.UpperLeftCorner.Y - 1, rect.LowerRightCorner.X + 1, rect.LowerRightCorner.Y + 1), outlineColor);
+            video::SColor outlineColor(255, 255, 255, 255); 
+            driver->draw2DRectangleOutline(core::rect<s32>(rect.UpperLeftCorner.X - 1, rect.UpperLeftCorner.Y - 1, rect.LowerRightCorner.X + 1, rect.LowerRightCorner.Y + 1), outlineColor);
 
             const std::string& categoryName = script->m_cheat_categories[i]->m_name;
             std::wstring wCategoryName = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(categoryName);
@@ -212,8 +194,8 @@ void NewMenu::draw()
                     std::wstring wFunctionName = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(functionName);   
                     subCategoryColors[i][j] = video::SColor(173, 43, 55, 69);
                     if (g_settings->getBool("newmenu_draw_type_full")) {
-                         if (script->m_cheat_categories[i]->m_cheats[j]->is_enabled()) {
-                           subCategoryColors[i][j] = video::SColor(210, 53, 118, 189);
+                        if (script->m_cheat_categories[i]->m_cheats[j]->is_enabled()) {
+                            subCategoryColors[i][j] = video::SColor(210, 53, 118, 189);
                         } else {
                             subCategoryColors[i][j] = video::SColor(173, 43, 55, 69);
                         }
@@ -226,9 +208,9 @@ void NewMenu::draw()
                     }
                     
                     if (g_settings->getBool("newmenu_draw_type_meteor")) {
-                         if (script->m_cheat_categories[i]->m_cheats[j]->is_enabled()) {
-                           subCategoryColors[i][j] = video::SColor(173, 78, 88, 100);
-                           driver->draw2DRectangle(video::SColor(210, 33, 98, 169), core::rect<s32>(subRect.UpperLeftCorner.X, subRect.UpperLeftCorner.Y, subRect.LowerRightCorner.X - 170, subRect.LowerRightCorner.Y));
+                        if (script->m_cheat_categories[i]->m_cheats[j]->is_enabled()) {
+                            subCategoryColors[i][j] = video::SColor(173, 78, 88, 100);
+                            driver->draw2DRectangle(video::SColor(210, 33, 98, 169), core::rect<s32>(subRect.UpperLeftCorner.X, subRect.UpperLeftCorner.Y, subRect.LowerRightCorner.X - 170, subRect.LowerRightCorner.Y));
                         } else {
                             subCategoryColors[i][j] = video::SColor(173, 43, 55, 69);
                         }
@@ -240,9 +222,9 @@ void NewMenu::draw()
                     s32 functionTextX = subRect.UpperLeftCorner.X + (subRect.getWidth() - functionTextSize.Width) / 2;
                     s32 functionTextY = subRect.UpperLeftCorner.Y + (subRect.getHeight() - functionTextSize.Height) / 2;
 
-                    font->draw(wFunctionName.c_str(), core::rect<s32>(functionTextX, functionTextY, functionTextX + functionTextSize.Width, functionTextY + functionTextSize.Height), video::SColor(255, 255, 255, 255));
+                    font-> draw(wFunctionName.c_str(), core::rect<s32>(functionTextX, functionTextY, functionTextX + functionTextSize.Width, functionTextY + functionTextSize.Height), video::SColor(255, 255, 255, 255));
                 }
             }
         }
     }
-}
+} 

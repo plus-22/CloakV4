@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <locale> 
 #include "log.h"
 
-
+class CustomEditBox;
 using namespace irr;
 using namespace gui;
 
@@ -52,7 +52,7 @@ public:
     virtual void draw() override;
 
     bool isOpen() { return m_is_open; }
-
+    
     ~NewMenu();
 
 private:
@@ -71,9 +71,98 @@ private:
     std::vector<std::vector<video::SColor>> subCategoryColors;
     Client* m_client;
     bool m_rectsCreated = false;
-
-
+    core::vector2d<s32> lastMousePos;
+    core::rect<s32> form;
+    
     video::SColor outlineColor = video::SColor(255, 255, 255, 255);
 };
 
 #endif 
+
+
+using namespace irr;
+using namespace core;
+using namespace video;
+using namespace gui;
+using namespace io;
+using namespace scene;
+
+class CustomEditBox {
+public:
+    CustomEditBox(IGUIEnvironment* guienv, const wchar_t* name, std::vector<std::wstring>& texts, rect<s32> position)
+        : texts(texts) {
+        editBox = guienv->addEditBox(name, rect<s32>(0, 0, 200, 30));
+        editBox->setRelativePosition(position);
+    }
+
+    void handleInput(const SEvent& event) {
+        if (event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown) {
+            if (event.KeyInput.Key == KEY_RETURN) {
+                std::wstring text = editBox->getText();
+            }
+        }
+    }
+
+    void updatePosition(rect<s32> newPosition) {
+        editBox->setRelativePosition(newPosition);
+    }
+
+    void moveEditBox(s32 deltaX, s32 deltaY) {
+        rect<s32> currentPosition = editBox->getRelativePosition();
+        currentPosition.UpperLeftCorner.X += deltaX;
+        currentPosition.UpperLeftCorner.Y += deltaY;
+        currentPosition.LowerRightCorner.X += deltaX;
+        currentPosition.LowerRightCorner.Y += deltaY;
+        updatePosition(currentPosition);
+    }
+
+    void Event(const SEvent& event, bool& dragging, vector2d<s32>& lastMousePos, rect<s32>& rectangle) {
+        if (!rectangle.isPointInside(vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
+            return; 
+        }
+
+        if (event.EventType == EET_MOUSE_INPUT_EVENT) {
+            switch (event.MouseInput.Event) {
+                case EMIE_LMOUSE_PRESSED_DOWN:
+                    dragging = true;
+                    lastMousePos = vector2d<s32>(event.MouseInput.X, event.MouseInput.Y);
+                    break;
+
+                case EMIE_LMOUSE_LEFT_UP:
+                    dragging = false;
+                    break;
+
+                case EMIE_MOUSE_MOVED:
+                    if (dragging) {
+                        s32 deltaX = event.MouseInput.X - lastMousePos.X;
+                        s32 deltaY = event.MouseInput.Y - lastMousePos.Y;
+                        rectangle.UpperLeftCorner.X += deltaX;
+                        rectangle.UpperLeftCorner.Y += deltaY;
+                        rectangle.LowerRightCorner.X += deltaX;
+                        rectangle.LowerRightCorner.Y += deltaY;
+
+                        moveEditBox(deltaX, deltaY);
+
+                        lastMousePos = vector2d<s32>(event.MouseInput.X, event.MouseInput.Y);
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+
+    void open() {
+        editBox->setVisible(true);
+    }
+    void close() {
+        editBox->setVisible(false);
+    }
+
+
+private:
+    IGUIEditBox* editBox;
+    std::vector<std::wstring>& texts; 
+};
