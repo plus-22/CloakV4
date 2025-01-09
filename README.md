@@ -1,14 +1,20 @@
-Chimera Client
+Cloak V4
 ==============
 <img src="doc/showcase1.png" alt="showcase" width="80%" />
 
-A minetest cheat client based off of [OtterClient](https://github.com/otterminetest/OtterClient/), which draws its roots from [DragonFire](https://github.com/dragonfireclient/dragonfireclient) and [WaspSaliva](https://repo.or.cz/waspsaliva.git).
+A minetest cheat client based off of [Chimeraclient](https://github.com/plus-22/chimeraclient/), which draws its roots from [OtterClient](https://github.com/otterminetest/OtterClient/).
 
-This client's name is kind of a joke, as the "Chimera" is a mythological creature made up of many different creatures, just like this client is made up of many clients.
+This client's name is based off of TeamAcedia's previous clients, CloakV3, CloakV2, and Cloak
 
 ### Important info:
 This client includes almost all CSM api additions from dragonfire, although it hasn't been documented (yet). It also includes many built-in client side mods and a new minimalistic design for the cheat menu.
 It has not been tested extensively, so it may not be stable. If any bug or error is found, please open an issue about it.
+
+### Core devs:
+  - [ProunceDev](https://github.com/ProunceDev)
+  - [FoxLoveFire](https://github.com/FoxLoveFire)
+  - [Plus-22](https://github.com/plus-22)
+  - [Pl608](https://github.com/PL608wastaken)
 
 # Features
 ### Menus
