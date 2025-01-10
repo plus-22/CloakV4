@@ -57,7 +57,7 @@ core.cheats = {
 		--["ThroughWalls"] = "dont_point_nodes",
         ["PrivBypass"] = "priv_bypass",
         ["QuickMenu"] = "use_old_menu",
-        ["NoCamBobbing"] = "nobob",
+        ["NoViewBob"] = "nobob",
 	},
 	["World"] = {
 		["Silence"] = "silence",
