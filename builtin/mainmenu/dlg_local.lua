@@ -461,7 +461,6 @@ local function main_button_handler(this, fields, name, tabdata)
 end
 
 local function on_change(type)
-	minetest.log("error", type)
 	if type == "DialogShow" then
 		local game = current_game()
 		if game then
