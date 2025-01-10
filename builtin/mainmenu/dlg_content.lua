@@ -26,7 +26,7 @@ local function get_content_icons(packages_with_updates)
 end
 
 
-local packages_raw, packages
+local packages_raw, packages, tab_selected_pkg
 
 local function update_packages()
 	pkgmgr.load_all()
@@ -56,13 +56,13 @@ local function on_change(type)
 	end
 end
 
-local function get_formspec(tabview, name, tabdata)
+local function get_formspec(dlgview, name, tabdata)
 	if not packages then
 		update_packages()
 	end
 
-	if not tabdata.selected_pkg then
-		tabdata.selected_pkg = 1
+	if not tab_selected_pkg then
+		tab_selected_pkg = 1
 	end
 
 	local use_technical_names = core.settings:get_bool("show_technical_names")
@@ -78,22 +78,23 @@ local function get_formspec(tabview, name, tabdata)
 	end
 
 	local retval = {
-		"label[0.4,0.4;", fgettext("Installed Packages:"), "]",
+		"size[17.5,8.1,true]" .."label[0.4,0.4;", fgettext("Installed Packages:"), "]",
 		"tablecolumns[color;tree;image,align=inline,width=1.5",
 			",tooltip=", fgettext("Update available?"),
 			",0=", core.formspec_escape(defaulttexturedir .. "blank.png"),
 			",4=", core.formspec_escape(defaulttexturedir .. "cdb_update_cropped.png"),
 			";text]",
-		"table[0.4,0.8;6.3,4.8;pkglist;",
+		"table[0.4,0.8;8,6;pkglist;",
 		pkgmgr.render_packagelist(packages, use_technical_names, update_icons),
-		";", tabdata.selected_pkg, "]",
+		";", tab_selected_pkg, "]",
 
-		"button[0.4,5.8;6.3,0.9;btn_contentdb;", contentdb_label, "]"
+		"button[9.2,7;8,1.2;btn_contentdb;", contentdb_label, "]" ..
+		"button[0.4,7;4,1.2;back;" .. fgettext("Back") .. "]"
 	}
 
 	local selected_pkg
-	if filterlist.size(packages) >= tabdata.selected_pkg then
-		selected_pkg = packages:get_list()[tabdata.selected_pkg]
+	if filterlist.size(packages) >= tab_selected_pkg then
+		selected_pkg = packages:get_list()[tab_selected_pkg]
 	end
 
 	if selected_pkg then
@@ -124,13 +125,13 @@ local function get_formspec(tabview, name, tabdata)
 				core.colorize("#BFBFBF", selected_pkg.name)
 		end
 
-		local desc_height = 3.2
+		local desc_height = 4.45
 
 		if selected_pkg.is_modpack then
-			desc_height = 2.1
+			desc_height = 3.6
 
 			table.insert_all(retval, {
-				"button[7.1,4.7;8,0.9;btn_mod_mgr_rename_modpack;",
+				"button[9.2,6.1;8,0.9;btn_mod_mgr_rename_modpack;",
 				fgettext("Rename"), "]"
 			})
 		elseif selected_pkg.type == "mod" then
@@ -154,31 +155,31 @@ local function get_formspec(tabview, name, tabdata)
 				end
 			end
 		elseif selected_pkg.type == "txp" then
-			desc_height = 2.1
+			desc_height = 3.6
 
 			if selected_pkg.enabled then
 				table.insert_all(retval, {
-					"button[7.1,4.7;8,0.9;btn_mod_mgr_disable_txp;",
+					"button[9.2,6.1;8,0.9;btn_mod_mgr_disable_txp;",
 					fgettext("Disable Texture Pack"), "]"
 				})
 			else
 				table.insert_all(retval, {
-					"button[7.1,4.7;8,0.9;btn_mod_mgr_use_txp;",
+					"button[9.2,6.1;8,0.9;btn_mod_mgr_use_txp;",
 					fgettext("Use Texture Pack"), "]"
 				})
 			end
 		end
 
 		table.insert_all(retval, {
-			"image[7.1,0.2;3,2;", core.formspec_escape(modscreenshot), "]",
-			"label[10.5,1;", core.formspec_escape(title_and_name), "]",
-			"box[7.1,2.4;8,", tostring(desc_height), ";#000]",
-			"textarea[7.1,2.4;8,", tostring(desc_height), ";;;", desc, "]",
+			"image[9.1,0.4;3,2;", core.formspec_escape(modscreenshot), "]",
+			"label[12.5,1;", core.formspec_escape(title_and_name), "]",
+			"box[9.1,2.4;8,", tostring(desc_height), ";#000]",
+			"textarea[9.4,2.4;8.5,", tostring(desc_height+0.6), ";;;", desc, "]",
 		})
 
 		if core.may_modify_path(selected_pkg.path) then
 			table.insert_all(retval, {
-				"button[7.1,5.8;4,0.9;btn_mod_mgr_delete_mod;",
+				"button[4.65,7;4,1.2;btn_mod_mgr_delete_mod;",
 				fgettext("Uninstall"), "]"
 			})
 		end
@@ -209,51 +210,56 @@ local function handle_doubleclick(pkg)
 	end
 end
 
-local function handle_buttons(tabview, fields, tabname, tabdata)
+local function handle_buttons(dlgview, fields, tabname, tabdata)
 
 	if fields.pkglist then
 		local event = core.explode_table_event(fields.pkglist)
-		tabdata.selected_pkg = event.row
+		tab_selected_pkg = event.row
 		if event.type == "DCL" then
-			handle_doubleclick(packages:get_list()[tabdata.selected_pkg])
+			handle_doubleclick(packages:get_list()[tab_selected_pkg])
 		end
+		return true
+	end
+
+	if fields.back then
+		dlgview:delete()
 		return true
 	end
 
 	if fields.btn_contentdb then
 		local dlg = create_contentdb_dlg()
-		dlg:set_parent(tabview)
-		tabview:hide()
+		dlg:set_parent(dlgview)
+		dlgview:hide()
 		dlg:show()
 		packages = nil
 		return true
 	end
 
 	if fields.btn_mod_mgr_rename_modpack then
-		local mod = packages:get_list()[tabdata.selected_pkg]
+		local mod = packages:get_list()[tab_selected_pkg]
 		local dlg_renamemp = create_rename_modpack_dlg(mod)
-		dlg_renamemp:set_parent(tabview)
-		tabview:hide()
+		dlg_renamemp:set_parent(dlgview)
+		dlgview:hide()
 		dlg_renamemp:show()
 		packages = nil
 		return true
 	end
 
 	if fields.btn_mod_mgr_delete_mod then
-		local mod = packages:get_list()[tabdata.selected_pkg]
+		local mod = packages:get_list()[tab_selected_pkg]
 		local dlg_delmod = create_delete_content_dlg(mod)
-		dlg_delmod:set_parent(tabview)
-		tabview:hide()
+		dlg_delmod:set_parent(dlgview)
+		dlgview:hide()
 		dlg_delmod:show()
 		packages = nil
 		return true
 	end
 
 	if fields.btn_mod_mgr_update then
-		local pkg = packages:get_list()[tabdata.selected_pkg]
+		local pkg = packages:get_list()[tab_selected_pkg]
 		local dlg = create_contentdb_dlg(nil, pkgmgr.get_contentdb_id(pkg))
-		dlg:set_parent(tabview)
-		tabview:hide()
+		dlg:set_parent(dlgview)
+		dlgview:hide()
 		dlg:show()
 		packages = nil
 		return true
@@ -262,7 +268,7 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 	if fields.btn_mod_mgr_use_txp or fields.btn_mod_mgr_disable_txp then
 		local txp_path = ""
 		if fields.btn_mod_mgr_use_txp then
-			txp_path = packages:get_list()[tabdata.selected_pkg].path
+			txp_path = packages:get_list()[tab_selected_pkg].path
 		end
 
 		core.settings:set("texture_path", txp_path)
@@ -277,17 +283,11 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 	return false
 end
 
-return {
-	name = "content",
-	caption = function()
-		local update_count = core.settings:get_bool("contentdb_enable_updates_indicator") and update_detector.get_count() or 0
-		if update_count == 0 then
-			return fgettext("Content")
-		else
-			return fgettext("Content [$1]", update_count)
-		end
-	end,
-	cbf_formspec = get_formspec,
-	cbf_button_handler = handle_buttons,
-	on_change = on_change
-}
+function create_content_dlg()
+	mm_game_theme.set_engine()
+	local retval = dialog_create("content",
+					get_formspec,
+					handle_buttons,
+					nil)
+	return retval
+end

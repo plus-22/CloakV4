@@ -16,15 +16,13 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-local packages_raw
-local packages
+local packages_raw, packages, tab_selected_pkg
 
 local function modname_valid(name)
 	return not name:find("[^a-z0-9_]")
 end
 
---------------------------------------------------------------------------------
-local function get_formspec(tabview, name, tabdata)
+local function get_formspec(dlgview, name, tabdata)
 	if pkgmgr.clientmods == nil then
 		pkgmgr.refresh_globals()
 	end
@@ -50,11 +48,6 @@ local function get_formspec(tabview, name, tabdata)
 		packages = filterlist.create(get_data, pkgmgr.compare_package,
 				is_equal, nil, {})
 
-
-
-
-
-----------------------------------------------------------------------------------------------------
 		local filename = core.get_clientmodpath() .. DIR_DELIM .. "mods.conf"
 		local conffile = Settings(filename)
 		local mods = conffile:to_table()
@@ -84,17 +77,6 @@ local function get_formspec(tabview, name, tabdata)
 		if not conffile:write() then
 			core.log("error", "Failed to write clientmod config file")
 		end
--------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
 
 		local filename = core.get_clientmodpath() .. DIR_DELIM .. "mods.conf"
 
@@ -129,25 +111,25 @@ local function get_formspec(tabview, name, tabdata)
 		end
 	end
 
-	if tabdata.selected_pkg == nil then
-		tabdata.selected_pkg = 1
+	if tab_selected_pkg == nil then
+		tab_selected_pkg = 1
 	end
 
 	local use_technical_names = core.settings:get_bool("show_technical_names")
 
 
 	local retval =
-		"label[0.05,-0.25;".. fgettext("Installed Packages:") .. "]" ..
+		"size[8.5,9,true]" .. "label[0.25,-0.1;".. fgettext("Installed Client Mods") .. "]" ..
 		"tablecolumns[color;tree;text]" ..
-		"table[0,0.25;5.1,4.3;pkglist;" ..
+		"table[0.15,0.5;8,7;pkglist;" ..
 		pkgmgr.render_packagelist(packages, use_technical_names) ..
-		";" .. tabdata.selected_pkg .. "]" ..
-		"button[0,4.85;5.25,0.5;btn_contentdb;".. fgettext("Browse online content") .. "]"
+		";" .. tab_selected_pkg .. "]" ..
+		"button[0.15,7.5;4,2;back;" .. fgettext("Back") .. "]"
 
 
 	local selected_pkg
-	if filterlist.size(packages) >= tabdata.selected_pkg then
-		selected_pkg = packages:get_list()[tabdata.selected_pkg]
+	if filterlist.size(packages) >= tab_selected_pkg then
+		selected_pkg = packages:get_list()[tab_selected_pkg]
 	end
 
 	if selected_pkg ~= nil then
@@ -174,19 +156,19 @@ local function get_formspec(tabview, name, tabdata)
 		local title_and_name
 		if selected_pkg.type == "mod" then
 			if selected_pkg.is_modpack then
-								if selected_pkg.is_clientside then
+				if selected_pkg.is_clientside then
 					if pkgmgr.is_modpack_entirely_enabled({list = packages}, selected_pkg.name) then
 						retval = retval ..
-							"button[8.65,4.65;3.25,1;btn_mod_mgr_mp_disable;" ..
+							"button[4.38,7.5;4,2;btn_mod_mgr_mp_disable;" ..
 							fgettext("Disable modpack") .. "]"
 					else
 						retval = retval ..
-							"button[8.65,4.65;3.25,1;btn_mod_mgr_mp_enable;" ..
+							"button[4.38,7.5;4,2;btn_mod_mgr_mp_enable;" ..
 							fgettext("Enable modpack") .. "]"
 					end
 				else
 					retval = retval ..
-						"button[8.65,4.65;3.25,1;btn_mod_mgr_rename_modpack;" ..
+						"button[4.38,7.5;4,2;btn_mod_mgr_rename_modpack;" ..
 						fgettext("Rename") .. "]"
 				end
 			else
@@ -209,34 +191,43 @@ local function get_formspec(tabview, name, tabdata)
 							"\n" .. toadd_soft
 					end
 				end
-								if selected_pkg.is_clientside then
+				if selected_pkg.is_clientside then
 					if selected_pkg.enabled then
 						retval = retval ..
-							"button[8.65,4.65;3.25,1;btn_mod_mgr_disable_mod;" ..
+							"button[4.38,7.5;4,2;btn_mod_mgr_disable_mod;" ..
 							fgettext("Disable") .. "]"
 					else
 						retval = retval ..
-							"button[8.65,4.65;3.25,1;btn_mod_mgr_enable_mod;" ..
+							"button[4.38,7.5;4,2;btn_mod_mgr_enable_mod;" ..
 							fgettext("Enable") .. "]"
 					end
 				end
 			end
+		end
+	end
+	return retval
 end
 
 --------------------------------------------------------------------------------
-local function handle_buttons(tabview, fields, tabname, tabdata)
+local function handle_doubleclick(pkg, pkg_name)
+	pkgmgr.enable_mod({data = {list = packages, selected_mod = pkg_name}})
+	packages = nil
+end
+
+--------------------------------------------------------------------------------
+local function handle_buttons(dlgview, fields, tabname, tabdata)
 	if fields["pkglist"] ~= nil then
 		local event = core.explode_table_event(fields["pkglist"])
-		tabdata.selected_pkg = event.row
+		tab_selected_pkg = event.row
 		if event.type == "DCL" then
-			handle_doubleclick(packages:get_list()[tabdata.selected_pkg], tabdata.selected_pkg)
+			handle_doubleclick(packages:get_list()[tab_selected_pkg], tab_selected_pkg)
 		end
 		return true
 	end
 
 	if fields.btn_mod_mgr_mp_enable ~= nil or
 			fields.btn_mod_mgr_mp_disable ~= nil then
-		pkgmgr.enable_mod({data = {list = packages, selected_mod = tabdata.selected_pkg}},
+		pkgmgr.enable_mod({data = {list = packages, selected_mod = tab_selected_pkg}},
 			fields.btn_mod_mgr_mp_enable ~= nil)
 		packages = nil
 		return true
@@ -244,36 +235,32 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 
 	if fields.btn_mod_mgr_enable_mod ~= nil or
 			fields.btn_mod_mgr_disable_mod ~= nil then
-		pkgmgr.enable_mod({data = {list = packages, selected_mod = tabdata.selected_pkg}},
+		pkgmgr.enable_mod({data = {list = packages, selected_mod = tab_selected_pkg}},
 			fields.btn_mod_mgr_enable_mod ~= nil)
 		packages = nil
 		return true
 	end
 
-	if fields["btn_contentdb"] ~= nil then
-		local dlg = create_store_dlg()
-		dlg:set_parent(tabview)
-		tabview:hide()
-		dlg:show()
-		packages = nil
+	if fields.back then
+		dlgview:delete()
 		return true
 	end
 
 	if fields["btn_mod_mgr_rename_modpack"] ~= nil then
-		local mod = packages:get_list()[tabdata.selected_pkg]
+		local mod = packages:get_list()[tab_selected_pkg]
 		local dlg_renamemp = create_rename_modpack_dlg(mod)
-		dlg_renamemp:set_parent(tabview)
-		tabview:hide()
+		dlg_renamemp:set_parent(dlgview)
+		dlgview:hide()
 		dlg_renamemp:show()
 		packages = nil
 		return true
 	end
 
 	if fields["btn_mod_mgr_delete_mod"] ~= nil then
-		local mod = packages:get_list()[tabdata.selected_pkg]
+		local mod = packages:get_list()[tab_selected_pkg]
 		local dlg_delmod = create_delete_content_dlg(mod)
-		dlg_delmod:set_parent(tabview)
-		tabview:hide()
+		dlg_delmod:set_parent(dlgview)
+		dlgview:hide()
 		dlg_delmod:show()
 		packages = nil
 		return true
@@ -282,7 +269,7 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 	if fields.btn_mod_mgr_use_txp or fields.btn_mod_mgr_disable_txp then
 		local txp_path = ""
 		if fields.btn_mod_mgr_use_txp then
-			txp_path = packages:get_list()[tabdata.selected_pkg].path
+			txp_path = packages:get_list()[tab_selected_pkg].path
 		end
 
 		core.settings:set("texture_path", txp_path)
@@ -296,11 +283,12 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 	return false
 end
 
---------------------------------------------------------------------------------
-return {
-	name = "content",
-	caption = fgettext("Content"),
-	cbf_formspec = get_formspec,
-	cbf_button_handler = handle_buttons,
-	on_change = pkgmgr.update_gamelist
-}
+function create_csm_dlg()
+	
+	mm_game_theme.set_engine()
+	local retval = dialog_create("csm",
+					get_formspec,
+					handle_buttons,
+					pkgmgr.update_gamelist)
+	return retval
+end

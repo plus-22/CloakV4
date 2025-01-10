@@ -17,13 +17,13 @@
 
 
 --------------------------------------------------------------------------------
--- A tabview implementation                                                   --
+-- A dlgview implementation                                                   --
 -- Usage:                                                                     --
--- tabview.create: returns initialized tabview raw element                    --
+-- dlgview.create: returns initialized dlgview raw element                    --
 -- element.add(tab): add a tab declaration                                    --
 -- element.handle_buttons()                                                   --
 -- element.handle_events()                                                    --
--- element.getFormspec() returns formspec of tabview                          --
+-- element.getFormspec() returns formspec of dlgview                          --
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
@@ -61,42 +61,29 @@ end
 local function get_formspec(self)
 	if self.hidden or (self.parent ~= nil and self.parent.hidden) then
 		return ""
+	else
+		mm_game_theme.clear_single("header")
 	end
-	local tab = self.tablist[self.last_tab_index]
-
-	local content, prepend = tab.get_formspec(self, tab.name, tab.tabdata, tab.tabsize)
-
-	local tsize = tab.tabsize or { width = self.width, height = self.height }
+	local tsize = { width = self.width, height = self.height }
 	if self.parent == nil and not prepend then
-		prepend = string.format("size[%f,%f,%s]", tsize.width, tsize.height,
-				dump(self.fixed_size))
-
-		if tab.formspec_version then
-			prepend = ("formspec_version[%d]"):format(tab.formspec_version) .. prepend
-		end
+		prepend = string.format("size[%f,%f,%s]", tsize.width, tsize.height, dump(self.fixed_size)) ..
+		"position[0.01,0.01]" .. "anchor[0,0]" ..
+		"bgcolor[#0000]" ..
+		"style_type[image_button;border=false;textcolor=white;font_size=*2;padding=0;font=bold;bgimg=" .. core.formspec_escape(defaulttexturedir .. "menu_local.png") .. ";bgimg_hovered=" .. core.formspec_escape(defaulttexturedir .. "menu_local_hovered.png") .. "]" ..
+		"image_button[0,1;4,0.95;;local_btn;" .. fgettext("Local") .. "]"..
+		"style_type[image_button;border=false;textcolor=white;font_size=*2;padding=0;font=bold;bgimg=" .. core.formspec_escape(defaulttexturedir .. "menu_online.png") .. ";bgimg_hovered=" .. core.formspec_escape(defaulttexturedir .. "menu_online_hovered.png") .. "]" ..
+		"image_button[0,2;4,0.95;;online;" .. fgettext("Online") .. "]" ..
+		"style_type[image_button;border=false;textcolor=white;font_size=*2;padding=0;font=bold;bgimg=" .. core.formspec_escape(defaulttexturedir .. "menu_csm.png") .. ";bgimg_hovered=" .. core.formspec_escape(defaulttexturedir .. "menu_csm_hovered.png") .. "]" ..
+		"image_button[0,3;4,0.95;;csm;" .. fgettext("CSMs") .. "]" ..
+		"image_button[0,4;4,0.95;;content;" .. fgettext("Content") .. "]" ..
+		"style_type[image_button;border=false;textcolor=white;font_size=*2;padding=0;font=bold;bgimg=" .. core.formspec_escape(defaulttexturedir .. "menu_settings.png") .. ";bgimg_hovered=" .. core.formspec_escape(defaulttexturedir .. "menu_settings_hovered.png") .. "]" ..
+		"image_button[0,5;4,0.95;;settings;" .. fgettext("Settings") .. "]" ..
+		"style_type[image_button;border=false;textcolor=white;font_size=*2;padding=0;font=bold;bgimg=" .. core.formspec_escape(defaulttexturedir .. "menu_about.png") .. ";bgimg_hovered=" .. core.formspec_escape(defaulttexturedir .. "menu_about_hovered.png") .. "]" ..
+		"image_button[0,6;4,0.95;;about;" .. fgettext("About") .. "]" ..
+		"image[-1,-0.7;7,1.8;" .. core.formspec_escape(defaulttexturedir .. "menu_header.png") .. "]"
 	end
 
-	local end_button_size = 0.75
-
-	local tab_header_size = { width = tsize.width, height = 0.85 }
-	if self.end_button then
-		tab_header_size.width = tab_header_size.width - end_button_size - 0.1
-	end
-
-	local formspec = (prepend or "") .. self:tab_header(tab_header_size) .. content
-
-	if self.end_button then
-		formspec = formspec ..
-				("style[%s;noclip=true;border=false]"):format(self.end_button.name) ..
-				("tooltip[%s;%s]"):format(self.end_button.name, self.end_button.label) ..
-				("image_button[%f,%f;%f,%f;%s;%s;]"):format(
-						self.width - end_button_size,
-						(-tab_header_size.height - end_button_size) / 2,
-						end_button_size,
-						end_button_size,
-						core.formspec_escape(self.end_button.icon),
-						self.end_button.name)
-	end
+	local formspec = (prepend or "")
 
 	return formspec
 end
@@ -108,22 +95,52 @@ local function handle_buttons(self,fields)
 		return false
 	end
 
-	if self:handle_tab_buttons(fields) then
+	if fields.local_btn then
+		local dlg = create_local_dlg()
+		dlg:set_parent(self)
+		self:hide()
+		dlg:show()
 		return true
 	end
 
-	if self.end_button and fields[self.end_button.name] then
-		return self.end_button.on_click(self)
-	end
-
-	if self.glb_btn_handler ~= nil and
-		self.glb_btn_handler(self, fields) then
+	if fields.online then
+		local dlg = create_online_dlg()
+		dlg:set_parent(self)
+		self:hide()
+		dlg:show()
 		return true
 	end
 
-	local tab = self.tablist[self.last_tab_index]
-	if tab.button_handler ~= nil then
-		return tab.button_handler(self, fields, tab.name, tab.tabdata)
+	if fields.csm then
+		local dlg = create_csm_dlg()
+		dlg:set_parent(self)
+		self:hide()
+		dlg:show()
+		return true
+	end
+
+	if fields.content then
+		local dlg = create_content_dlg()
+		dlg:set_parent(self)
+		self:hide()
+		dlg:show()
+		return true
+	end
+
+	if fields.settings then
+		local dlg = create_settings_dlg()
+		dlg:set_parent(self)
+		self:hide()
+		dlg:show()
+		return true
+	end
+
+	if fields.about then
+		local dlg = create_about_dlg()
+		dlg:set_parent(self)
+		self:hide()
+		dlg:show()
+		return true
 	end
 
 	return false
@@ -166,8 +183,9 @@ local function tab_header(self, size)
 
 		toadd = toadd .. caption
 	end
-	return string.format("tabheader[%f,%f;%f,%f;%s;%s;%i;true;false]",
-			self.header_x, self.header_y, size.width, size.height, self.name, toadd, self.last_tab_index)
+	return ""
+	--return string.format("tabheader[%f,%f;%f,%f;%s;%s;%i;true;false]",
+	--		self.header_x, self.header_y, size.width, size.height, self.name, toadd, self.last_tab_index)
 end
 
 --------------------------------------------------------------------------------
@@ -178,7 +196,7 @@ local function switch_to_tab(self, index)
 				self.current_tab, self.tablist[index].name)
 	end
 
-	--update tabview data
+	--update dlgview data
 	self.last_tab_index = index
 	local old_tab = self.current_tab
 	self.current_tab = self.tablist[index].name
@@ -219,34 +237,23 @@ local function set_tab_by_name(self, name)
 end
 
 --------------------------------------------------------------------------------
-local function hide_tabview(self)
+local function hide_dlgview(self)
 	self.hidden=true
 
-	--call on_change as we're not gonna show self tab any longer
-	if self.tablist[self.last_tab_index].on_change ~= nil then
-		self.tablist[self.last_tab_index].on_change("LEAVE",
-				self.current_tab, nil)
-	end
 end
 
 --------------------------------------------------------------------------------
-local function show_tabview(self)
+local function show_dlgview(self)
 	self.hidden=false
-
-	-- call for tab to enter
-	if self.tablist[self.last_tab_index].on_change ~= nil then
-		self.tablist[self.last_tab_index].on_change("ENTER",
-				nil,self.current_tab)
-	end
 end
 
-local tabview_metatable = {
+local dlgview_metatable = {
 	add                       = add_tab,
 	handle_buttons            = handle_buttons,
 	handle_events             = handle_events,
 	get_formspec              = get_formspec,
-	show                      = show_tabview,
-	hide                      = hide_tabview,
+	show                      = show_dlgview,
+	hide                      = hide_dlgview,
 	delete                    = function(self) ui.delete(self) end,
 	set_parent                = function(self,parent) self.parent = parent end,
 	set_autosave_tab          =
@@ -264,10 +271,10 @@ local tabview_metatable = {
 	handle_tab_buttons = handle_tab_buttons
 }
 
-tabview_metatable.__index = tabview_metatable
+dlgview_metatable.__index = dlgview_metatable
 
 --------------------------------------------------------------------------------
-function tabview_create(name, size, tabheaderpos)
+function dlgview_create(name, size, tabheaderpos)
 	local self = {}
 
 	self.name     = name
@@ -277,7 +284,7 @@ function tabview_create(name, size, tabheaderpos)
 	self.header_x = tabheaderpos.x
 	self.header_y = tabheaderpos.y
 
-	setmetatable(self, tabview_metatable)
+	setmetatable(self, dlgview_metatable)
 
 	self.fixed_size     = true
 	self.hidden         = true
