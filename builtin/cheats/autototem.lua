@@ -26,13 +26,13 @@ local function update_count()
         end
         last_count = count
         if last_count > 0 then
-            if totem_stack then
+            if totem_stack:get_name()=="mcl_totems:totem" then
                 minetest.update_infotext("AutoTotem", "Combat", "autototem", last_count.."+1")
                 else
                 minetest.update_infotext("AutoTotem", "Combat", "autototem", last_count)
             end
         else
-            if totem_stack then
+            if totem_stack:get_name()=="mcl_totems:totem" then
                 minetest.update_infotext("AutoTotem", "Combat", "autototem", "0+1")
             else
                 minetest.update_infotext("AutoTotem", "Combat", "autototem", "0")
