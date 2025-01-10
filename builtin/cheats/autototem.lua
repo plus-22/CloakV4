@@ -5,16 +5,11 @@ local totem_move_action = InventoryAction("move")
 local last_count
 local last_item = "mcl_totems:totem"  -- Set the specific item to track
 local epoch = 0
+local invalid_game = false
+
 totem_move_action:to("current_player", "offhand", 1)
 minetest.settings:set_bool("crystalspam", false)
 minetest.settings:set_bool("autototem", false)
-
-
-
-
-
-
-
 
 local function update_count()
     if minetest.localplayer ~= nil then
@@ -41,36 +36,31 @@ local function update_count()
     end
 end
 
-
-
-
-
-
-
-
 minetest.register_globalstep(function(dtime)
 	local player = minetest.localplayer
 	if not player then return end
-
-	if minetest.settings:get_bool("autototem") then
-        totem_stack = minetest.get_inventory("current_player").offhand[1]
-		if totem_stack and totem_stack:get_name() ~= "mcl_totems:totem" then
-			local totem_index = minetest.find_item("mcl_totems:totem")
-			if totem_index then
-				totem_move_action:from("current_player", "main", totem_index)
-				totem_move_action:apply()
-
-			end
-		end
-        if os.time() > epoch then
-            update_count()
-        epoch = os.time()
-    end
+    local inventory = minetest.get_inventory("current_player")
+    if inventory and inventory["offhand"] then
+        if minetest.settings:get_bool("autototem") then
+            totem_stack = minetest.get_inventory("current_player").offhand[1]
+            if totem_stack and totem_stack:get_name() ~= "mcl_totems:totem" then
+                local totem_index = minetest.find_item("mcl_totems:totem")
+                if totem_index then
+                    totem_move_action:from("current_player", "main", totem_index)
+                    totem_move_action:apply()
+                end
+            end
+            if os.time() > epoch then
+                update_count()
+                epoch = os.time()
+            end
+        end
+    else
+        if invalid_game == false then
+            minetest.update_infotext("AutoTotem", "Combat", "autototem", "Invalid Game")
+            invalid_game = true
+        end
 	end
 end)
-
-
-
-
 
 minetest.register_cheat_with_infotext("AutoTotem", "Combat", "autototem", "0")
