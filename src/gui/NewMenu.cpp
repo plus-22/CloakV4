@@ -12,10 +12,15 @@ NewMenu::NewMenu(gui::IGUIEnvironment* env,
     m_client(client), m_rectsCreated(false) 
 {    
     infostream << "[NEWMENU] Successfully created" << std::endl;
+    this->env = env;
+    xray_form = core::rect<s32>(150 + 60, 150, 700 + 60, 200);
+    node_form = core::rect<s32>(150 + 60, 210, 700 + 60, 260);
 }
 
 NewMenu::~NewMenu()
 {
+    delete xrayLineEdit;
+    delete nodeLineEdit;
 }
 
 void NewMenu::create()
@@ -27,9 +32,15 @@ void NewMenu::create()
         return;
     }
 
+    if (!xrayLineEdit) 
+        xrayLineEdit = new CustomEditBox(env, g_settings->get("xray_nodes"), "xray_nodes", xray_form, "Xray node list");
+
+    if (!nodeLineEdit)
+        nodeLineEdit = new CustomEditBox(env, g_settings->get("node_esp_nodes"), "node_esp_nodes", node_form, "ESP node list");
+
     if (!m_rectsCreated) {
         for (size_t i = 0; i < script->m_cheat_categories.size(); i++) {
-            categoryRects.push_back(createRect(20 + i * (rectWidth + 5), 20));  
+            categoryRects.push_back(createRect(20, 20 + i * (rectHeight + 10)));
             selectedCategory.push_back(false); 
             subCategoryRects.push_back(std::vector<core::rect<s32>>());
         }
@@ -54,7 +65,11 @@ void NewMenu::create()
 }
 
 void NewMenu::close()
-{   
+{
+    if (xrayLineEdit) 
+        xrayLineEdit->close();
+    if (nodeLineEdit)
+        nodeLineEdit->close();
     Environment->removeFocus(this);
     m_menumgr->deletingMenu(this);
     IGUIElement::setVisible(false);
@@ -79,7 +94,18 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
             close();
             return true; 
         }
-    } 
+    }
+
+    if (xrayLineEdit) {
+        xrayLineEdit->Event(event, isDragging, lastMousePos, xray_form);
+        xrayLineEdit->handleInput(event);
+    }
+
+    if (nodeLineEdit) {
+        nodeLineEdit->Event(event, isDragging, lastMousePos, node_form);
+        nodeLineEdit->handleInput(event);
+    }
+
     if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
         if (event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
             for (size_t i =  0; i < categoryRects.size(); ++i) {
@@ -87,17 +113,6 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
                     isDragging = true;
                     draggedRectIndex = i;
                     offset = core::vector2d<s32>(event.MouseInput.X - categoryRects[i].UpperLeftCorner.X, event.MouseInput.Y - categoryRects[i].UpperLeftCorner.Y);
-                    selectedCategory[i] = !selectedCategory[i]; 
-
-                    if (selectedCategory[i]) {
-                        subCategoryRects[i].clear();
-                        int subCategoryCount = script->m_cheat_categories[i]->m_cheats.size();
-                        for (int j = 0; j < subCategoryCount; ++j) { 
-                            subCategoryRects[i].push_back(createRect(categoryRects[i].UpperLeftCorner.X, categoryRects[i].LowerRightCorner.Y + j * (rectHeight)));
-                        }
-                    } else {
-                        subCategoryRects[i].clear(); 
-                    }
                     return true; 
                 }
             }
@@ -114,6 +129,22 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
             }
             return false; 
 
+        } else if (event.MouseInput.Event == irr::EMIE_RMOUSE_PRESSED_DOWN) {
+            for (size_t i = 0; i < categoryRects.size(); ++i) {
+                if (categoryRects[i].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
+                    selectedCategory[i] = !selectedCategory[i];
+                    if (selectedCategory[i]) {
+                        subCategoryRects[i].clear();
+                        int subCategoryCount = script->m_cheat_categories[i]->m_cheats.size();
+                        for (int j = 0; j < subCategoryCount; ++j) { 
+                            subCategoryRects[i].push_back(createRect(categoryRects[i].UpperLeftCorner.X, categoryRects[i].LowerRightCorner.Y + j * (rectHeight)));
+                        }
+                    } else {
+                        subCategoryRects[i].clear(); 
+                    }
+                    return true; 
+                }
+            }
         } else if (event.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
             isDragging = false;
             draggedRectIndex = -1;
@@ -163,12 +194,29 @@ void NewMenu::draw()
     gui::IGUIFont* font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_HD);
 
     if (m_is_open) {
+        if (g_settings->getBool("XrayNodes")) {
+            if (xrayLineEdit) {
+                xrayLineEdit->open();
+                driver->draw2DRectangle(video::SColor(173, 43, 55, 69), xray_form);
+            }
+        } else {
+            xrayLineEdit->close();
+        } 
+
+        if (g_settings->getBool("ESPNodes")) {
+            if (nodeLineEdit) {
+                nodeLineEdit->open();
+                driver->draw2DRectangle(video::SColor(173, 43, 55, 69), node_form);
+            }
+        } else {
+            nodeLineEdit->close();
+        }
+
         for (size_t i = 0; i < categoryRects.size(); ++i) {
             const auto& rect = categoryRects[i];
             video::SColor color = selectedCategory[i] ? video::SColor(210, 53, 118, 189) : video::SColor(173, 43, 55, 69);
             driver->draw2DRectangle(color, rect);
 
-            video::SColor outlineColor(255, 255, 255, 255); 
             driver->draw2DRectangleOutline(core::rect<s32>(rect.UpperLeftCorner.X - 1, rect.UpperLeftCorner.Y - 1, rect.LowerRightCorner.X + 1, rect.LowerRightCorner.Y + 1), outlineColor);
 
             const std::string& categoryName = script->m_cheat_categories[i]->m_name;

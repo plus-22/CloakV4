@@ -37,6 +37,8 @@ core.cheats = {
 		["NoRender"] = "norender.particles",
         ["NoDrownCam"] = "small_post_effect_color", 
         ["BrightNight"] = "no_night", 
+		["XrayNodes"] = "XrayNodes",
+		["ESPNodes"] = "ESPNodes",
 	},
 	["Interact"] = {
 		["FastDig"] = "fastdig",
