@@ -2,9 +2,51 @@
 
 local switched_to_totem = 0
 local totem_move_action = InventoryAction("move")
+local last_count
+local last_item = "mcl_totems:totem"  -- Set the specific item to track
+local epoch = 0
 totem_move_action:to("current_player", "offhand", 1)
 minetest.settings:set_bool("crystalspam", false)
 minetest.settings:set_bool("autototem", false)
+
+
+
+
+
+
+
+
+local function update_count()
+    if minetest.localplayer ~= nil then
+        local count = 0
+        for k, v in ipairs(minetest.get_inventory("current_player").main) do
+            if v:get_name() == last_item then
+                count = count + v:get_count()
+            end
+        end
+        last_count = count
+        if last_count > 0 then
+            if totem_stack then
+                minetest.update_infotext("AutoTotem", "Combat", "autototem", last_count.."+1")
+                else
+                minetest.update_infotext("AutoTotem", "Combat", "autototem", last_count)
+            end
+        else
+            if totem_stack then
+                minetest.update_infotext("AutoTotem", "Combat", "autototem", "0+1")
+            else
+                minetest.update_infotext("AutoTotem", "Combat", "autototem", "0")
+            end
+        end
+    end
+end
+
+
+
+
+
+
+
 
 minetest.register_globalstep(function(dtime)
 	local player = minetest.localplayer
@@ -20,7 +62,15 @@ minetest.register_globalstep(function(dtime)
 
 			end
 		end
+        if os.time() > epoch then
+            update_count()
+        epoch = os.time()
+    end
 	end
 end)
 
-minetest.register_cheat("AutoTotem", "Combat", "autototem")
+
+
+
+
+minetest.register_cheat_with_infotext("AutoTotem", "Combat", "autototem", "0")
