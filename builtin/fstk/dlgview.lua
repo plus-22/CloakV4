@@ -64,7 +64,6 @@ local function get_formspec(self)
 	else
 		mm_game_theme.clear_single("header")
 	end
-	local prepend = ""
 	local tsize = { width = self.width, height = self.height }
 	if self.parent == nil then
 		prepend = string.format("size[%f,%f,%s]", tsize.width, tsize.height, dump(self.fixed_size)) ..
