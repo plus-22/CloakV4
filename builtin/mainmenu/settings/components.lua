@@ -402,11 +402,11 @@ local function make_noise_params(setting)
 			return fs, 0.8
 		end,
 
-		on_submit = function(self, fields, dlgview)
+		on_submit = function(self, fields, tabview)
 			if fields["edit_" .. setting.name] then
 				local dlg = create_change_mapgen_flags_dlg(setting)
-				dlg:set_parent(dlgview)
-				dlgview:hide()
+				dlg:set_parent(tabview)
+				tabview:hide()
 				dlg:show()
 
 				return true

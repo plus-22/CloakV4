@@ -25,13 +25,13 @@ ui.find_by_name(name) --> returns component or nil
 ^ find a component within ui
 ^ name: name of component to look for
 
-File: fst/dlgview.lua
+File: fst/tabview.lua
 ---------------------
 
-dlgview_create(name, size, tabheaderpos) --> returns dlgview component
-^ create a new dlgview component
-^ name: name of dlgview (has to be unique per ui)
-^ size: size of dlgview
+tabview_create(name, size, tabheaderpos) --> returns tabview component
+^ create a new tabview component
+^ name: name of tabview (has to be unique per ui)
+^ size: size of tabview
 	{
 		x,
 		y
@@ -42,47 +42,47 @@ dlgview_create(name, size, tabheaderpos) --> returns dlgview component
 		y
 	}
 
-Class reference dlgview:
+Class reference tabview:
 
 methods:
 - add_tab(tab)
-  ^ add a tab to this dlgview
+  ^ add a tab to this tabview
   ^ tab:
   {
 	name               = "tabname",      -- name of tab to create
-	caption            = "tab caption",  -- text to show for tab header. Either a string or a function: (dlgview) -> string
-	cbf_button_handler = function(dlgview, fields, tabname, tabdata), -- callback for button events
-	--TODO cbf_events         = function(dlgview, event, tabname),           -- callback for events
-	cbf_formspec       = function(dlgview, name, tabdata),            -- get formspec
+	caption            = "tab caption",  -- text to show for tab header. Either a string or a function: (tabview) -> string
+	cbf_button_handler = function(tabview, fields, tabname, tabdata), -- callback for button events
+	--TODO cbf_events         = function(tabview, event, tabname),           -- callback for events
+	cbf_formspec       = function(tabview, name, tabdata),            -- get formspec
 	tabsize            =
 		{
 			x, -- x width
 			y  -- y height
-		},                                                            -- special size for this tab (only relevant if no parent for dlgview set)
+		},                                                            -- special size for this tab (only relevant if no parent for tabview set)
 	on_change          = function(type,old_tab,new_tab)               -- called on tab change, type is "ENTER" or "LEAVE"
   }
 - set_autosave_tab(value)
-  ^ tell dlgview to automatically save current tabname as "dlgview_name"_LAST
+  ^ tell tabview to automatically save current tabname as "tabview_name"_LAST
   ^ value: true/false
 - set_tab(name)
   ^ set's tab to tab named "name", returns true/false on success
   ^ name: name of tab to set
 - set_global_event_handler(handler)
   ^ set a handler to be called prior calling tab specific event handler
-  ^ handler: function(dlgview,event) --> returns true to finish event processing false to continue
+  ^ handler: function(tabview,event) --> returns true to finish event processing false to continue
 - set_global_button_handler(handler)
   ^ set a handler to be called prior calling tab specific button handler
-  ^ handler: function(dlgview,fields) --> returns true to finish button processing false to continue
+  ^ handler: function(tabview,fields) --> returns true to finish button processing false to continue
 - set_parent(parent)
-  ^ set parent to attach dlgview to. TV's with parent are hidden if their parent
+  ^ set parent to attach tabview to. TV's with parent are hidden if their parent
     is hidden and they don't set their specified size.
   ^ parent: component to attach to
 - show()
-  ^ show dlgview
+  ^ show tabview
 - hide()
-  ^ hide dlgview
+  ^ hide tabview
 - delete()
-  ^ delete dlgview
+  ^ delete tabview
 - set_fixed_size(state)
   ^ true/false set to fixed size, variable size
 - set_end_button(info)
@@ -90,7 +90,7 @@ methods:
       * name: button name
       * label: tooltip text
       * icon: path to icon
-      * on_click(dlgview): callback function
+      * on_click(tabview): callback function
 
 File: fst/dialog.lua
 ---------------------

@@ -94,8 +94,8 @@ function singleplayer_refresh_gamebar()
 
 	local btnbar = buttonbar_create(
 			"game_button_bar",
-			core.settings:get_bool("enable_touch") and {x = -0.29, y = 8.45} or {x = -0.29, y = 8.675},
-			{x = 15.85, y = 1.25},
+			core.settings:get_bool("enable_touch") and {x = 0, y = 7.25} or {x = 0, y = 7.475},
+			{x = 15.5, y = 1.25},
 			"#000000",
 			game_buttonbar_button_handler)
 
@@ -152,12 +152,12 @@ local function get_disabled_settings(game)
 	return disabled_settings
 end
 
-local function get_formspec(dlgview, name, tabdata)
+local function get_formspec(tabview, name, tabdata)
 
 	-- Point the player to ContentDB when no games are found
 	if #pkgmgr.games == 0 then
-		local W = dlgview.width
-		local H = dlgview.height
+		local W = tabview.width
+		local H = tabview.height
 
 		local hypertext = "<global valign=middle halign=center size=18>" ..
 				fgettext_ne("Minetest is a game-creation platform that allows you to play many different games.") .. "\n" ..
@@ -207,8 +207,6 @@ local function get_formspec(dlgview, name, tabdata)
 	end
 
 	retval = retval ..
-	        "size[15.5,8.1,true]" .. 
-			"button[0.1,7.5;3.225,0.8;back;".. fgettext("Back") .. "]" ..
 			"container[5.25,4.875]" ..
 			"button[0,0;3.225,0.8;world_delete;".. fgettext("Delete") .. "]" ..
 			"button[3.325,0;3.225,0.8;world_configure;".. fgettext("Select Mods") .. "]" ..
@@ -220,7 +218,7 @@ local function get_formspec(dlgview, name, tabdata)
 			host ..
 			"container_end[]" ..
 			"container[5.25,0.375]" ..
-			"label[0,0.1;".. fgettext("Select World:") .. "]"..
+			"label[0,0.2;".. fgettext("Select World:") .. "]"..
 			"textlist[0,0.5;9.875,3.9;sp_worlds;" ..
 			menu_render_worldlist() ..
 			";" .. index .. "]" ..
@@ -235,7 +233,7 @@ local function get_formspec(dlgview, name, tabdata)
 
 		-- Reset y so that the text fields always start at the same position,
 		-- regardless of whether some of the checkboxes are hidden.
-		y = 0.2 + 5.2 * yo + 0.35
+		y = 0.2 + 4 * yo + 0.35
 
 		retval = retval .. "field[0," .. y .. ";4.5,0.75;te_playername;" .. fgettext("Name") .. ";" ..
 				core.formspec_escape(current_name) .. "]"
@@ -270,14 +268,11 @@ end
 
 local function main_button_handler(this, fields, name, tabdata)
 
+	assert(name == "local")
+
 	if fields.game_open_cdb then
 		local maintab = ui.find_by_name("maintab")
 		local dlg = create_contentdb_dlg("game")
-		local gamebar = ui.find_by_name("game_button_bar")
-		if gamebar then
-			gamebar:hide()
-		end
-		this:delete()
 		dlg:set_parent(maintab)
 		maintab:hide()
 		dlg:show()
@@ -446,23 +441,10 @@ local function main_button_handler(this, fields, name, tabdata)
 
 		return true
 	end
-
-	if fields.back then
-		this:delete()
-		menudata.worldlist:set_filtercriteria(nil)
-		local gamebar = ui.find_by_name("game_button_bar")
-		if gamebar then
-			gamebar:hide()
-		end
-		mm_game_theme.set_engine()
-		mm_game_theme.clear_single("header")
-		return true
-	end
 end
 
 local function on_change(type)
-	minetest.log("error", type)
-	if type == "DialogShow" then
+	if type == "ENTER" then
 		local game = current_game()
 		if game then
 			apply_game(game)
@@ -473,35 +455,20 @@ local function on_change(type)
 		if singleplayer_refresh_gamebar() then
 			ui.find_by_name("game_button_bar"):show()
 		end
-	elseif type == "MenuQuit" then
+	elseif type == "LEAVE" then
 		menudata.worldlist:set_filtercriteria(nil)
 		local gamebar = ui.find_by_name("game_button_bar")
 		if gamebar then
 			gamebar:hide()
 		end
-		mm_game_theme.set_engine()
-		mm_game_theme.clear_single("header")
-		return false
-	elseif type == "DialogHide" then
-		menudata.worldlist:set_filtercriteria(nil)
-		local gamebar = ui.find_by_name("game_button_bar")
-		if gamebar then
-			gamebar:hide()
-		end
-		mm_game_theme.set_engine()
-		mm_game_theme.clear_single("header")
-		return false
 	end
 end
 
 --------------------------------------------------------------------------------
-
-function create_local_dlg()
-	mm_game_theme.set_engine()
-	serverlistmgr.sync()
-	local retval = dialog_create("local",
-					get_formspec,
-					main_button_handler,
-					on_change)
-	return retval
-end
+return {
+	name = "local",
+	caption = fgettext("Start Game"),
+	cbf_formspec = get_formspec,
+	cbf_button_handler = main_button_handler,
+	on_change = on_change
+}

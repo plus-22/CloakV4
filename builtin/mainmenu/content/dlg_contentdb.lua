@@ -185,7 +185,7 @@ local function get_info_formspec(text)
 
 		"label[4,4.35;", text, "]",
 		"container[0,", H - 0.8 - 0.375, "]",
-		"button[0.375,0;3,0.8;back;", fgettext("Back"), "]",
+		"button[0.375,0;5,0.8;back;", fgettext("Back to Main Menu"), "]",
 		"container_end[]",
 	})
 end
@@ -226,7 +226,7 @@ local function get_formspec(dlgdata)
 
 		-- Page nav buttons
 		"container[0,", H - 0.8 - 0.375, "]",
-		"button[0.375,0;3,0.8;back;", fgettext("Back"), "]",
+		"button[0.375,0;5,0.8;back;", fgettext("Back to Main Menu"), "]",
 
 		"container[", W - 0.375 - 0.8*4 - 2,  ",0]",
 		"image_button[0,0;0.8,0.8;", core.formspec_escape(defaulttexturedir), "start_icon.png;pstart;]",
