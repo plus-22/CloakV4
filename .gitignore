@@ -136,4 +136,3 @@ lib/irrlichtmt
 client/mod_storage.sqlite
 minetest.dmp
 minetest.dmp
-*.dmp
