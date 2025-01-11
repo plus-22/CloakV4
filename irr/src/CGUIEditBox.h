@@ -137,6 +137,12 @@ public:
 	//! Returns whether the element takes input from the IME
 	bool acceptsIME() override;
 
+	void setMarkColor(video::SColor color, bool flag) override
+	{
+		MarkColor = color;
+		customMarkColor = flag;
+	}
+
 protected:
 	//! Breaks the single text line.
 	void breakText();
@@ -171,6 +177,8 @@ protected:
 	s32 MarkBegin;
 	s32 MarkEnd;
 
+	video::SColor MarkColor; 
+	bool customMarkColor;
 	video::SColor OverrideColor;
 	gui::IGUIFont *OverrideFont, *LastBreakFont;
 	IOSOperator *Operator;
