@@ -70,6 +70,7 @@ void NewMenu::close()
         xrayLineEdit->close();
     if (nodeLineEdit)
         nodeLineEdit->close();
+
     Environment->removeFocus(this);
     m_menumgr->deletingMenu(this);
     IGUIElement::setVisible(false);
@@ -186,10 +187,83 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
     return Parent ? Parent->OnEvent(event) : false; 
 }
 
-void NewMenu::draw() 
+void NewMenu::drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font)
 {
     GET_SCRIPT_POINTER
 
+    for (size_t i = 0; i < categoryRects.size(); ++i) {
+        const auto& rect = categoryRects[i];
+        video::SColor color = selectedCategory[i] ? video::SColor(210, 53, 118, 189) : video::SColor(173, 43, 55, 69);
+        driver->draw2DRectangle(color, rect);
+
+        driver->draw2DRectangleOutline(core::rect<s32>(rect.UpperLeftCorner.X - 1, rect.UpperLeftCorner.Y - 1, rect.LowerRightCorner.X + 1, rect.LowerRightCorner.Y + 1), outlineColor);
+
+        const std::string& categoryName = script->m_cheat_categories[i]->m_name;
+        std::wstring wCategoryName = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(categoryName);
+
+        core::dimension2d<u32> textSizeU32 = font->getDimension(wCategoryName.c_str());
+        core::dimension2d<s32> textSize(textSizeU32.Width, textSizeU32.Height);
+
+        s32 textX = rect.UpperLeftCorner.X + (rect.getWidth() - textSize.Width) / 2;
+        s32 textY = rect.UpperLeftCorner.Y + (rect.getHeight() - textSize.Height) / 2;
+
+        font->draw(wCategoryName.c_str(), core::rect<s32>(textX, textY, textX + textSize.Width, textY + textSize.Height), video::SColor(255, 255, 255, 255));
+    }
+
+}
+
+void NewMenu::subDrawCategory(video::IVideoDriver* driver, gui::IGUIFont* font)
+{
+    GET_SCRIPT_POINTER
+
+    for (size_t i = 0; i < subCategoryRects.size(); ++i) {
+        if (selectedCategory[i]) {
+            for (size_t j = 0; j < subCategoryRects[i].size(); ++j) {
+                const auto& subRect = subCategoryRects[i][j];
+                driver->draw2DRectangle(subCategoryColors[i][j], subRect);
+                driver->draw2DRectangleOutline(core::rect<s32>(subRect.UpperLeftCorner.X - 1, subRect.UpperLeftCorner.Y - 1, subRect.LowerRightCorner.X + 1, subRect.LowerRightCorner.Y + 1), outlineColor);
+
+                const auto& functionName = script->m_cheat_categories[i]->m_cheats[j]->m_name;
+                std::wstring wFunctionName = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(functionName);   
+                subCategoryColors[i][j] = video::SColor(173, 43, 55, 69);
+                if (g_settings->getBool("newmenu_draw_type_full")) {
+                    if (script->m_cheat_categories[i]->m_cheats[j]->is_enabled()) {
+                        subCategoryColors[i][j] = video::SColor(210, 53, 118, 189);
+                    } else {
+                        subCategoryColors[i][j] = video::SColor(173, 43, 55, 69);
+                    }
+                }
+
+                if (g_settings->getBool("newmenu_draw_type_small")) {
+                    if (script->m_cheat_categories[i]->m_cheats[j]->is_enabled()) {
+                        driver->draw2DRectangle(video::SColor(210, 53, 118, 189), core::rect<s32>(subRect.UpperLeftCorner.X + 3, subRect.UpperLeftCorner.Y + 3, subRect.LowerRightCorner.X - 3, subRect.LowerRightCorner.Y - 3));
+                    }
+                }
+                
+                if (g_settings->getBool("newmenu_draw_type_meteor")) {
+                    if (script->m_cheat_categories[i]->m_cheats[j]->is_enabled()) {
+                        subCategoryColors[i][j] = video::SColor(173, 78, 88, 100);
+                        driver->draw2DRectangle(video::SColor(210, 33, 98, 169), core::rect<s32>(subRect.UpperLeftCorner.X, subRect.UpperLeftCorner.Y, subRect.LowerRightCorner.X - 170, subRect.LowerRightCorner.Y));
+                    } else {
+                        subCategoryColors[i][j] = video::SColor(173, 43, 55, 69);
+                    }
+                }
+
+                core::dimension2d<u32> functionTextSizeU32 = font->getDimension(wFunctionName.c_str());
+                core::dimension2d<s32> functionTextSize(functionTextSizeU32.Width, functionTextSizeU32.Height);
+
+                s32 functionTextX = subRect.UpperLeftCorner.X + (subRect.getWidth() - functionTextSize.Width) / 2;
+                s32 functionTextY = subRect.UpperLeftCorner.Y + (subRect.getHeight() - functionTextSize.Height) / 2;
+
+                font-> draw(wFunctionName.c_str(), core::rect<s32>(functionTextX, functionTextY, functionTextX + functionTextSize.Width, functionTextY + functionTextSize.Height), video::SColor(255, 255, 255, 255));
+            }
+        }
+    }
+}
+
+void NewMenu::draw() 
+{
+    GET_SCRIPT_POINTER
     video::IVideoDriver* driver = Environment->getVideoDriver();
     gui::IGUIFont* font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_HD);
 
@@ -212,67 +286,8 @@ void NewMenu::draw()
             nodeLineEdit->close();
         }
 
-        for (size_t i = 0; i < categoryRects.size(); ++i) {
-            const auto& rect = categoryRects[i];
-            video::SColor color = selectedCategory[i] ? video::SColor(210, 53, 118, 189) : video::SColor(173, 43, 55, 69);
-            driver->draw2DRectangle(color, rect);
-
-            driver->draw2DRectangleOutline(core::rect<s32>(rect.UpperLeftCorner.X - 1, rect.UpperLeftCorner.Y - 1, rect.LowerRightCorner.X + 1, rect.LowerRightCorner.Y + 1), outlineColor);
-
-            const std::string& categoryName = script->m_cheat_categories[i]->m_name;
-            std::wstring wCategoryName = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(categoryName);
-
-            core::dimension2d<u32> textSizeU32 = font->getDimension(wCategoryName.c_str());
-            core::dimension2d<s32> textSize(textSizeU32.Width, textSizeU32.Height);
-
-            s32 textX = rect.UpperLeftCorner.X + (rect.getWidth() - textSize.Width) / 2;
-            s32 textY = rect.UpperLeftCorner.Y + (rect.getHeight() - textSize.Height) / 2;
-
-            font->draw(wCategoryName.c_str(), core::rect<s32>(textX, textY, textX + textSize.Width, textY + textSize.Height), video::SColor(255, 255, 255, 255));
-        }
-
-        for (size_t i = 0; i < subCategoryRects.size(); ++i) {
-            if (selectedCategory[i]) {
-                for (size_t j = 0; j < subCategoryRects[i].size(); ++j) {
-                    const auto& subRect = subCategoryRects[i][j];
-                    driver->draw2DRectangle(subCategoryColors[i][j], subRect);
-                    driver->draw2DRectangleOutline(core::rect<s32>(subRect.UpperLeftCorner.X - 1, subRect.UpperLeftCorner.Y - 1, subRect.LowerRightCorner.X + 1, subRect.LowerRightCorner.Y + 1), outlineColor);
-
-                    const auto& functionName = script->m_cheat_categories[i]->m_cheats[j]->m_name;
-                    std::wstring wFunctionName = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(functionName);   
-                    subCategoryColors[i][j] = video::SColor(173, 43, 55, 69);
-                    if (g_settings->getBool("newmenu_draw_type_full")) {
-                        if (script->m_cheat_categories[i]->m_cheats[j]->is_enabled()) {
-                            subCategoryColors[i][j] = video::SColor(210, 53, 118, 189);
-                        } else {
-                            subCategoryColors[i][j] = video::SColor(173, 43, 55, 69);
-                        }
-                    }
-
-                    if (g_settings->getBool("newmenu_draw_type_small")) {
-                        if (script->m_cheat_categories[i]->m_cheats[j]->is_enabled()) {
-                            driver->draw2DRectangle(video::SColor(210, 53, 118, 189), core::rect<s32>(subRect.UpperLeftCorner.X + 3, subRect.UpperLeftCorner.Y + 3, subRect.LowerRightCorner.X - 3, subRect.LowerRightCorner.Y - 3));
-                        }
-                    }
-                    
-                    if (g_settings->getBool("newmenu_draw_type_meteor")) {
-                        if (script->m_cheat_categories[i]->m_cheats[j]->is_enabled()) {
-                            subCategoryColors[i][j] = video::SColor(173, 78, 88, 100);
-                            driver->draw2DRectangle(video::SColor(210, 33, 98, 169), core::rect<s32>(subRect.UpperLeftCorner.X, subRect.UpperLeftCorner.Y, subRect.LowerRightCorner.X - 170, subRect.LowerRightCorner.Y));
-                        } else {
-                            subCategoryColors[i][j] = video::SColor(173, 43, 55, 69);
-                        }
-                    }
-
-                    core::dimension2d<u32> functionTextSizeU32 = font->getDimension(wFunctionName.c_str());
-                    core::dimension2d<s32> functionTextSize(functionTextSizeU32.Width, functionTextSizeU32.Height);
-
-                    s32 functionTextX = subRect.UpperLeftCorner.X + (subRect.getWidth() - functionTextSize.Width) / 2;
-                    s32 functionTextY = subRect.UpperLeftCorner.Y + (subRect.getHeight() - functionTextSize.Height) / 2;
-
-                    font-> draw(wFunctionName.c_str(), core::rect<s32>(functionTextX, functionTextY, functionTextX + functionTextSize.Width, functionTextY + functionTextSize.Height), video::SColor(255, 255, 255, 255));
-                }
-            }
-        }
+        drawCategory(driver, font);
+        subDrawCategory(driver, font);
     }
+
 } 

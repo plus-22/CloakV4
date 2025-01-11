@@ -51,6 +51,9 @@ public:
     virtual bool OnEvent(const irr::SEvent& event);
     virtual void draw() override;
 
+    void drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font);
+    void subDrawCategory(video::IVideoDriver* driver, gui::IGUIFont* font);
+
     bool isOpen() { return m_is_open; }
     
     ~NewMenu();
@@ -114,6 +117,9 @@ public:
                 form.UpperLeftCorner.Y + 10
             ), 
             false);
+
+        editBox->setDrawBackground(false);
+        editBox->setMarkColor(video::SColor(173, 35, 45, 56), true);
         editBox->setVisible(false);
     }
 
