@@ -209,6 +209,7 @@ void set_default_settings()
     settings->setDefault("no_force_rotate", "false");
     settings->setDefault("no_night", "false");
     settings->setDefault("nobob", "false");
+	settings->setDefault("show_friends_nametags", "false");
 
 	settings->setDefault("esp.player.drawType", "0");
 	settings->setDefault("esp.player.edgeOpacity", "255");

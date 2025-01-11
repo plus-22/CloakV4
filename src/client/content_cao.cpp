@@ -999,12 +999,38 @@ void GenericCAO::updateMarker()
 	m_marker = m_client->getMinimap()->addMarker(node);
 }
 
+std::vector<std::string> splitString(const std::string& str, char delimiter) {
+    std::vector<std::string> tokens;
+    std::stringstream ss(str);
+    std::string token;
+
+    while (std::getline(ss, token, delimiter)) {
+        tokens.push_back(token);
+    }
+
+    return tokens;
+}
+
 void GenericCAO::updateNametag()
 {
 	/*
 	if (m_is_local_player) // No nametag for local player
 		return;
 	*/
+	Json::Value friends = {};
+	try {
+		friends = g_settings->getJson("friends");
+	} catch (std::exception& e) {
+		g_settings->set("friends", "{}");
+	}
+
+	Address serverAddress = m_client->getServerAddress();
+	std::string address = m_client->getAddressName().c_str();
+	u16 port = serverAddress.getPort();
+	std::string server_url = address + ":" + toPaddedString(port);
+
+	std::string friendsList = friends[server_url].asString();
+	std::vector<std::string> friendNames = splitString(friendsList, ',');
 
 	if (m_prop.nametag.empty() || m_prop.nametag_color.getAlpha() == 0) {
 		// Delete nametag
@@ -1023,11 +1049,27 @@ void GenericCAO::updateNametag()
 	pos.Y = m_prop.selectionbox.MaxEdge.Y + 0.3f;
 	if (!m_nametag) {
 		// Add nametag
+		if (g_settings->getBool("show_friends_nametag")) {
+			for (auto &it: friendNames) {
+				if (it == m_prop.nametag) {
+					m_prop.nametag_color = video::SColor(255, 0, 255, 0);
+				}
+			}
+		}
 		m_nametag = m_client->getCamera()->addNametag(node,
 			m_prop.nametag, m_prop.nametag_color,
 			m_prop.nametag_bgcolor, pos, nametag_images);
 	} else {
 		// Update nametag
+
+		if (g_settings->getBool("show_friends_nametag")) {
+			for (auto &it: friendNames) {
+				if (it == m_prop.nametag) {
+					m_prop.nametag_color = video::SColor(255, 0, 255, 0);
+				}
+			}
+		}
+		
 		m_nametag->text = m_prop.nametag;
 		m_nametag->textcolor = m_prop.nametag_color;
 		m_nametag->bgcolor = m_prop.nametag_bgcolor;

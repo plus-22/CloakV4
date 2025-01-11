@@ -64,6 +64,9 @@ core.cheats = {
 	["World"] = {
 		["Silence"] = "silence",
 
+	},
+	["Exploits"] = {
+		["ShowFriends"] = "show_friends_nametag",
 	}
 }
 
