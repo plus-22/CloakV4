@@ -470,7 +470,10 @@ local function on_change(type)
 		end
 
 		if singleplayer_refresh_gamebar() then
-			ui.find_by_name("game_button_bar"):show()
+			local gamebar = ui.find_by_name("game_button_bar")
+			if gamebar then
+				gamebar:show()
+			end
 		end
 	elseif type == "MenuQuit" then
 		menudata.worldlist:set_filtercriteria(nil)

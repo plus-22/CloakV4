@@ -30,16 +30,20 @@ class CustomEditBox;
 using namespace irr;
 using namespace gui;
 
-#define GET_SCRIPT_POINTER                                                     \
+#define GET_SCRIPT_POINTER                                                   \
+    if (!m_client)                                                           \
+        return;                                                              \
     ClientScripting *script = m_client->getScript();                         \
     if (!script || !script->m_cheats_loaded)                                 \
         return;
 
-#define GET_SCRIPT_POINTER_BOOL                                                     \
+#define GET_SCRIPT_POINTER_BOOL                                              \
+    if (!m_client)                                                           \
+        return true;                                                         \
     ClientScripting *script = m_client->getScript();                         \
     if (!script || !script->m_cheats_loaded)                                 \
-        return true;     
-
+        return true;                                                         \
+        
 class NewMenu: public IGUIElement
 {
 public:
