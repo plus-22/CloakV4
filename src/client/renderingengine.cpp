@@ -354,6 +354,59 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 		if (g_settings->getBool("menu_clouds")) {
 			g_menuclouds->step(dtime * 3);
 			g_menucloudsmgr->drawAll();
+		} else {
+			// draw menu background
+			video::ITexture *menu_bg_img = tsrc->getTexture("menu_bg.png");
+			video::ITexture *menu_header_img = tsrc->getTexture("menu_header.png");
+			if (menu_header_img || menu_bg_img) {
+				const core::dimension2d<u32> &bg_size = menu_bg_img->getSize();
+				
+				draw2DImageFilterScaled(get_video_driver(), menu_bg_img, core::rect<s32>(0, 0, screensize.X, screensize.Y), core::rect<s32>(0, 0, bg_size.Width, bg_size.Height), 0, 0, true);
+				
+				video::ITexture *progress_img_bg = tsrc->getTexture("progress_bar_bg.png");
+				if (progress_img_bg) {
+					const core::dimension2d<u32> &progress_size = progress_img_bg->getSize();
+					const core::dimension2d<u32> &header_size = menu_header_img->getSize();
+
+			#ifndef __ANDROID__
+					const core::dimension2d<u32> &img_size = progress_img_bg->getSize();
+					float density = g_settings->getFloat("gui_scaling", 0.5f, 20.0f) * getDisplayDensity();
+					u32 loading_barW = rangelim(img_size.Width, 200, 600) * density;
+					u32 loading_barH = rangelim(img_size.Height, 24, 72) * density;
+			#else
+					const core::dimension2d<u32> img_size(256, 48);
+					float imgRatio = (float)img_size.Height / img_size.Width;
+					u32 loading_barW = screensize.X / 2.2f;
+					u32 loading_barH = floor(imgW * imgRatio);
+			#endif
+
+					u32 headerW = loading_barW * 3;
+
+					// Use floating-point scaling for accuracy
+					float scaling_factor = static_cast<float>(headerW) / header_size.Width;
+					u32 headerH = header_size.Height * scaling_factor;
+
+					// Position header centered horizontally and above the progress bar
+					int padding_above_progress = screensize.Y*0.1; // Adjust as needed
+					v2s32 header_pos(
+						(screensize.X - headerW) / 2,
+						(screensize.Y / 2) - headerH - padding_above_progress
+					);
+
+					// Draw the header
+					draw2DImageFilterScaled(
+						get_video_driver(),
+						menu_header_img,
+						core::rect<s32>(
+							header_pos.X, header_pos.Y,
+							header_pos.X + headerW, header_pos.Y + headerH
+						),
+						core::rect<s32>(0, 0, header_size.Width, header_size.Height),
+						0, 0, true
+					);
+				}
+			}
+
 		}
 	} else {
 		driver->beginScene(true, true, video::SColor(255, 0, 0, 0));

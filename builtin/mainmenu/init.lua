@@ -31,7 +31,7 @@ defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
 dofile(basepath .. "common" .. DIR_DELIM .. "filterlist.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "buttonbar.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "dialog.lua")
-dofile(basepath .. "fstk" .. DIR_DELIM .. "tabview.lua")
+dofile(basepath .. "fstk" .. DIR_DELIM .. "dlgview.lua")
 dofile(basepath .. "fstk" .. DIR_DELIM .. "ui.lua")
 dofile(menupath .. DIR_DELIM .. "async_event.lua")
 dofile(menupath .. DIR_DELIM .. "common.lua")
@@ -48,16 +48,14 @@ dofile(menupath .. DIR_DELIM .. "dlg_register.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_rename_modpack.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_version_info.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_reinstall_mtg.lua")
-
-local tabs = {
-	content  = dofile(menupath .. DIR_DELIM .. "tab_content.lua"),
-	about = dofile(menupath .. DIR_DELIM .. "tab_about.lua"),
-	local_game = dofile(menupath .. DIR_DELIM .. "tab_local.lua"),
-	play_online = dofile(menupath .. DIR_DELIM .. "tab_online.lua")
-}
+dofile(menupath .. DIR_DELIM .. "dlg_about.lua")
+dofile(menupath .. DIR_DELIM .. "dlg_csm.lua")
+dofile(menupath .. DIR_DELIM .. "dlg_content.lua")
+dofile(menupath .. DIR_DELIM .. "dlg_online.lua")
+dofile(menupath .. DIR_DELIM .. "dlg_local.lua")
 
 --------------------------------------------------------------------------------
-local function main_event_handler(tabview, event)
+local function main_event_handler(dlgview, event)
 	if event == "MenuQuit" then
 		core.close()
 	end
@@ -87,36 +85,13 @@ local function init_globals()
 
 	mm_game_theme.init()
 	mm_game_theme.set_engine() -- This is just a fallback.
-
-	-- Create main tabview
-	local tv_main = tabview_create("maintab", {x = 15.5, y = 7.1}, {x = 0, y = 0})
-
-	tv_main:set_autosave_tab(true)
-	tv_main:add(tabs.local_game)
-	tv_main:add(tabs.play_online)
-	tv_main:add(tabs.content)
-	tv_main:add(tabs.about)
+	mm_game_theme.clear_single("header")
+	core.settings:set_bool("menu_clouds", false)
+	-- Create main dlgview
+	local tv_main = dlgview_create("maintab", {x = 7.1, y = 7.1}, {x = 0, y = 10})
 
 	tv_main:set_global_event_handler(main_event_handler)
 	tv_main:set_fixed_size(false)
-
-	local last_tab = core.settings:get("maintab_LAST")
-	if last_tab and tv_main.current_tab ~= last_tab then
-		tv_main:set_tab(last_tab)
-	end
-
-	tv_main:set_end_button({
-		icon = defaulttexturedir .. "settings_btn.png",
-		label = fgettext("Settings"),
-		name = "open_settings",
-		on_click = function(tabview)
-			local dlg = create_settings_dlg()
-			dlg:set_parent(tabview)
-			tabview:hide()
-			dlg:show()
-			return true
-		end,
-	})
 
 	ui.set_default("maintab")
 	tv_main:show()

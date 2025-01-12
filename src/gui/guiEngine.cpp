@@ -61,15 +61,15 @@ void TextDestGuiEngine::gotText(const std::wstring &text)
 /******************************************************************************/
 MenuTextureSource::~MenuTextureSource()
 {
-	u32 before = m_driver->getTextureCount();
+	//u32 before = m_driver->getTextureCount();
+//
+	//for (const auto &it: m_to_delete) {
+	//	m_driver->removeTexture(it);
+	//}
+	//m_to_delete.clear();
 
-	for (const auto &it: m_to_delete) {
-		m_driver->removeTexture(it);
-	}
-	m_to_delete.clear();
-
-	infostream << "~MenuTextureSource() before cleanup: "<< before
-			<< " after: " << m_driver->getTextureCount() << std::endl;
+	//infostream << "~MenuTextureSource() before cleanup: "<< before
+	//		<< " after: " << m_driver->getTextureCount() << std::endl;
 }
 
 /******************************************************************************/
