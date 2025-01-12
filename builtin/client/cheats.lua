@@ -18,6 +18,7 @@ core.cheats = {
 		["AirJump"] = "airjump",
 		["Spider"] = "spider",
 		["AutoSneak"] = "autosneak",
+		["BunnyHop"] = "BHOP",
 	},
 	["Render"] = {
 		["Xray"] = "xray",

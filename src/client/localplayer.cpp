@@ -686,7 +686,11 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 		if (m_autojump_time <= 0.0f)
 			m_autojump = false;
 	}
-
+	
+	if (!g_settings->getBool("free_move") && g_settings->getBool("BHOP")) {
+		control.jump = true;
+		superspeed = true;
+	}
 	if (control.jump) {
 		if (free_move) {
 			//if (!control.sneak) {
