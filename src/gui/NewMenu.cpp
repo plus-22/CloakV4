@@ -263,6 +263,9 @@ void NewMenu::subDrawCategory(video::IVideoDriver* driver, gui::IGUIFont* font)
 
 void NewMenu::draw() 
 {
+    if (m_client->isShutdown()) {
+        return;
+    }
     GET_SCRIPT_POINTER
     video::IVideoDriver* driver = Environment->getVideoDriver();
     gui::IGUIFont* font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_HD);
