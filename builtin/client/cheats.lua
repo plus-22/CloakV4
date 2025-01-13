@@ -67,7 +67,7 @@ core.cheats = {
 
 	},
 	["Exploits"] = {
-		["ShowFriends"] = "show_friends_nametag",
+		["ShowFriends"] = "show_friends_nametags",
 	}
 }
 
