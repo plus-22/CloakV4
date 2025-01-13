@@ -255,6 +255,11 @@ void Client::loadMods()
 	// Initialize cheats
 	m_script->init_cheats();
 
+	// Initialize cheat settings
+	m_script->init_cheat_settings();
+
+	// m_script->print_all_cheat_settings();
+
 	// Initialize info texts
 	m_script->update_infotexts();
 
