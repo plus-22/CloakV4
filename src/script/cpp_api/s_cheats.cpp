@@ -70,10 +70,11 @@ ScriptApiCheatsCategory::ScriptApiCheatsCategory(const std::string &name) : m_na
 
 ScriptApiCheatsCategory::~ScriptApiCheatsCategory()
 {
-	for (auto i = m_cheats.begin(); i != m_cheats.end(); i++)
-		delete *i;
-	for (auto i = m_cheat_settings.begin(); i != m_cheat_settings.end(); i++)
-		delete *i;
+	for (int i = 0; i < m_cheats.size(); i++) 
+		delete m_cheats[i];
+		
+	for (int i = 0; i < m_cheat_settings.size(); i++) 
+		delete m_cheat_settings[i];
 }
 
 void ScriptApiCheatsCategory::read_cheats(lua_State *L)
@@ -148,12 +149,12 @@ void ScriptApiCheats::init_cheat_settings()
 {
     SCRIPTAPI_PRECHECKHEADER
     
-    errorstream << "Loading cheat_settings" << std::endl;
+    warningstream << "Loading cheat_settings" << std::endl;
     lua_getglobal(L, "core");
     lua_getfield(L, -1, "cheat_settings");
     if (!lua_istable(L, -1)) {
         lua_pop(L, 2);
-        errorstream << "No cheat_settings found in core" << std::endl;
+        warningstream << "No cheat_settings found in core" << std::endl;
         return;
     }
 
@@ -162,10 +163,10 @@ void ScriptApiCheats::init_cheat_settings()
     while (lua_next(L, -2) != 0) {
         if (lua_isstring(L, -2)) {
             const char *category_name = lua_tostring(L, -2);
-            errorstream << "Category: " << category_name << std::endl;
+            warningstream << "Category: " << category_name << std::endl;
 			ScriptApiCheatsCategory* category = get_category(category_name);
 			if (category == nullptr) {
-				errorstream << "CheatMenuSettings: Invalid category: " << category_name << std::endl;
+				warningstream << "CheatMenuSettings: Invalid category: " << category_name << std::endl;
 				lua_pop(L, 1);
 				continue;
 			}
@@ -240,7 +241,7 @@ void ScriptApiCheats::init_cheat_settings()
 							}
                             
                         } else {
-							errorstream << "CheatSettings: Unknown data type " << std::endl;
+							warningstream << "CheatSettings: Unknown data type " << std::endl;
 						}
                         lua_pop(L, 1); // Pop cheat table
                     }
@@ -327,56 +328,56 @@ ScriptApiCheatsCheatSetting::~ScriptApiCheatsCheatSetting()
 
 void ScriptApiCheatsCheatSetting::set_value(const bool &value)
 {
-	g_settings->setBool(m_setting, value)
+	g_settings->setBool(m_setting, value);
 }
 
 void ScriptApiCheatsCheatSetting::set_value(const double &value)
 {
-	g_settings->setFloat(m_setting, value)
+	g_settings->setFloat(m_setting, value);
 }
 
 void ScriptApiCheatsCheatSetting::set_value(const std::string &value)
 {
-	g_settings->set(m_setting, value)
+	g_settings->set(m_setting, value);
 }
 
 void ScriptApiCheats::print_all_cheat_settings()
 {
-	errorstream << "Printing all cheat settings:" << std::endl;
+	warningstream << "Printing all cheat settings:" << std::endl;
 
 	for (ScriptApiCheatsCategory *category : m_cheat_categories) {
 		if (!category) continue;
 
-		errorstream << "Category: " << category->m_name << std::endl;
+		warningstream << "Category: " << category->m_name << std::endl;
 
 		for (ScriptApiCheatsCheatSetting *setting : category->m_cheat_settings) {
 			if (!setting) continue;
 
-			errorstream << "  Cheat Setting: " << setting->m_name << std::endl;
-			errorstream << "    Type: " << setting->m_type << std::endl;
-			errorstream << "    Parent: " << setting->m_parent << std::endl;
+			warningstream << "  Cheat Setting: " << setting->m_name << std::endl;
+			warningstream << "    Type: " << setting->m_type << std::endl;
+			warningstream << "    Parent: " << setting->m_parent << std::endl;
 
 			if (setting->m_type == "slider_int" || setting->m_type == "slider_float") {
-				errorstream << "    Min: " << setting->m_min << std::endl;
-				errorstream << "    Max: " << setting->m_max << std::endl;
-				errorstream << "    Steps: " << setting->m_steps << std::endl;
+				warningstream << "    Min: " << setting->m_min << std::endl;
+				warningstream << "    Max: " << setting->m_max << std::endl;
+				warningstream << "    Steps: " << setting->m_steps << std::endl;
 			} 
 			if (setting->m_type == "text") {
-				errorstream << "    Size: " << setting->m_size << std::endl;
+				warningstream << "    Size: " << setting->m_size << std::endl;
 			}
 
 			// Print options if available
 			if (!setting->m_options.empty() && setting->m_type == "selectionbox") {
-				errorstream << "    Options: ";
+				warningstream << "    Options: ";
 				for (std::string *option : setting->m_options) {
 					if (option) {
-						errorstream << *option << " ";
+						warningstream << *option << " ";
 					}
 				}
-				errorstream << std::endl;
+				warningstream << std::endl;
 			}
 		}
 	}
 
-	errorstream << "Finished printing cheat settings." << std::endl;
+	warningstream << "Finished printing cheat settings." << std::endl;
 }
