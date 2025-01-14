@@ -7,6 +7,8 @@ core.register_on_active_object_step(function(gcao)
 
 	if (gcao.is_local_player) then return end
 
+	if (not gcao.is_player) then return end
+
 	if (not core.can_attack(gcao.id)) then return end
 
     local player = core.localplayer
