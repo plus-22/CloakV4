@@ -1,22 +1,46 @@
--- Credits to cora
 
-local function look_nearest()
-    if not minetest.localplayer then return end 
-    local player = minetest.localplayer
-    for k, v in ipairs(minetest.get_objects_inside_radius(player:get_pos(), 7)) do
-        if (v:is_player() and v:get_name() ~= minetest.localplayer:get_name()) then
-            local pos = v:get_pos()
-            pos.y = pos.y - 1
-            ws.aim(pos)
-            return
-        end
-    end
-end
+--Once cheat setting system is done, this bool should be toggleable to switch between aiming modes
+attack_enemies_only = true
 
-minetest.register_globalstep(function()
-    if minetest.settings:get_bool("autoaim") then
-        look_nearest()
+core.register_on_active_object_step(function(gcao)
+	if (not core.settings:get_bool("autoaim")) then return end
+
+	if (gcao.is_local_player) then return end
+
+	if (not gcao.is_player) then return end
+
+	if (not core.can_attack(gcao.id)) then return end
+
+    local player = core.localplayer
+    if (player:get_hp() <= 0) then return end
+
+    local interval = 0.1
+
+	if (gcao.hp <= 0) then return end
+
+	local is_enemy = not player:is_player_friendly(gcao.id)
+	if (not is_enemy and attack_enemies_only == true) then
+        return
+    elseif (not is_enemy and attack_enemies_only == false) then
     end
+
+    local myPos = player:get_pos()
+    local enemyPos = gcao.position;
+	local range = player:get_wielded_item_range()^2
+	local dist = (myPos.x - enemyPos.x)^2 + (myPos.y - enemyPos.y)^2 + (myPos.z - enemyPos.z)^2
+	local is_close = dist <= range
+	if not is_close then return end
+
+	if (core.settings:get_bool("autoaim")) then
+		ws.aim(enemyPos)
+	end
+
+    return true
 end)
+core.register_cheat_with_infotext("Autoaim", "Combat", "autoaim", "")
 
-minetest.register_cheat_with_infotext("Autoaim", "Combat", "autoaim", "Nearest")
+if attack_enemies_only == true then
+    minetest.update_infotext("Autoaim", "Combat", "autoaim", "Enemies")
+else
+    minetest.update_infotext("Autoaim", "Combat", "autoaim", "All")
+end
