@@ -691,7 +691,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 			m_autojump = false;
 	}
 
-	if (g_settings->getBool("BHOP") && control.isMoving() && !g_settings->getBool("freecam") && !g_settings->getBool("free_move")) {
+	if (g_settings->getBool("BHOP") && control.isMoving() && !g_settings->getBool("freecam")) {
 		control.jump = true;
 		control.aux1 = true;
 	}

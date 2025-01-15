@@ -8,6 +8,8 @@ local epoch = 0
 local invalid_game = false
 
 totem_move_action:to("current_player", "offhand", 1)
+minetest.settings:set_bool("crystalspam", false)
+minetest.settings:set_bool("autototem", false)
 
 local function update_count()
     if minetest.localplayer ~= nil then
