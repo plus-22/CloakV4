@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <string>
 
+class ScriptApiCheatsCategory;
+
 class ScriptApiCheatsCheat
 {
 public:
@@ -34,7 +36,7 @@ public:
 	std::string get_info_text();
 	bool is_enabled();
 	void toggle(lua_State *L, int error_handler);
-
+	bool has_settings(ScriptApiCheatsCategory *category);
 private:
 	std::string m_setting;
 	int m_function_ref;

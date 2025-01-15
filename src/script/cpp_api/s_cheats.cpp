@@ -64,6 +64,16 @@ void ScriptApiCheatsCheat::toggle(lua_State *L, int error_handler)
 		g_settings->setBool(m_setting, !is_enabled());
 }
 
+bool ScriptApiCheatsCheat::has_settings(ScriptApiCheatsCategory *category)
+{
+	for (size_t i = 0; i < category->m_cheat_settings.size(); ++i) {
+		if (category->m_cheat_settings[i]->m_parent == m_setting) {
+			return true;
+		}
+	}
+	return false;
+}
+
 ScriptApiCheatsCategory::ScriptApiCheatsCategory(const std::string &name) : m_name(name)
 {
 }

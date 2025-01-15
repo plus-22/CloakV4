@@ -13,8 +13,6 @@ NewMenu::NewMenu(gui::IGUIEnvironment* env,
 {    
     infostream << "[NEWMENU] Successfully created" << std::endl;
     this->env = env;
-    xray_form = core::rect<s32>(150 + 60, 150, 700 + 60, 200);
-    node_form = core::rect<s32>(150 + 60, 210, 700 + 60, 260);
 }
 
 NewMenu::~NewMenu()
@@ -31,26 +29,61 @@ void NewMenu::create()
         std::cout << "No categories available." << std::endl;
         return;
     }
+    if (!m_initialized) {
+        category_positions.resize(script->m_cheat_categories.size(), core::position2d<s32>(0, 0));
+        categoryRects.resize(script->m_cheat_categories.size(), core::rect<s32>(0,0,0,0));
+        dropdownRects.resize(script->m_cheat_categories.size(), core::rect<s32>(0,0,0,0));
+        textRects.resize(script->m_cheat_categories.size(), core::rect<s32>(0,0,0,0));
+        selectedCategory.resize(script->m_cheat_categories.size(), false);
+        selectedCheat.resize(script->m_cheat_categories.size());
+        dropdownHovered.resize(script->m_cheat_categories.size(), false);
+        textHovered.resize(script->m_cheat_categories.size(), false);
+        cheatRects.resize(script->m_cheat_categories.size());
+        cheatTextRects.resize(script->m_cheat_categories.size());
+        cheatDropdownRects.resize(script->m_cheat_categories.size());
+        cheatDropdownHovered.resize(script->m_cheat_categories.size());
+        cheat_positions.resize(script->m_cheat_categories.size());
+        cheatTextHovered.resize(script->m_cheat_categories.size());
 
-    if (!xrayLineEdit) 
-        xrayLineEdit = new CustomEditBox(env, g_settings->get("xray_nodes"), "xray_nodes", xray_form, "Xray node list");
+        for (size_t i = 0; i < script->m_cheat_categories.size(); ++i) {
+            category_positions[i] = core::position2d<s32>(20, 20 + ((category_height + 10) * i));
+            categoryRects[i] = core::rect<s32>(category_positions[i].X, category_positions[i].Y, 
+                                            category_positions[i].X + category_width, category_positions[i].Y + category_height);
 
-    if (!nodeLineEdit)
-        nodeLineEdit = new CustomEditBox(env, g_settings->get("node_esp_nodes"), "node_esp_nodes", node_form, "ESP node list");
+            textRects[i] = core::rect<s32>(category_positions[i].X, category_positions[i].Y, 
+                                        category_positions[i].X + (category_width - category_height), category_positions[i].Y + category_height);
 
-    if (!m_rectsCreated) {
-        for (size_t i = 0; i < script->m_cheat_categories.size(); i++) {
-            categoryRects.push_back(createRect(20, 20 + i * (rectHeight + 10)));
-            selectedCategory.push_back(false); 
-            subCategoryRects.push_back(std::vector<core::rect<s32>>());
+            dropdownRects[i] = core::rect<s32>(category_positions[i].X + (category_width - category_height), category_positions[i].Y, 
+                                            category_positions[i].X + category_width, category_positions[i].Y + category_height);
+                                    
+            cheatRects[i].resize(script->m_cheat_categories[i]->m_cheats.size(), core::rect<s32>(0,0,0,0));
+            cheatTextRects[i].resize(script->m_cheat_categories[i]->m_cheats.size(), core::rect<s32>(0,0,0,0));
+            cheatDropdownRects[i].resize(script->m_cheat_categories[i]->m_cheats.size(), core::rect<s32>(0,0,0,0));
+            cheatDropdownHovered[i].resize(script->m_cheat_categories[i]->m_cheats.size(), false);
+            cheatTextHovered[i].resize(script->m_cheat_categories[i]->m_cheats.size(), false);
+            selectedCheat[i].resize(script->m_cheat_categories[i]->m_cheats.size(), false);
+            cheat_positions[i].resize(script->m_cheat_categories[i]->m_cheats.size(), core::position2d<s32>(0, 0));
+
+            for (size_t c = 0; c < script->m_cheat_categories[i]->m_cheats.size(); ++c) {
+                cheat_positions[i][c] = core::position2d<s32>(20, 20 + ((category_height + 10) * i) + category_height + 1 + (category_height * c));
+                cheatRects[i][c] = core::rect<s32>(cheat_positions[i][c].X, cheat_positions[i][c].Y, 
+                                                cheat_positions[i][c].X + category_width, cheat_positions[i][c].Y + category_height);
+                if (script->m_cheat_categories[i]->m_cheats[c]->has_settings(script->m_cheat_categories[i])) {
+                    cheatTextRects[i][c] = core::rect<s32>(cheat_positions[i][c].X, cheat_positions[i][c].Y, 
+                                                        cheat_positions[i][c].X + (category_width - category_height), cheat_positions[i][c].Y + category_height);
+
+                    cheatDropdownRects[i][c] = core::rect<s32>(cheat_positions[i][c].X + (category_width - category_height), cheat_positions[i][c].Y, 
+                                                            cheat_positions[i][c].X + category_width, cheat_positions[i][c].Y + category_height);
+                } else {
+                    cheatTextRects[i][c] = core::rect<s32>(cheat_positions[i][c].X, cheat_positions[i][c].Y, 
+                                                        cheat_positions[i][c].X + category_width, cheat_positions[i][c].Y + category_height);
+
+                    cheatDropdownRects[i][c] = core::rect<s32>(cheat_positions[i][c].X + category_width, cheat_positions[i][c].Y, 
+                                                            cheat_positions[i][c].X + category_width, cheat_positions[i][c].Y);
+                }
+            }
         }
-        m_rectsCreated = true; 
-    }
-
-    subCategoryColors.resize(script->m_cheat_categories.size());
-
-    for (size_t i = 0; i < script->m_cheat_categories.size(); ++i) {
-        subCategoryColors[i].resize(script->m_cheat_categories[i]->m_cheats.size(), video::SColor(255, 0, 0, 0)); 
+        m_initialized = true;
     }
 
     core::rect<s32> screenRect(0, 0, 
@@ -66,11 +99,6 @@ void NewMenu::create()
 
 void NewMenu::close()
 {
-    if (xrayLineEdit) 
-        xrayLineEdit->close();
-    if (nodeLineEdit)
-        nodeLineEdit->close();
-
     Environment->removeFocus(this);
     m_menumgr->deletingMenu(this);
     IGUIElement::setVisible(false);
@@ -78,7 +106,7 @@ void NewMenu::close()
 }
 
 core::rect<s32> NewMenu::createRect(s32 x, s32 y) {
-    return core::rect<s32>(x, y, x + rectWidth, y + rectHeight);
+    return core::rect<s32>(x, y, x + category_width, y + category_height);
 }
 
 bool NewMenu::OnEvent(const irr::SEvent& event) 
@@ -86,7 +114,6 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
     if (!m_is_open) {
         return false;
     }
-
     GET_SCRIPT_POINTER_BOOL  
     if (event.EventType == irr::EET_KEY_INPUT_EVENT)
     {
@@ -97,55 +124,34 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
         }
     }
 
-    if (xrayLineEdit) {
-        xrayLineEdit->Event(event, isDragging, lastMousePos, xray_form);
-        xrayLineEdit->handleInput(event);
-    }
-
-    if (nodeLineEdit) {
-        nodeLineEdit->Event(event, isDragging, lastMousePos, node_form);
-        nodeLineEdit->handleInput(event);
-    }
-
     if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
         if (event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
-            for (size_t i =  0; i < categoryRects.size(); ++i) {
-                if (categoryRects[i].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
+            for (size_t i =  0; i < dropdownRects.size(); ++i) {
+                if (dropdownRects[i].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
+                    selectedCategory[i] = !selectedCategory[i];
+                    return true; 
+                }
+            }
+
+            for (size_t i =  0; i < textRects.size(); ++i) {
+                if (textRects[i].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
                     isDragging = true;
                     draggedRectIndex = i;
-                    offset = core::vector2d<s32>(event.MouseInput.X - categoryRects[i].UpperLeftCorner.X, event.MouseInput.Y - categoryRects[i].UpperLeftCorner.Y);
+                    offset = core::vector2d<s32>(event.MouseInput.X - textRects[i].UpperLeftCorner.X, event.MouseInput.Y - textRects[i].UpperLeftCorner.Y);
                     return true; 
                 }
             }
 
-            for (size_t i = 0; i < subCategoryRects.size(); ++i) {
-                if (selectedCategory[i]) {
-                    for (size_t j = 0; j < subCategoryRects[i].size(); ++j) {
-                        if (subCategoryRects[i][j].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
-                            script->toggle_cheat(script->m_cheat_categories[i]->m_cheats[j]);
-                            return true; 
-                        }
+            for (size_t i =  0; i < cheatTextRects.size(); ++i) {
+                for (size_t c =  0; c < cheatTextRects[i].size(); ++c) {
+                    if (cheatTextRects[i][c].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
+                        script->toggle_cheat(script->m_cheat_categories[i]->m_cheats[c]);
+                        return true; 
                     }
                 }
+                
             }
             return false; 
-
-        } else if (event.MouseInput.Event == irr::EMIE_RMOUSE_PRESSED_DOWN) {
-            for (size_t i = 0; i < categoryRects.size(); ++i) {
-                if (categoryRects[i].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
-                    selectedCategory[i] = !selectedCategory[i];
-                    if (selectedCategory[i]) {
-                        subCategoryRects[i].clear();
-                        int subCategoryCount = script->m_cheat_categories[i]->m_cheats.size();
-                        for (int j = 0; j < subCategoryCount; ++j) { 
-                            subCategoryRects[i].push_back(createRect(categoryRects[i].UpperLeftCorner.X, categoryRects[i].LowerRightCorner.Y + j * (rectHeight)));
-                        }
-                    } else {
-                        subCategoryRects[i].clear(); 
-                    }
-                    return true; 
-                }
-            }
         } else if (event.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
             isDragging = false;
             draggedRectIndex = -1;
@@ -159,57 +165,165 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
 
             if (newX < 0) {
                 newX = 0;
-            } else if (newX + rectWidth > screenWidth) {
-                newX = screenWidth - rectWidth;
+            } else if (newX + categoryRects[draggedRectIndex].getWidth() > screenWidth) {
+                newX = screenWidth - categoryRects[draggedRectIndex].getWidth();
             }
 
             if (newY < 0) {
                 newY = 0;
-            } else if (newY + rectHeight > screenHeight) {
-                newY = screenHeight - rectHeight;
+            } else if (newY + categoryRects[draggedRectIndex].getHeight() > screenHeight) {
+                newY = screenHeight - categoryRects[draggedRectIndex].getHeight();
             }
 
-            categoryRects[draggedRectIndex].UpperLeftCorner.X = newX;
-            categoryRects[draggedRectIndex].UpperLeftCorner.Y = newY;
-            categoryRects[draggedRectIndex].LowerRightCorner.X = categoryRects[draggedRectIndex].UpperLeftCorner.X + rectWidth;
-            categoryRects[draggedRectIndex].LowerRightCorner.Y = categoryRects[draggedRectIndex].UpperLeftCorner.Y + rectHeight;
+            category_positions[draggedRectIndex] = core::position2d<s32>(newX, newY);
+            categoryRects[draggedRectIndex] = core::rect<s32>(category_positions[draggedRectIndex].X, category_positions[draggedRectIndex].Y, 
+                                           category_positions[draggedRectIndex].X + category_width, category_positions[draggedRectIndex].Y + category_height);
 
-            for (size_t j = 0; j < subCategoryRects[draggedRectIndex].size(); ++j) {
-                subCategoryRects[draggedRectIndex][j].UpperLeftCorner.X = categoryRects[draggedRectIndex].UpperLeftCorner.X;
-                subCategoryRects[draggedRectIndex][j].UpperLeftCorner.Y = categoryRects[draggedRectIndex].LowerRightCorner.Y + j * (rectHeight);
-                subCategoryRects[draggedRectIndex][j].LowerRightCorner.X = subCategoryRects[draggedRectIndex][j].UpperLeftCorner.X + rectWidth;
-                subCategoryRects[draggedRectIndex][j].LowerRightCorner.Y = subCategoryRects[draggedRectIndex][j].UpperLeftCorner.Y + rectHeight;
+            textRects[draggedRectIndex] = core::rect<s32>(category_positions[draggedRectIndex].X, category_positions[draggedRectIndex].Y, 
+                                        category_positions[draggedRectIndex].X + (category_width - category_height), category_positions[draggedRectIndex].Y + category_height);
+
+            dropdownRects[draggedRectIndex] = core::rect<s32>(category_positions[draggedRectIndex].X + (category_width - category_height), category_positions[draggedRectIndex].Y, 
+                                            category_positions[draggedRectIndex].X + category_width, category_positions[draggedRectIndex].Y + category_height);
+            
+
+            for (size_t c = 0; c < script->m_cheat_categories[draggedRectIndex]->m_cheats.size(); ++c) {
+            cheat_positions[draggedRectIndex][c] = core::position2d<s32>(category_positions[draggedRectIndex].X, category_positions[draggedRectIndex].Y + category_height + 1 + (category_height * c));
+            cheatRects[draggedRectIndex][c] = core::rect<s32>(cheat_positions[draggedRectIndex][c].X, cheat_positions[draggedRectIndex][c].Y, 
+                                               cheat_positions[draggedRectIndex][c].X + category_width, cheat_positions[draggedRectIndex][c].Y + category_height);
+            if (script->m_cheat_categories[draggedRectIndex]->m_cheats[c]->has_settings(script->m_cheat_categories[draggedRectIndex])) {
+                cheatTextRects[draggedRectIndex][c] = core::rect<s32>(cheat_positions[draggedRectIndex][c].X, cheat_positions[draggedRectIndex][c].Y, 
+                                                       cheat_positions[draggedRectIndex][c].X + (category_width - category_height), cheat_positions[draggedRectIndex][c].Y + category_height);
+
+                cheatDropdownRects[draggedRectIndex][c] = core::rect<s32>(cheat_positions[draggedRectIndex][c].X + (category_width - category_height), cheat_positions[draggedRectIndex][c].Y, 
+                                                           cheat_positions[draggedRectIndex][c].X + category_width, cheat_positions[draggedRectIndex][c].Y + category_height);
+            } else {
+                cheatTextRects[draggedRectIndex][c] = core::rect<s32>(cheat_positions[draggedRectIndex][c].X, cheat_positions[draggedRectIndex][c].Y, 
+                                                       cheat_positions[draggedRectIndex][c].X + category_width, cheat_positions[draggedRectIndex][c].Y + category_height);
+
+                cheatDropdownRects[draggedRectIndex][c] = core::rect<s32>(cheat_positions[draggedRectIndex][c].X + category_width, cheat_positions[draggedRectIndex][c].Y, 
+                                                           cheat_positions[draggedRectIndex][c].X + category_width, cheat_positions[draggedRectIndex][c].Y);
             }
+        }
+
             return true;
+        } else if (event.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
+            for (size_t i = 0; i < dropdownHovered.size(); ++i) {
+                dropdownHovered[i] = dropdownRects[i].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y));
+            }
+            for (size_t i = 0; i < textHovered.size(); ++i) {
+                textHovered[i] = textRects[i].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y));
+            }
+            for (size_t i = 0; i < cheatTextHovered.size(); ++i) {
+                for (size_t c = 0; c < cheatTextHovered[i].size(); ++c) {
+                    cheatTextHovered[i][c] = cheatTextRects[i][c].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y));
+                }
+            }
+            for (size_t i = 0; i < cheatDropdownHovered.size(); ++i) {
+                for (size_t c = 0; c < cheatDropdownHovered[i].size(); ++c) {
+                    cheatDropdownHovered[i][c] = cheatDropdownRects[i][c].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y));
+                }
+            }
         }
     }
 
     return Parent ? Parent->OnEvent(event) : false; 
 }
 
-void NewMenu::drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font)
+void NewMenu::drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font, const size_t i)
 {
     GET_SCRIPT_POINTER
-
-    for (size_t i = 0; i < categoryRects.size(); ++i) {
-        const auto& rect = categoryRects[i];
-        video::SColor color = selectedCategory[i] ? video::SColor(210, 53, 118, 189) : video::SColor(173, 43, 55, 69);
-        driver->draw2DRectangle(color, rect);
-
-        driver->draw2DRectangleOutline(core::rect<s32>(rect.UpperLeftCorner.X - 1, rect.UpperLeftCorner.Y - 1, rect.LowerRightCorner.X + 1, rect.LowerRightCorner.Y + 1), outlineColor);
-
-        const std::string& categoryName = script->m_cheat_categories[i]->m_name;
-        std::wstring wCategoryName = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(categoryName);
-
-        core::dimension2d<u32> textSizeU32 = font->getDimension(wCategoryName.c_str());
-        core::dimension2d<s32> textSize(textSizeU32.Width, textSizeU32.Height);
-
-        s32 textX = rect.UpperLeftCorner.X + (rect.getWidth() - textSize.Width) / 2;
-        s32 textY = rect.UpperLeftCorner.Y + (rect.getHeight() - textSize.Height) / 2;
-
-        font->draw(wCategoryName.c_str(), core::rect<s32>(textX, textY, textX + textSize.Width, textY + textSize.Height), video::SColor(255, 255, 255, 255));
+    // TODO REMOVE THESE AND STORE THEM AS SETTINGS
+    const s32 unit_size = category_height / 9;
+    const video::SColor category_color = video::SColor(230, 30, 30, 40);
+    const video::SColor cheat_color = video::SColor(180, 10, 15, 20);
+    const video::SColor cheat_color_enabled = video::SColor(180, 50, 80, 175);
+    const video::SColor outline_color = video::SColor(230, 75, 125, 250);
+    
+    ///////////////////////// DRAW CATEGORY HEADER /////////////////////////
+    video::SColor arrow_color = video::SColor(255, 255, 255, 255);
+    video::SColor text_color = video::SColor(255, 255, 255, 255);
+    if (dropdownHovered[i] == true) {
+        arrow_color = video::SColor(255, 127, 127, 127);
+    }
+    if (textHovered[i] == true) {
+        text_color = video::SColor(255, 127, 127, 127);
     }
 
+    driver->draw2DRectangle(category_color, categoryRects[i]);
+    
+    driver->draw2DRectangleOutline(core::rect<s32>(categoryRects[i].UpperLeftCorner.X, categoryRects[i].UpperLeftCorner.Y, categoryRects[i].LowerRightCorner.X - 1, categoryRects[i].LowerRightCorner.Y - 1), outline_color);
+    driver->draw2DRectangleOutline(core::rect<s32>(categoryRects[i].UpperLeftCorner.X - 1, categoryRects[i].UpperLeftCorner.Y - 1, categoryRects[i].LowerRightCorner.X, categoryRects[i].LowerRightCorner.Y), outline_color);
+
+    const std::string& categoryName = script->m_cheat_categories[i]->m_name;
+    std::wstring wCategoryName = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(categoryName);
+
+    core::dimension2d<u32> textSizeU32 = font->getDimension(wCategoryName.c_str());
+    core::dimension2d<s32> textSize(textSizeU32.Width, textSizeU32.Height);
+
+    s32 textX = textRects[i].UpperLeftCorner.X + (textRects[i].getWidth() - textSize.Width) / 2;
+    s32 textY = textRects[i].UpperLeftCorner.Y + (textRects[i].getHeight() - textSize.Height) / 2;
+
+
+    font->draw(wCategoryName.c_str(), core::rect<s32>(textX, textY, textX + textSize.Width, textY + textSize.Height), text_color);
+
+    core::position2d<s32> dropdown_center(dropdownRects[i].UpperLeftCorner.X + dropdownRects[i].getWidth() / 2 ,dropdownRects[i].UpperLeftCorner.Y + dropdownRects[i].getHeight() / 2);
+
+    if (selectedCategory[i]) {
+        driver->draw2DLine(core::position2d<s32>(dropdown_center.X - (unit_size * 3), dropdown_center.Y + (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X, dropdown_center.Y - (unit_size * 1.5)), arrow_color);
+        driver->draw2DLine(core::position2d<s32>(dropdown_center.X - (unit_size * 3), 1 + dropdown_center.Y + (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X, 1 + dropdown_center.Y - (unit_size * 1.5)), arrow_color);
+        driver->draw2DLine(core::position2d<s32>(dropdown_center.X, dropdown_center.Y - (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X + (unit_size * 3), dropdown_center.Y + (unit_size * 1.5)), arrow_color);
+        driver->draw2DLine(core::position2d<s32>(dropdown_center.X, 1 + dropdown_center.Y - (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X + (unit_size * 3), 1 + dropdown_center.Y + (unit_size * 1.5)), arrow_color);
+        ///////////////////////// DRAW CHEATS /////////////////////////
+        for (size_t cheat_index = 0; cheat_index < script->m_cheat_categories[i]->m_cheats.size(); ++cheat_index) {
+            arrow_color = video::SColor(255, 255, 255, 255);
+            text_color = video::SColor(255, 255, 255, 255);
+            if (cheatDropdownHovered[i][cheat_index] == true) {
+                arrow_color = video::SColor(255, 127, 127, 127);
+            }
+            if (cheatTextHovered[i][cheat_index] == true) {
+                text_color = video::SColor(255, 127, 127, 127);
+            }
+            if (script->m_cheat_categories[i]->m_cheats[cheat_index]->is_enabled()) {
+                driver->draw2DRectangle(cheat_color_enabled, cheatRects[i][cheat_index]);
+            } else {
+                driver->draw2DRectangle(cheat_color, cheatRects[i][cheat_index]);
+            }
+
+            const std::string& cheatName = script->m_cheat_categories[i]->m_cheats[cheat_index]->m_name;
+            std::wstring wCheatName = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(cheatName);
+
+            textSizeU32 = font->getDimension(wCheatName.c_str());
+            core::dimension2d<s32> textSize(textSizeU32.Width, textSizeU32.Height);
+
+            s32 textX = cheatTextRects[i][cheat_index].UpperLeftCorner.X + (cheatTextRects[i][cheat_index].getWidth() - textSize.Width) / 2;
+            s32 textY = cheatTextRects[i][cheat_index].UpperLeftCorner.Y + (cheatTextRects[i][cheat_index].getHeight() - textSize.Height) / 2;
+
+
+            font->draw(wCheatName.c_str(), core::rect<s32>(textX, textY, textX + textSize.Width, textY + textSize.Height), text_color);
+            if (script->m_cheat_categories[i]->m_cheats[cheat_index]->has_settings(script->m_cheat_categories[i])) {
+                core::position2d<s32> dropdown_center(cheatDropdownRects[i][cheat_index].UpperLeftCorner.X + cheatDropdownRects[i][cheat_index].getWidth() / 2, 
+                                                        cheatDropdownRects[i][cheat_index].UpperLeftCorner.Y + cheatDropdownRects[i][cheat_index].getHeight() / 2);
+
+                if (selectedCheat[i][cheat_index]) {
+                    driver->draw2DLine(core::position2d<s32>(dropdown_center.X - (unit_size * 3), dropdown_center.Y + (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X, dropdown_center.Y - (unit_size * 1.5)), arrow_color);
+                    driver->draw2DLine(core::position2d<s32>(dropdown_center.X - (unit_size * 3), 1 + dropdown_center.Y + (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X, 1 + dropdown_center.Y - (unit_size * 1.5)), arrow_color);
+                    driver->draw2DLine(core::position2d<s32>(dropdown_center.X, dropdown_center.Y - (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X + (unit_size * 3), dropdown_center.Y + (unit_size * 1.5)), arrow_color);
+                    driver->draw2DLine(core::position2d<s32>(dropdown_center.X, 1 + dropdown_center.Y - (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X + (unit_size * 3), 1 + dropdown_center.Y + (unit_size * 1.5)), arrow_color);
+                } else {
+                    driver->draw2DLine(core::position2d<s32>(dropdown_center.X - (unit_size * 3), dropdown_center.Y - (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X, dropdown_center.Y + (unit_size * 1.5)), arrow_color);
+                    driver->draw2DLine(core::position2d<s32>(dropdown_center.X - (unit_size * 3), 1 + dropdown_center.Y - (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X, 1 + dropdown_center.Y + (unit_size * 1.5)), arrow_color);
+                    driver->draw2DLine(core::position2d<s32>(dropdown_center.X, dropdown_center.Y + (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X + (unit_size * 3), dropdown_center.Y - (unit_size * 1.5)), arrow_color);
+                    driver->draw2DLine(core::position2d<s32>(dropdown_center.X, 1 + dropdown_center.Y + (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X + (unit_size * 3), 1 + dropdown_center.Y - (unit_size * 1.5)), arrow_color);
+                }
+                
+            }
+        }
+    } else {
+        driver->draw2DLine(core::position2d<s32>(dropdown_center.X - (unit_size * 3), dropdown_center.Y - (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X, dropdown_center.Y + (unit_size * 1.5)), arrow_color);
+        driver->draw2DLine(core::position2d<s32>(dropdown_center.X - (unit_size * 3), 1 + dropdown_center.Y - (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X, 1 + dropdown_center.Y + (unit_size * 1.5)), arrow_color);
+        driver->draw2DLine(core::position2d<s32>(dropdown_center.X, dropdown_center.Y + (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X + (unit_size * 3), dropdown_center.Y - (unit_size * 1.5)), arrow_color);
+        driver->draw2DLine(core::position2d<s32>(dropdown_center.X, 1 + dropdown_center.Y + (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X + (unit_size * 3), 1 + dropdown_center.Y - (unit_size * 1.5)), arrow_color);
+    }
 }
 
 void NewMenu::subDrawCategory(video::IVideoDriver* driver, gui::IGUIFont* font)
@@ -268,26 +382,8 @@ void NewMenu::draw()
     gui::IGUIFont* font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_HD);
 
     if (m_is_open) {
-        if (g_settings->getBool("XrayNodes")) {
-            if (xrayLineEdit) {
-                xrayLineEdit->open();
-                driver->draw2DRectangle(video::SColor(173, 43, 55, 69), xray_form);
-            }
-        } else {
-            xrayLineEdit->close();
-        } 
-
-        if (g_settings->getBool("ESPNodes")) {
-            if (nodeLineEdit) {
-                nodeLineEdit->open();
-                driver->draw2DRectangle(video::SColor(173, 43, 55, 69), node_form);
-            }
-        } else {
-            nodeLineEdit->close();
+        for (size_t i = 0; i < script->m_cheat_categories.size(); i++) {
+            drawCategory(driver, font, i);
         }
-
-        drawCategory(driver, font);
-        subDrawCategory(driver, font);
     }
-
 } 

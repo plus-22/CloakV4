@@ -30,12 +30,12 @@ class CustomEditBox;
 using namespace irr;
 using namespace gui;
 
-#define GET_SCRIPT_POINTER                                                     \
+#define GET_SCRIPT_POINTER                                                   \
     ClientScripting *script = m_client->getScript();                         \
     if (!script || !script->m_cheats_loaded)                                 \
         return;
 
-#define GET_SCRIPT_POINTER_BOOL                                                     \
+#define GET_SCRIPT_POINTER_BOOL                                              \
     ClientScripting *script = m_client->getScript();                         \
     if (!script || !script->m_cheats_loaded)                                 \
         return true;     
@@ -51,27 +51,39 @@ public:
     virtual bool OnEvent(const irr::SEvent& event);
     virtual void draw() override;
 
-    void drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font);
+    void drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font, const size_t category_index);
     void subDrawCategory(video::IVideoDriver* driver, gui::IGUIFont* font);
-
     bool isOpen() { return m_is_open; }
     
     ~NewMenu();
 
 private:
     core::rect<s32> createRect(s32 x, s32 y);
-    std::vector<core::rect<s32>> categoryRects;
     core::vector2d<s32> offset; 
     IMenuManager* m_menumgr; 
     bool isDragging;
-    core::vector2d<s32> rectPosition; 
-    const int rectWidth = 175; 
-    const int rectHeight = 35;
+    bool m_initialized = false;
+    core::vector2d<s32> rectPosition;
+    const s32 category_width = 195;
+    const s32 category_height = 35;
     bool m_is_open = false; 
     int draggedRectIndex;
     std::vector<bool> selectedCategory;
+    std::vector<std::vector<bool>> selectedCheat;
+    std::vector<bool> dropdownHovered;
+    std::vector<bool> textHovered;
+    std::vector<std::vector<bool>> cheatDropdownHovered;
+    std::vector<std::vector<bool>> cheatTextHovered;
+    std::vector<core::rect<s32>> categoryRects;
+    std::vector<core::rect<s32>> dropdownRects;
+    std::vector<core::rect<s32>> textRects;
+    std::vector<std::vector<core::rect<s32>>> cheatRects;
+    std::vector<std::vector<core::rect<s32>>> cheatTextRects;
+    std::vector<std::vector<core::rect<s32>>> cheatDropdownRects;
     std::vector<std::vector<core::rect<s32>>> subCategoryRects;
     std::vector<std::vector<video::SColor>> subCategoryColors;
+    std::vector<core::position2d<s32>> category_positions;
+    std::vector<std::vector<core::position2d<s32>>> cheat_positions;
     Client* m_client;
     bool m_rectsCreated = false;
     core::vector2d<s32> lastMousePos;
@@ -82,6 +94,10 @@ private:
 
     gui::IGUIEnvironment* env;
     video::SColor outlineColor = video::SColor(255, 255, 255, 255);
+    std::vector<bool> subCategoryRectanglesVisible; // Для хранения видимости прямоугольников
+    std::vector<core::rect<s32>> subCategoryRectangles;
+
+    s32 subCategoryHeight = category_height * 3;
 };
 
 #endif
