@@ -64,8 +64,8 @@ private:
     bool isDragging;
     bool m_initialized = false;
     core::vector2d<s32> rectPosition;
-    const s32 category_width = 195;
-    const s32 category_height = 35;
+    const s32 category_height = 34;
+    const s32 category_width = category_height * 5;
     bool m_is_open = false; 
     int draggedRectIndex;
     std::vector<bool> selectedCategory;
