@@ -35,6 +35,11 @@ using namespace gui;
     if (!script || !script->m_cheats_loaded)                                 \
         return;
 
+#define GET_SCRIPT_POINTER_S32                                               \
+    ClientScripting *script = m_client->getScript();                         \
+    if (!script || !script->m_cheats_loaded)                                 \
+        return s32(0);
+
 #define GET_SCRIPT_POINTER_BOOL                                              \
     ClientScripting *script = m_client->getScript();                         \
     if (!script || !script->m_cheats_loaded)                                 \
@@ -66,6 +71,10 @@ private:
     core::vector2d<s32> rectPosition;
     const s32 category_height = 34;
     const s32 category_width = category_height * 5;
+    const s32 setting_width = category_height * 4.6;
+    const s32 setting_bar_width = category_height * 0.2;
+    const s32 setting_bar_padding = category_height * 0.1;
+    const s32 selection_box_setting_height = category_height * 2;
     bool m_is_open = false; 
     int draggedRectIndex;
     std::vector<bool> selectedCategory;
@@ -74,26 +83,30 @@ private:
     std::vector<bool> textHovered;
     std::vector<std::vector<bool>> cheatDropdownHovered;
     std::vector<std::vector<bool>> cheatTextHovered;
+    std::vector<std::vector<std::vector<bool>>> cheatSettingTextHovered;
     std::vector<core::rect<s32>> categoryRects;
     std::vector<core::rect<s32>> dropdownRects;
     std::vector<core::rect<s32>> textRects;
     std::vector<std::vector<core::rect<s32>>> cheatRects;
+    std::vector<std::vector<std::vector<core::rect<s32>>>> cheatSettingRects;
+    std::vector<std::vector<std::vector<core::rect<s32>>>> cheatSettingTextRects;
     std::vector<std::vector<core::rect<s32>>> cheatTextRects;
     std::vector<std::vector<core::rect<s32>>> cheatDropdownRects;
     std::vector<std::vector<core::rect<s32>>> subCategoryRects;
     std::vector<std::vector<video::SColor>> subCategoryColors;
+    std::vector<std::vector<std::vector<core::position2d<s32>>>> cheat_setting_positions;
     std::vector<core::position2d<s32>> category_positions;
     std::vector<std::vector<core::position2d<s32>>> cheat_positions;
+    s32 respaceMenu(size_t i);
     Client* m_client;
     bool m_rectsCreated = false;
     core::vector2d<s32> lastMousePos;
     core::rect<s32> xray_form, node_form;
-    
-    CustomEditBox *xrayLineEdit = nullptr;
-    CustomEditBox *nodeLineEdit = nullptr;
 
     gui::IGUIEnvironment* env;
     video::SColor outlineColor = video::SColor(255, 255, 255, 255);
+    video::SColor settingBackgroundColor = video::SColor(230, 1, 2, 0);
+    video::SColor settingBarColor = video::SColor(255, 80, 120, 220);
     std::vector<bool> subCategoryRectanglesVisible; // Для хранения видимости прямоугольников
     std::vector<core::rect<s32>> subCategoryRectangles;
 

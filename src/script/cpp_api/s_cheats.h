@@ -23,30 +23,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <string>
 
-class ScriptApiCheatsCategory;
-
-class ScriptApiCheatsCheat
-{
-public:
-	ScriptApiCheatsCheat(const std::string &name, const std::string &setting, const std::string &info_text);
-	ScriptApiCheatsCheat(const std::string &name, const int &function, const std::string &info_text);
-	std::string m_name;
-	std::string m_info_text;
-	void set_info_text(std::string infoText);
-	std::string get_info_text();
-	bool is_enabled();
-	void toggle(lua_State *L, int error_handler);
-	bool has_settings(ScriptApiCheatsCategory *category);
-private:
-	std::string m_setting;
-	int m_function_ref;
-};
-
 class ScriptApiCheatsCheatSetting
 {
 public:
 	ScriptApiCheatsCheatSetting(const std::string &name, const std::string &setting);
 	~ScriptApiCheatsCheatSetting();
+	void toggle();
 	void set_value(const bool &value);
 	void set_value(const double &value);
 	void set_value(const std::string &value);
@@ -58,9 +40,29 @@ public:
 	double m_steps;
 	double m_size;
 	std::vector<std::string *> m_options;
-private:
 	std::string m_setting;
 };
+
+class ScriptApiCheatsCheat
+{
+public:
+	ScriptApiCheatsCheat(const std::string &name, const std::string &setting, const std::string &info_text);
+	ScriptApiCheatsCheat(const std::string &name, const int &function, const std::string &info_text);
+	~ScriptApiCheatsCheat();
+	std::string m_name;
+	std::string m_info_text;
+	void set_info_text(std::string infoText);
+	std::string get_info_text();
+	bool is_enabled();
+	void toggle(lua_State *L, int error_handler);
+	bool has_settings();
+	std::vector<ScriptApiCheatsCheatSetting *> m_cheat_settings;
+	std::string m_setting;
+private:
+	int m_function_ref;
+};
+
+
 
 class ScriptApiCheatsCategory
 {
@@ -70,8 +72,7 @@ public:
 	std::string m_name;
 	void read_cheats(lua_State *L);
 	std::vector<ScriptApiCheatsCheat *> m_cheats;
-	std::vector<ScriptApiCheatsCheatSetting *> m_cheat_settings;
-	//ScriptApiCheatsCheat* get_cheat(const std::string &name);
+	ScriptApiCheatsCheat* get_cheat_by_id(const std::string &setting_id);
 };
 
 class ScriptApiCheats : virtual public ScriptApiBase

@@ -37,9 +37,7 @@ core.cheats = {
 		["TunnelTracers"] = "enable_tunnel_tracers",
 		["NoRender"] = "norender.particles",
         ["NoDrownCam"] = "small_post_effect_color", 
-        ["BrightNight"] = "no_night", 
-		["XrayNodes"] = "XrayNodes",
-		["ESPNodes"] = "ESPNodes",
+        ["BrightNight"] = "no_night",
 	},
 	["Interact"] = {
 		["FastDig"] = "fastdig",

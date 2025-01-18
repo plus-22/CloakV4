@@ -91,6 +91,9 @@ randomize_version (Randomize version) bool false
 
 [*Cheats]
 
+[**Menu]
+use_menu_grid (Use grid in cheat menu) bool true
+
 [**Xray]
 xray (XRay) bool false
 
