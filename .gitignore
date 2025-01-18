@@ -3,6 +3,7 @@
 .cmake
 CMakeUserPresets.json
 Testing/*
+.devcontainer/*
 *.swp
 *.bak*
 *.orig
