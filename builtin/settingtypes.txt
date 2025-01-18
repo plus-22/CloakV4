@@ -120,6 +120,7 @@ friend_esp_color (Friends ESP color) string (255, 0, 255)
 
 enemy_esp_color (Enemy ESP color) string (255, 0, 0)
 
+hp_player_bar (Show Players HP) bool false
 
 noweather (NoWeather) bool false
 

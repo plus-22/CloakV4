@@ -211,6 +211,7 @@ void set_default_settings()
     settings->setDefault("nobob", "false");
 	settings->setDefault("show_friends_nametags", "false");
 	settings->setDefault("BHOP", "false");
+	settings->setDefault("hp_player_bar", "false");
 
 	settings->setDefault("esp.player.drawType", "0");
 	settings->setDefault("esp.player.edgeOpacity", "255");

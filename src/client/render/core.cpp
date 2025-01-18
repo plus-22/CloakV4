@@ -372,6 +372,9 @@ void RenderingCore::DrawHUD(PipelineContext &context)
 		context.hud->drawHotbar(context.client->getEnv().getLocalPlayer()->getWieldIndex());
 		context.hud->drawLuaElements(context.client->getCamera()->getOffset());
 		context.client->getCamera()->drawNametags();
+		if (g_settings->getBool("hp_player_bar")) {
+			context.client->getCamera()->drawPlayersHP();
+		}
 	}
 	context.device->getGUIEnvironment()->drawAll();
 }
