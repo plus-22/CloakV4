@@ -997,6 +997,9 @@ public:
 	inline bool isTouchCrosshairDisabled() {
 		return !m_touch_use_crosshair && camera->getCameraMode() == CAMERA_MODE_FIRST;
 	}
+
+private:
+	void panic();
 #ifdef __ANDROID__
 	bool m_android_chat_open;
 #endif

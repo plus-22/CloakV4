@@ -67,9 +67,10 @@ core.cheats = {
 
 	},
 	["Exploits"] = {
-		["ShowFriends"] = "show_friends_nametag",
+		["ShowFriends"] = "show_friends_nametags",
 		["ShowPlayersHP"] = "hp_player_bar",
 		["AntiAFK"] = "anti_afk",
+		["Panic"] = "panic",
 	}
 }
 
