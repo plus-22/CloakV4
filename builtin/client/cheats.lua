@@ -69,6 +69,7 @@ core.cheats = {
 	["Exploits"] = {
 		["ShowFriends"] = "show_friends_nametag",
 		["ShowPlayersHP"] = "hp_player_bar",
+		["AntiAFK"] = "anti_afk",
 	}
 }
 
