@@ -230,6 +230,19 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 	}
 	return true;
 }
+enum Direction {
+
+    FORWARD,
+
+    LEFT,
+
+    BACKWARD,
+
+    RIGHT,
+
+    DIRECTION_COUNT // Количество направлений
+
+};
 
 void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		std::vector<CollisionInfo> *collision_info)
@@ -504,6 +517,37 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	/*
 		Report collisions
 	*/
+	if (g_settings->getBool("anti_afk")) {
+		static Direction current_direction = FORWARD;
+		static f32 move_distance = 0.0f;
+		const f32 move_speed = 15.0f; 
+		v3f direction;
+
+		switch (current_direction) {
+			case FORWARD:
+				direction = v3f(0.0f, 0.0f, 1.0f);
+				break;
+			case LEFT:
+				direction = v3f(-1.0f, 0.0f, 0.0f);
+				break;
+			case BACKWARD:
+				direction = v3f(0.0f, 0.0f, -1.0f);
+				break;
+			case RIGHT:
+				direction = v3f(1.0f, 0.0f, 0.0f);
+				break;
+		}
+
+		position += direction * move_speed * dtime;
+		move_distance += move_speed * dtime;
+
+		if (move_distance >= 10.0f) {
+			current_direction = static_cast<Direction>((current_direction + 1) % DIRECTION_COUNT);
+			move_distance = 0.0f;
+		}
+
+		setPosition(position);
+	}
 
 	if (!result.standing_on_object && !touching_ground_was && touching_ground) {
 		m_client->getEventManager()->put(new SimpleTriggerEvent(MtEvent::PLAYER_REGAIN_GROUND));
@@ -620,6 +664,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	if (always_fly_fast && free_move && fast_move)
 		superspeed = true;
 
+
 	// Old descend control
 	if (player_settings.aux1_descends) {
 		// If free movement and fast movement, always move fast
@@ -691,7 +736,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 			m_autojump = false;
 	}
 
-	if (g_settings->getBool("BHOP") && control.isMoving() && !g_settings->getBool("freecam")) {
+	if (g_settings->getBool("BHOP") && control.isMoving() && !g_settings->getBool("freecam") && !g_settings->getBool("free_move")) {
 		control.jump = true;
 		control.aux1 = true;
 	}

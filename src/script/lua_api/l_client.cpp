@@ -40,9 +40,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/keycode.h"
 #include "client/game.h"
 
-#define checkCSMRestrictionFlag(flag) \
-	( getClient(L)->checkCSMRestrictionFlag(CSMRestrictionFlags::flag) )
-
 // Not the same as FlagDesc, which contains an `u32 flag`
 struct CSMFlagDesc {
 	const char *name;
@@ -112,11 +109,6 @@ int ModApiClient::l_send_chat_message(lua_State *L)
 	if (!lua_isstring(L, 1))
 		return 0;
 
-	// If server disabled this API, discard
-
-	if (checkCSMRestrictionFlag(CSM_RF_CHAT_MESSAGES))
-		return 0;
-
 	std::string message = luaL_checkstring(L, 1);
 	getClient(L)->sendChatMessage(utf8_to_wide(message));
 	return 0;
@@ -132,8 +124,6 @@ int ModApiClient::l_clear_out_chat_queue(lua_State *L)
 // get_player_names()
 int ModApiClient::l_get_player_names(lua_State *L)
 {
-	if (checkCSMRestrictionFlag(CSM_RF_READ_PLAYERINFO))
-		return 0;
 
 	auto plist = getClient(L)->getConnectedPlayerNames();
 	lua_createtable(L, plist.size(), 0);
@@ -239,10 +229,7 @@ end
 */
 // all_loaded_nodes()
 int ModApiClient::l_all_loaded_nodes(lua_State *L){
-    if (checkCSMRestrictionFlag(CSM_RF_LOOKUP_NODES)) {
-        return 0;
-    }
-
+   
     Client *client = getClient(L);
     std::vector<std::pair<v3s16, MapNode>> *nodes = new std::vector<std::pair<v3s16, MapNode>>(client->getAllLoadedNodes());
 
@@ -265,9 +252,7 @@ end
 */
 // nodes_at_block_pos(pos)
 int ModApiClient::l_nodes_at_block_pos(lua_State *L){
-    if (checkCSMRestrictionFlag(CSM_RF_LOOKUP_NODES)) {
-        return 0;
-    }
+   
 
     v3s16 pos = read_v3s16(L, 1);
     Client *client = getClient(L);
@@ -345,8 +330,6 @@ int ModApiClient::l_get_item_def(lua_State *L)
 	IItemDefManager *idef = gdef->idef();
 	assert(idef);
 
-	if (checkCSMRestrictionFlag(CSM_RF_READ_ITEMDEFS))
-		return 0;
 
 	if (!lua_isstring(L, 1))
 		return 0;
@@ -373,8 +356,6 @@ int ModApiClient::l_get_node_def(lua_State *L)
 	if (!lua_isstring(L, 1))
 		return 0;
 
-	if (checkCSMRestrictionFlag(CSM_RF_READ_NODEDEFS))
-		return 0;
 
 	std::string name = readParam<std::string>(L, 1);
 	const ContentFeatures &cf = ndef->get(ndef->getId(name));
@@ -798,7 +779,7 @@ int ModApiClient::l_get_inv_item_damage(lua_State *L)
 		return 0;
 	}
 
-	if (index < 0 || index > list->getSize() - 1) {
+	if (index > list->getSize() - 1) {
 		lua_pushnil(L);
 		return 0;
 	}
@@ -879,7 +860,7 @@ int ModApiClient::l_get_inv_item_break(lua_State *L)
 		return 0;
 	}
 
-	if (index < 0 || index > list->getSize() - 1) {
+	if (index > list->getSize() - 1) {
 		lua_pushnil(L);
 		return 0;
 	}

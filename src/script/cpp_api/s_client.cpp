@@ -563,7 +563,6 @@ bool ScriptApiClient::on_active_object_step(float dtime, GenericCAO *gcao)
 	push_object_properties(L, &gcao->getProperties());
 	lua_setfield(L, -2, "props");
 
-
 	try {
 		runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
 	} catch (LuaError &e) {

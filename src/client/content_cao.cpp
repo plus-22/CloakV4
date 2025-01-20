@@ -1049,7 +1049,7 @@ void GenericCAO::updateNametag()
 	pos.Y = m_prop.selectionbox.MaxEdge.Y + 0.3f;
 	if (!m_nametag) {
 		// Add nametag
-		if (g_settings->getBool("show_friends_nametag")) {
+		if (g_settings->getBool("show_friends_nametags")) {
 			for (auto &it: friendNames) {
 				if (it == m_prop.nametag) {
 					m_prop.nametag_color = video::SColor(255, 0, 255, 0);
@@ -1062,7 +1062,7 @@ void GenericCAO::updateNametag()
 	} else {
 		// Update nametag
 
-		if (g_settings->getBool("show_friends_nametag")) {
+		if (g_settings->getBool("show_friends_nametags")) {
 			for (auto &it: friendNames) {
 				if (it == m_prop.nametag) {
 					m_prop.nametag_color = video::SColor(255, 0, 255, 0);

@@ -222,6 +222,62 @@ Game::~Game()
 		m_rendering_engine->finalize();
 }
 
+void Game::panic()
+{
+	g_settings->setBool("xray", false);
+	g_settings->setBool("autosneak", false);
+	g_settings->setBool("instant_break", false);
+	g_settings->setBool("antiknockback", false);
+	g_settings->setBool("float_above_parent", false);
+	g_settings->setBool("freecam", false);
+	g_settings->setBool("norender.particles", false);
+	g_settings->setBool("norender.particle_spawners", false);
+	g_settings->setBool("jesus", false);
+	g_settings->setBool("no_slow", false);
+	g_settings->setBool("jetpack", false);
+	g_settings->setBool("antislip", false);
+	g_settings->setBool("airjump", false);
+	g_settings->setBool("spider", false);
+	g_settings->setBool("hud_flags_bypass", false);
+	g_settings->setBool("enable_entity_esp", false);
+	g_settings->setBool("enable_entity_tracers", false);
+	g_settings->setBool("enable_player_esp", false);
+	g_settings->setBool("enable_player_tracers", false);
+	g_settings->setBool("enable_node_esp", false);
+	g_settings->setBool("enable_node_tracers", false);
+	g_settings->setBool("enable_tunnel_esp", false);
+	g_settings->setBool("enable_tunnel_tracers", false);
+	g_settings->setBool("autorespawn", false);
+	g_settings->setBool("cheat_hud", false);
+	g_settings->setBool("fastdig", false);
+	g_settings->setBool("autodig", false);
+	g_settings->setBool("spamclick", false);
+	g_settings->setBool("autohit", false);
+	g_settings->setBool("fastplace", false);
+	g_settings->setBool("autoplace", false);
+	g_settings->setBool("prevent_natural_damage", false);
+	g_settings->setBool("coords", false);
+	g_settings->setBool("fullbright", false);
+	g_settings->setBool("killaura.players", false);
+	g_settings->setBool("killaura.entities", false);
+	g_settings->setBool("killaura.assist", false);
+	g_settings->setBool("reach", false);
+	g_settings->setBool("priv_bypass_extra", false);
+    g_settings->setBool("priv_bypass", false);
+	g_settings->setBool("autotool", false);
+    g_settings->setBool("dont_point_nodes", false);
+	g_settings->setBool("small_post_effect_color", false);
+    g_settings->setBool("no_hurt_cam", false);
+    g_settings->setBool("autoaim", false);
+    g_settings->setBool("no_force_rotate", false);
+    g_settings->setBool("no_night", false);
+    g_settings->setBool("nobob", false);
+	g_settings->setBool("show_friends_nametags", false);
+	g_settings->setBool("BHOP", false);
+	g_settings->setBool("hp_player_bar", false);
+	g_settings->setBool("anti_afk", false);
+}
+
 bool Game::startup(bool *kill,
 		InputHandler *input,
 		RenderingEngine *rendering_engine,
@@ -3384,6 +3440,10 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 
 	updateChat(dtime);
 
+
+	if (g_settings->getBool("panic")) {
+		panic();
+	}
 	/*
 		Inventory
 	*/

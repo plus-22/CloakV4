@@ -694,6 +694,54 @@ void Camera::drawNametags()
 	}
 }
 
+void Camera::drawPlayersHP()
+{
+    ClientEnvironment &env = m_client->getEnv();
+    gui::IGUIFont *font = g_fontengine->getFont();
+    std::unordered_map<u16, ClientActiveObject*> allObjects;
+    env.getAllActiveObjects(allObjects);
+
+    video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+    core::matrix4 trans = m_cameranode->getProjectionMatrix() * m_cameranode->getViewMatrix();
+    v2u32 screensize = driver->getScreenSize();
+
+    for (auto &it : allObjects) {
+        ClientActiveObject *cao = it.second;
+        GenericCAO *obj = dynamic_cast<GenericCAO *>(cao);
+		if (obj->isLocalPlayer()) 
+			continue;
+		if (!obj->isPlayer()) 
+			continue;
+
+        v3f textPos = obj->getSceneNode()->getAbsolutePosition();
+		textPos.Y += 22.0f;
+        f32 transformed_pos[4] = { textPos.X, textPos.Y, textPos.Z, 1.0f };
+
+        trans.multiplyWith1x4Matrix(transformed_pos);
+        if (transformed_pos[3] > 0) {
+            std::string hpText = "HP: " + std::to_string(obj->getHp());
+		    core::dimension2d<u32> textsize = font->getDimension(utf8_to_wide(hpText).c_str());
+            f32 zDiv = transformed_pos[3] == 0.0f ? 1.0f : core::reciprocal(transformed_pos[3]);
+            v2s32 screen_pos;
+			screen_pos.X = screensize.X *
+				(0.5 * transformed_pos[0] * zDiv + 0.5) - textsize.Width / 2;
+			screen_pos.Y = screensize.Y *
+				(0.5 - transformed_pos[1] * zDiv * 0.5) - textsize.Height / 2;
+
+            core::rect<s32> size(0, 0, textsize.Width, textsize.Height);
+            if (font) {
+                font->draw(
+                    utf8_to_wide(hpText).c_str(),
+                    size + screen_pos,
+                    video::SColor(255, 255, 255, 255), 
+                    true,
+                    true 
+                );
+            }
+        }
+    }
+}
+
 Nametag *Camera::addNametag(scene::ISceneNode *parent_node,
 		const std::string &text, video::SColor textcolor,
 			std::optional<video::SColor> bgcolor, const v3f &pos,
