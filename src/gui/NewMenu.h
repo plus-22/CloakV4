@@ -64,19 +64,29 @@ public:
 
 private:
     core::rect<s32> createRect(s32 x, s32 y);
+    double roundToNearestStep(double number, double m_min, double m_max, double m_steps);
+    void calculateSliderSplit(const core::rect<s32>& sliderRect, double value, double minValue, double maxValue, core::rect<s32>& filledRect, core::rect<s32>& remainingRect);
+    double calculateSliderValueFromPosition(const core::rect<s32>& sliderBarRect, const core::position2d<s32>& pointerPosition, double m_min, double m_max, double m_steps);
+
     core::vector2d<s32> offset; 
     IMenuManager* m_menumgr; 
-    bool isDragging;
+    bool isDragging = false;
+    bool isSliding = false;
     bool m_initialized = false;
     core::vector2d<s32> rectPosition;
     const s32 category_height = 34;
     const s32 category_width = category_height * 5;
     const s32 setting_width = category_height * 4.6;
-    const s32 setting_bar_width = category_height * 0.2;
+    const s32 setting_bar_width = category_height * 0.1;
     const s32 setting_bar_padding = category_height * 0.1;
+    const s32 slider_height_padding = category_height * 0.4;
+    const s32 slider_width_padding = category_height * 0.3;
     const s32 selection_box_setting_height = category_height * 2;
     bool m_is_open = false; 
-    int draggedRectIndex;
+    int draggedRectIndex = 0;
+    int draggedSliderCategoryIndex = 0;
+    int draggedSliderCheatIndex = 0;
+    int draggedSliderSettingIndex = 0;
     std::vector<bool> selectedCategory;
     std::vector<std::vector<bool>> selectedCheat;
     std::vector<bool> dropdownHovered;
@@ -84,11 +94,16 @@ private:
     std::vector<std::vector<bool>> cheatDropdownHovered;
     std::vector<std::vector<bool>> cheatTextHovered;
     std::vector<std::vector<std::vector<bool>>> cheatSettingTextHovered;
+    std::vector<std::vector<std::vector<bool>>> cheatSliderHovered;
     std::vector<core::rect<s32>> categoryRects;
     std::vector<core::rect<s32>> dropdownRects;
     std::vector<core::rect<s32>> textRects;
     std::vector<std::vector<core::rect<s32>>> cheatRects;
     std::vector<std::vector<std::vector<core::rect<s32>>>> cheatSettingRects;
+    std::vector<std::vector<std::vector<core::rect<s32>>>> cheatSliderRects;
+    std::vector<std::vector<std::vector<IGUIEditBox*>>> cheatSettingTextFields;
+    std::vector<std::vector<std::vector<std::wstring>>> cheatSettingTextLasts;
+    std::vector<std::vector<std::vector<core::rect<s32>>>> cheatSliderBarRects;
     std::vector<std::vector<std::vector<core::rect<s32>>>> cheatSettingTextRects;
     std::vector<std::vector<core::rect<s32>>> cheatTextRects;
     std::vector<std::vector<core::rect<s32>>> cheatDropdownRects;
@@ -107,7 +122,11 @@ private:
     video::SColor outlineColor = video::SColor(255, 255, 255, 255);
     video::SColor settingBackgroundColor = video::SColor(230, 1, 2, 0);
     video::SColor settingBarColor = video::SColor(255, 80, 120, 220);
-    std::vector<bool> subCategoryRectanglesVisible; // Для хранения видимости прямоугольников
+    video::SColor sliderColor = video::SColor(255, 200, 200, 200);
+    video::SColor sliderBarColor = video::SColor(255, 255, 255, 255);
+    video::SColor sliderColorActive = video::SColor(255, 125, 125, 125);
+    video::SColor sliderBarColorActive = video::SColor(255, 66, 111, 195);
+    std::vector<bool> subCategoryRectanglesVisible;
     std::vector<core::rect<s32>> subCategoryRectangles;
 
     s32 subCategoryHeight = category_height * 3;

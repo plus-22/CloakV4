@@ -156,7 +156,7 @@ void set_default_settings()
 
 	// Cheats
 	settings->setDefault("xray", "false");
-	settings->setDefault("xray_nodes", "default:stone,mcl_core:stone");
+	settings->setDefault("xray.nodes", "default:stone,mcl_core:stone");
 	settings->setDefault("autosneak", "false");
 	settings->setDefault("instant_break", "false");
 	settings->setDefault("antiknockback", "false");
@@ -207,6 +207,8 @@ void set_default_settings()
 	settings->setDefault("small_post_effect_color", "false");
     settings->setDefault("no_hurt_cam", "false");
     settings->setDefault("autoaim", "false");
+    settings->setDefault("autoaim.distance", "2");
+	
     settings->setDefault("no_force_rotate", "false");
     settings->setDefault("no_night", "false");
     settings->setDefault("nobob", "false");

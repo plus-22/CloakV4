@@ -132,7 +132,7 @@ Game::Game() :
 		&freecamChangedCallback, this);
 	g_settings->registerChangedCallback("xray",
 		&updateAllMapBlocksCallback, this);
-	g_settings->registerChangedCallback("xray_nodes",
+	g_settings->registerChangedCallback("xray.nodes",
 		&updateAllMapBlocksCallback, this);
 	g_settings->registerChangedCallback("node_esp_nodes",
 		&updateAllMapBlocksCallback, this);
@@ -211,7 +211,7 @@ Game::~Game()
 		&freecamChangedCallback, this);
 	g_settings->deregisterChangedCallback("xray",
 		&updateAllMapBlocksCallback, this);
-	g_settings->deregisterChangedCallback("xray_nodes",
+	g_settings->deregisterChangedCallback("xray.nodes",
 		&updateAllMapBlocksCallback, this);
 	g_settings->deregisterChangedCallback("node_esp_nodes",
 		&updateAllMapBlocksCallback, this);

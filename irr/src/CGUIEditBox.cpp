@@ -1128,13 +1128,14 @@ void CGUIEditBox::breakText()
 		if (!MultiLine)
 			lineBreak = false;
 
-		if (c == L' ' || c == 0 || i == (size - 1)) {
+		if (c == L' ' || c == 0 || i == (size - 1) || c == L',') {
 			// here comes the next whitespace, look if
 			// we can break the last word to the next line
 			// We also break whitespace, otherwise cursor would vanish beside the right border.
 			s32 whitelgth = font->getDimension(whitespace.c_str()).Width;
 			s32 worldlgth = font->getDimension(word.c_str()).Width;
-
+			if (c == L',')
+				word += c;
 			if (WordWrap && length + worldlgth + whitelgth > elWidth && line.size() > 0) {
 				// break to next line
 				length = worldlgth;
@@ -1144,6 +1145,7 @@ void CGUIEditBox::breakText()
 				line = word;
 			} else {
 				// add word to line
+				
 				line += whitespace;
 				line += word;
 				length += whitelgth + worldlgth;
@@ -1152,7 +1154,7 @@ void CGUIEditBox::breakText()
 			word = L"";
 			whitespace = L"";
 
-			if (c)
+			if (c && !c == L',')
 				whitespace += c;
 
 			// compute line break
