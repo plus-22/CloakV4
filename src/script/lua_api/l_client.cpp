@@ -229,7 +229,7 @@ end
 */
 // all_loaded_nodes()
 int ModApiClient::l_all_loaded_nodes(lua_State *L){
-   
+
     Client *client = getClient(L);
     std::vector<std::pair<v3s16, MapNode>> *nodes = new std::vector<std::pair<v3s16, MapNode>>(client->getAllLoadedNodes());
 
@@ -252,7 +252,7 @@ end
 */
 // nodes_at_block_pos(pos)
 int ModApiClient::l_nodes_at_block_pos(lua_State *L){
-   
+
 
     v3s16 pos = read_v3s16(L, 1);
     Client *client = getClient(L);
@@ -495,13 +495,13 @@ int ModApiClient::l_drop_selected_item(lua_State *L)
 int ModApiClient::l_get_objects_inside_radius(lua_State *L)
 {
     ClientEnvironment &env = getClient(L)->getEnv();
-    
+
     v3f pos = checkFloatPos(L, 1);
     float radius = readParam<float>(L, 2) * BS; // Ensure BS is defined appropriately
-    
+
     std::vector<DistanceSortedActiveObject> objs;
     env.getActiveObjects(pos, radius, objs); // This method remains unchanged
-    
+
     lua_createtable(L, objs.size(), 0); // Create a new Lua table
     for (size_t i = 0; i < objs.size(); ++i) { // Use size_t for indexing
         ClientObjectRef::create(L, objs[i].obj); // Access obj directly from the vector
@@ -637,7 +637,7 @@ int ModApiClient::l_file_write(lua_State *L)
 		if(lua_isboolean(L, -1)){
 			unsafe_write = lua_toboolean(L, -1);
 		}
-		lua_pop(L, 1); 
+		lua_pop(L, 1);
 	}
 
 	if (!unsafe_write || g_settings->getBool("secure.enable_security")) {
@@ -662,7 +662,7 @@ int ModApiClient::l_file_append(lua_State *L)
 		if(lua_isboolean(L, -1)){
 			unsafe_write = lua_toboolean(L, -1);
 		}
-		lua_pop(L, 1); 
+		lua_pop(L, 1);
 	}
 
 	if (!unsafe_write || g_settings->getBool("secure.enable_security")) {

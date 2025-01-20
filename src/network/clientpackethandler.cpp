@@ -643,8 +643,8 @@ void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 	*/
 
     if (g_settings->getBool("no_force_rotate"))
-		return;    
-    
+		return;
+
 	ClientEvent *event = new ClientEvent();
 	event->type = CE_PLAYER_FORCE_MOVE;
 	event->player_force_move.pitch = pitch;

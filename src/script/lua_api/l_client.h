@@ -158,7 +158,7 @@ private:
 
 	// print_esp_colors()
 	static int l_print_esp_colors(lua_State *L);
-	
+
 	// update_infotexts()
 	static int l_update_infotexts(lua_State *L);
 

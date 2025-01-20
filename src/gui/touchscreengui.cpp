@@ -877,7 +877,7 @@ void TouchScreenGUI::hide()
 
 void TouchScreenGUI::show()
 {
-	if (m_visible) 
+	if (m_visible)
 		return;
 
 	setVisible(true);

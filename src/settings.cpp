@@ -817,8 +817,8 @@ bool Settings::getJsonNoEx(const std::string& jsonString, Json::Value& outputJso
 	std::string errors;
 
 	bool parsedSuccess = reader->parse(jsonString.c_str(),
-										jsonString.c_str() + jsonString.size(), 
-										&outputJson, 
+										jsonString.c_str() + jsonString.size(),
+										&outputJson,
 										&errors);
 	delete reader;
 	if (!parsedSuccess) {

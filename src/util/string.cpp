@@ -984,8 +984,8 @@ Json::Value str_to_json(std::string_view str) {
 	Json::Value root;
 	std::string errors;
 	bool parsedSuccess = reader->parse(str.data(),
-									   str.data() + str.size(), 
-									   &root, 
+									   str.data() + str.size(),
+									   &root,
 									   &errors);
 	delete reader;
 	if (!parsedSuccess) {

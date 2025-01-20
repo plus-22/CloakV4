@@ -1133,9 +1133,9 @@ void Client::interact(InteractAction action, const PointedThing& pointed)
 	pkt.putLongString(tmp_os.str());
 
 	if (action == INTERACT_PLACE) {
-		writePlayerPos(myplayer, &m_env.getClientMap(), &pkt, m_camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT, false);	
+		writePlayerPos(myplayer, &m_env.getClientMap(), &pkt, m_camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT, false);
 	} else {
-		writePlayerPos(myplayer, &m_env.getClientMap(), &pkt, m_camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT, g_settings->getBool("autosneak"));	
+		writePlayerPos(myplayer, &m_env.getClientMap(), &pkt, m_camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT, g_settings->getBool("autosneak"));
 	}
 
 	Send(&pkt);
@@ -1632,7 +1632,7 @@ std::vector<std::pair<v3s16, MapNode>> Client::getNodesAtBlockPos(v3s16 blockPos
 		v3s16 absoluteNodePos = blockPos * MAP_BLOCKSIZE + relNodePos;
 		bool is_valid_position;
 		MapNode node = CSMGetNode(absoluteNodePos, &is_valid_position);
-		
+
 		if (is_valid_position)
 			nodes.emplace_back(absoluteNodePos, node);
 	}
@@ -1659,7 +1659,7 @@ std::vector<std::pair<v3s16, MapNode>> Client::getAllLoadedNodes()
 			v3s16 absoluteNodePos = blockPos * MAP_BLOCKSIZE + relNodePos;
 			bool is_valid_position;
 			MapNode node = CSMGetNode(absoluteNodePos, &is_valid_position);
-			
+
 			if (is_valid_position)
 				nodes.emplace_back(absoluteNodePos, node);
 		}

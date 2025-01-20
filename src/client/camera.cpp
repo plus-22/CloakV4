@@ -708,9 +708,9 @@ void Camera::drawPlayersHP()
     for (auto &it : allObjects) {
         ClientActiveObject *cao = it.second;
         GenericCAO *obj = dynamic_cast<GenericCAO *>(cao);
-		if (obj->isLocalPlayer()) 
+		if (obj->isLocalPlayer())
 			continue;
-		if (!obj->isPlayer()) 
+		if (!obj->isPlayer())
 			continue;
 
         v3f textPos = obj->getSceneNode()->getAbsolutePosition();
@@ -733,9 +733,9 @@ void Camera::drawPlayersHP()
                 font->draw(
                     utf8_to_wide(hpText).c_str(),
                     size + screen_pos,
-                    video::SColor(255, 255, 255, 255), 
+                    video::SColor(255, 255, 255, 255),
                     true,
-                    true 
+                    true
                 );
             }
         }

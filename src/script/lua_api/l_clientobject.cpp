@@ -194,16 +194,16 @@ int ClientObjectRef::l_set_properties(lua_State *L)
 {
     ClientObjectRef *ref = checkobject(L, 1);
     GenericCAO *gcao = get_generic_cao(ref, L);
-    
+
     // Retrieve current properties
     ObjectProperties prop = gcao->getProperties();
-    
+
     // Read new properties from Lua stack
     read_object_properties(L, 2, nullptr, &prop, getClient(L)->idef());
-    
+
     // Set new properties
     gcao->setProperties(prop);
-    
+
     return 1; // Return success status
 }
 
@@ -256,7 +256,7 @@ int ClientObjectRef::l_set_nametag_images(lua_State *L)
 {
     ClientObjectRef *ref = checkobject(L, 1);
     GenericCAO *gcao = get_generic_cao(ref, L);
-    
+
     // Clear previous nametag images
     gcao->nametag_images.clear();
 

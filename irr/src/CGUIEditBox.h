@@ -177,7 +177,7 @@ protected:
 	s32 MarkBegin;
 	s32 MarkEnd;
 
-	video::SColor MarkColor; 
+	video::SColor MarkColor;
 	bool customMarkColor;
 	video::SColor OverrideColor;
 	gui::IGUIFont *OverrideFont, *LastBreakFont;

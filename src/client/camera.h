@@ -231,7 +231,7 @@ public:
 	void drawNametags();
 
 	void drawPlayersHP();
-	
+
 	inline void addArmInertia(f32 player_yaw);
 
 private:

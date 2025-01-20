@@ -859,7 +859,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc, scene::ISceneManager *smgr)
 	}
 
 	if (m_client->modsLoaded())
-		m_client->getScript()->on_object_properties_change(m_id);   
+		m_client->getScript()->on_object_properties_change(m_id);
 
 	if (m_animated_meshnode) {
 		u32 mat_count = m_animated_meshnode->getMaterialCount();
@@ -1069,7 +1069,7 @@ void GenericCAO::updateNametag()
 				}
 			}
 		}
-		
+
 		m_nametag->text = m_prop.nametag;
 		m_nametag->textcolor = m_prop.nametag_color;
 		m_nametag->bgcolor = m_prop.nametag_bgcolor;
@@ -1822,13 +1822,13 @@ void GenericCAO::processMessage(const std::string &data)
 		newprops.deSerialize(is);
         setProperties(newprops);
 
-		
-        
+
+
         		// notify CSM
 		if (m_client->modsLoaded())
 			m_client->getScript()->on_object_properties_change(m_id);
 
-        
+
 	} else if (cmd == AO_CMD_UPDATE_POSITION) {
 		// Not sent by the server if this object is an attachment.
 		// We might however get here if the server notices the object being detached before the client.
@@ -2127,7 +2127,7 @@ bool GenericCAO::canAttack(int threshold) {
 	for(ItemGroupList::const_iterator i = m_armor_groups.begin();
 			i != m_armor_groups.end(); ++i) {
 		if (m_prop.pointable == PointabilityType::POINTABLE
-			&& i->first == "fleshy" 
+			&& i->first == "fleshy"
 			&& i->second >= threshold) {
 				return true;
 		}

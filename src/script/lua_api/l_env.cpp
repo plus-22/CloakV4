@@ -1136,13 +1136,13 @@ int ModApiEnv::l_find_nodes_near_under_air_except(lua_State *L)
 	if (Client *client = getClient(L))
 		radius = client->CSMClampRadius(pos, radius);
 #endif
-	
+
 	std::vector<u32> individual_count;
 	individual_count.resize(filter.size());
-	
+
 	lua_newtable(L);
 	u32 i = 0;
-	
+
 	for (int d = start_radius; d <= radius; d++) {
 		const std::vector<v3s16> &list = FacePositionCache::getFacePositions(d);
 		for (const v3s16 &posi : list) {

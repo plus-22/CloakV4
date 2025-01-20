@@ -215,8 +215,8 @@ void RenderingCore::drawTracersAndESP()
 			bool is_player = obj->isPlayer();
 			bool draw_esp = is_player ? draw_player_esp : draw_entity_esp;
 			bool draw_tracers = is_player ? draw_player_tracers : draw_entity_tracers;
-			video::SColor color = is_player 
-				? (is_friendly  
+			video::SColor color = is_player
+				? (is_friendly
 					? friend_esp_color
 			 		: enemy_esp_color)
 				: entity_esp_color;
@@ -228,7 +228,7 @@ void RenderingCore::drawTracersAndESP()
 					}
 				}
 			}
-			
+
 			if (! (draw_esp || draw_tracers))
 				continue;
 			aabb3f box;

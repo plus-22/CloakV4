@@ -360,9 +360,9 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 			video::ITexture *menu_header_img = tsrc->getTexture("menu_header.png");
 			if (menu_header_img || menu_bg_img) {
 				const core::dimension2d<u32> &bg_size = menu_bg_img->getSize();
-				
+
 				draw2DImageFilterScaled(get_video_driver(), menu_bg_img, core::rect<s32>(0, 0, screensize.X, screensize.Y), core::rect<s32>(0, 0, bg_size.Width, bg_size.Height), 0, 0, true);
-				
+
 				video::ITexture *progress_img_bg = tsrc->getTexture("progress_bar_bg.png");
 				if (progress_img_bg) {
 					const core::dimension2d<u32> &progress_size = progress_img_bg->getSize();

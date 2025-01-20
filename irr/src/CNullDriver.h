@@ -122,7 +122,7 @@ public:
 	virtual void draw3DBox(const core::aabbox3d<f32> &box,
 			SColor color = SColor(255, 255, 255, 255),
 			int drawType = 0,
-			int edgeAlpha = -1, 
+			int edgeAlpha = -1,
 			int faceAlpha = -1,
 			u8 diffNeighbors = 63) override;
 
@@ -169,7 +169,7 @@ public:
 	virtual void draw2DRectangle(const core::rect<s32> &pos,
 			SColor colorLeftUp, SColor colorRightUp, SColor colorLeftDown, SColor colorRightDown,
 			const core::rect<s32> *clip = 0) override;
-			
+
 	void draw2DRectangleOutline(const core::recti& pos, SColor color=SColor(255,255,255,255)) override;
 
 	//! Draws a 2d line.

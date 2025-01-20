@@ -100,7 +100,7 @@ xray_nodes (XRay Nodes) string default:stone,mcl_core:stone
 
 enable_node_esp (NodeESP) bool false
 
-node_esp_nodes (NodeESP Nodes) string 
+node_esp_nodes (NodeESP Nodes) string
 
 [**Entities]
 

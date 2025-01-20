@@ -645,7 +645,7 @@ bool canWalkOn(v3s16 pos, MeshMakeData *data) {
 }
 
 bool isValidPotentialTunnelSpace(v3s16 pos, int max_height, int max_width, MeshMakeData *data) {
-    bool valid = false;    
+    bool valid = false;
 
     bool x_valid = false;
     bool y_valid = false;
@@ -655,7 +655,7 @@ bool isValidPotentialTunnelSpace(v3s16 pos, int max_height, int max_width, MeshM
     int depth = 0;
     int height = 0;
     for (int h = 1; h <= max_height; h++) {
-        v3s16 t_pos_floor = pos + v3s16(0, -h, 0);  
+        v3s16 t_pos_floor = pos + v3s16(0, -h, 0);
         if (canWalkOn(t_pos_floor, data)) {
             break;
         }
@@ -663,7 +663,7 @@ bool isValidPotentialTunnelSpace(v3s16 pos, int max_height, int max_width, MeshM
     }
     for (int h = 1; h <= max_height; h++) {
         v3s16 t_pos_ceil = pos + v3s16(0, h, 0);
-        
+
         if (canWalkOn(t_pos_ceil, data)) {
             break;
         }
@@ -679,7 +679,7 @@ bool isValidPotentialTunnelSpace(v3s16 pos, int max_height, int max_width, MeshM
     int left = 0;
     int right = 0;
     for (int x = 1; x <= max_width; x++) {
-        v3s16 t_pos_left = pos + v3s16(-x, 0, 0);        
+        v3s16 t_pos_left = pos + v3s16(-x, 0, 0);
         if (canWalkOn(t_pos_left, data)) {
             break;
         }
@@ -687,7 +687,7 @@ bool isValidPotentialTunnelSpace(v3s16 pos, int max_height, int max_width, MeshM
     }
     for (int x = 1; x <= max_width; x++) {
         v3s16 t_pos_right = pos + v3s16(x, 0, 0);
-        
+
         if (canWalkOn(t_pos_right, data)) {
             break;
         }
@@ -700,7 +700,7 @@ bool isValidPotentialTunnelSpace(v3s16 pos, int max_height, int max_width, MeshM
     int backwards = 0;
     int forwards = 0;
     for (int z = 1; z <= max_width; z++) {
-        v3s16 t_pos_backwards = pos + v3s16(0, 0, -z);        
+        v3s16 t_pos_backwards = pos + v3s16(0, 0, -z);
         if (canWalkOn(t_pos_backwards, data)) {
             break;
         }
@@ -708,7 +708,7 @@ bool isValidPotentialTunnelSpace(v3s16 pos, int max_height, int max_width, MeshM
     }
     for (int z = 1; z <= max_width; z++) {
         v3s16 t_pos_forwards = pos + v3s16(0, 0, z);
-        
+
         if (canWalkOn(t_pos_forwards, data)) {
             break;
         }
@@ -728,16 +728,16 @@ bool isTunnelNode(v3s16 pos, int height, int width, MeshMakeData *data) {
         if (canWalkThrough(pos+v3s16(0,h,0), data) && !canWalkThrough(pos+v3s16(0,h+1,0), data)) {
             for (int w = -width; w <= width; w++) {
                 // Z
-                if ((w != 0) && 
+                if ((w != 0) &&
                     (((!canWalkThrough(pos+v3s16(-1, h, w), data) && !canWalkThrough(pos+v3s16(1, h, w), data))
                     && canWalkThrough(pos+v3s16(0, h, 1+w), data) && canWalkThrough(pos+v3s16(0, h, -1+w), data))
                     || (canWalkThrough(pos+v3s16(-1, h, w), data) && canWalkThrough(pos+v3s16(1, h, w), data)
                     && !canWalkThrough(pos+v3s16(0, h, 1+w), data) && !canWalkThrough(pos+v3s16(0, h, -1+w), data)) )) {
                         return true;
                 }
-          
+
                 // X
-                if ((w != 0) && 
+                if ((w != 0) &&
                     (((!canWalkThrough(pos+v3s16(w, h, -1), data) && !canWalkThrough(pos+v3s16(w, h, 1), data))
                     && canWalkThrough(pos+v3s16(1+w, h, 0), data) && canWalkThrough(pos+v3s16(-1+w, h, 0), data))
                     || (canWalkThrough(pos+v3s16(w, h, -1), data) && canWalkThrough(pos+v3s16(w, h, 1), data)
@@ -984,7 +984,7 @@ MapBlockMesh::MapBlockMesh(Client *client, MeshMakeData *data, v3s16 camera_offs
 
 					int max_height = 4;
 					int max_width = 3;
-					if (isValidPotentialTunnelSpace(pos, max_height, max_width, data) 
+					if (isValidPotentialTunnelSpace(pos, max_height, max_width, data)
 						&& isTunnelNode(pos, max_height, max_width, data)) {
 							tunnel_esp_nodes.insert(pos);
 					}

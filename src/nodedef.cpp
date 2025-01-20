@@ -438,9 +438,9 @@ video::SColor ContentFeatures::getNodeEspColor() const {
     static const irr::video::SColor black(0, 0, 0, 0);
     static const irr::video::SColor white(255, 255, 255, 255);
 
-    float distanceMinimap = minimap_color != NULL && minimap_color != white ? 
+    float distanceMinimap = minimap_color != NULL && minimap_color != white ?
                             getColorDistance(minimap_color, black) : 0.0f;
-    float distancePostEffect = post_effect_color != NULL && post_effect_color != white ? 
+    float distancePostEffect = post_effect_color != NULL && post_effect_color != white ?
                                getColorDistance(post_effect_color, black) : 0.0f;
 
     if (distanceMinimap > distancePostEffect) {
@@ -1067,13 +1067,13 @@ NodeDefManager::~NodeDefManager()
 #endif
 }
 
-void NodeDefManager::printESPColors() const 
+void NodeDefManager::printESPColors() const
 {
-    for (const ContentFeatures &feature : m_content_features) 
+    for (const ContentFeatures &feature : m_content_features)
     {
         video::SColor color = feature.getNodeEspColor();
-        
-        std::cout << feature.name << " (" 
+
+        std::cout << feature.name << " ("
                   << (int)color.getRed() << ", "
                   << (int)color.getGreen() << ", "
                   << (int)color.getBlue() << ")" << std::endl;

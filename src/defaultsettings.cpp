@@ -234,7 +234,7 @@ void set_default_settings()
 	settings->setDefault("entity_esp_color", "(255, 255, 255)");
 	settings->setDefault("friend_esp_color", "(255, 0, 255)");
 	settings->setDefault("enemy_esp_color", "(255, 0, 0)");
-	
+
 	settings->setDefault("silence", "false");
 
 	settings->setDefault("XrayNodes", "false");
@@ -260,7 +260,7 @@ void set_default_settings()
 	settings->setDefault("keymap_cmd_local", ".");
 	settings->setDefault("keymap_minimap", "KEY_KEY_V");
 	settings->setDefault("keymap_console", "KEY_F10");
-	
+
 	settings->setDefault("keymap_toggle_freecam", "KEY_KEY_G");
 	settings->setDefault("keymap_toggle_killaura", "KEY_KEY_X");
 	settings->setDefault("keymap_toggle_autoaim", "KEY_KEY_N");

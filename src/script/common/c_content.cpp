@@ -2317,7 +2317,7 @@ void push_pointed_thing(lua_State *L, const PointedThing &pointed, bool csm,
 		} else {
 			push_objectRef(L, pointed.object_id);
 		}
-		
+
 		lua_setfield(L, -2, "ref");
 	} else {
 		lua_pushstring(L, "nothing");
@@ -2649,7 +2649,7 @@ void push_collision_move_result(lua_State *L, const collisionMoveResult &res)
 void push_physics_override(lua_State *L, float speed, float jump, float gravity, bool sneak, bool sneak_glitch, bool new_move)
 {
 	lua_createtable(L, 0, 6);
-	
+
 	lua_pushnumber(L, speed);
 	lua_setfield(L, -2, "speed");
 	lua_pushnumber(L, jump);

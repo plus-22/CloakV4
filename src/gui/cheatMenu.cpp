@@ -223,7 +223,7 @@ void CheatMenu::drawHUD(video::IVideoDriver *driver, double dtime)
 				if (!info_text.empty()) {
 					cheat_str += " [" + info_text + "]";
 				}
-				core::dimension2d<u32> dim = 
+				core::dimension2d<u32> dim =
 							m_font->getDimension(utf8_to_wide(cheat_str).c_str());
 				enabled_cheats.push_back(std::make_pair(cheat_str, dim));
 				cheat_count++;

@@ -168,11 +168,11 @@ public:
 			SColor color = SColor(255, 255, 255, 255)) override;
 
 	//! Draws a 3d box
-	void draw3DBox(const core::aabbox3d<f32> &box, 
-		SColor color = SColor(255, 255, 255, 255), 
-		int drawType = 0, 
-		int edgeAlpha = -1, 
-		int faceAlpha = -1, 
+	void draw3DBox(const core::aabbox3d<f32> &box,
+		SColor color = SColor(255, 255, 255, 255),
+		int drawType = 0,
+		int edgeAlpha = -1,
+		int faceAlpha = -1,
 		u8 diffNeighbors = 63) override;
 
 	//! Draws a 3d line.

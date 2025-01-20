@@ -139,12 +139,12 @@ public:
 
 	v3s16 getLightPosition() const;
 
-	inline void setYaw(f32 yaw) { 
+	inline void setYaw(f32 yaw) {
 		m_yaw = yaw;
 		if (!m_freecam)
 			m_legit_yaw = m_yaw;
 	}
-	inline void setLegitYaw(f32 yaw) { 
+	inline void setLegitYaw(f32 yaw) {
 		if (m_freecam)
 			m_legit_yaw = yaw;
 		else
@@ -153,12 +153,12 @@ public:
 	f32 getYaw() const { return m_yaw; }
 	f32 getLegitYaw() const { return m_legit_yaw; }
 
-	inline void setPitch(f32 pitch) { 
+	inline void setPitch(f32 pitch) {
 		m_pitch = pitch;
 		if (!m_freecam)
 			m_legit_pitch = m_pitch;
 	}
-	inline void setLegitPitch(f32 pitch) { 
+	inline void setLegitPitch(f32 pitch) {
 		if (m_freecam)
 			m_legit_pitch = pitch;
 		else

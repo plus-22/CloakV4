@@ -520,7 +520,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	if (g_settings->getBool("anti_afk")) {
 		static Direction current_direction = FORWARD;
 		static f32 move_distance = 0.0f;
-		const f32 move_speed = 15.0f; 
+		const f32 move_speed = 15.0f;
 		v3f direction;
 
 		switch (current_direction) {

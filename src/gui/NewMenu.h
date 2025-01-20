@@ -22,8 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "script/scripting_client.h"
 #include "client/client.h"
 #include "client/fontengine.h"
-#include <codecvt> 
-#include <locale> 
+#include <codecvt>
+#include <locale>
 #include "log.h"
 
 class CustomEditBox;
@@ -38,7 +38,7 @@ using namespace gui;
 #define GET_SCRIPT_POINTER_BOOL                                                     \
     ClientScripting *script = m_client->getScript();                         \
     if (!script || !script->m_cheats_loaded)                                 \
-        return true;     
+        return true;
 
 class NewMenu: public IGUIElement
 {
@@ -55,19 +55,19 @@ public:
     void subDrawCategory(video::IVideoDriver* driver, gui::IGUIFont* font);
 
     bool isOpen() { return m_is_open; }
-    
+
     ~NewMenu();
 
 private:
     core::rect<s32> createRect(s32 x, s32 y);
     std::vector<core::rect<s32>> categoryRects;
-    core::vector2d<s32> offset; 
-    IMenuManager* m_menumgr; 
+    core::vector2d<s32> offset;
+    IMenuManager* m_menumgr;
     bool isDragging;
-    core::vector2d<s32> rectPosition; 
-    const int rectWidth = 175; 
+    core::vector2d<s32> rectPosition;
+    const int rectWidth = 175;
     const int rectHeight = 35;
-    bool m_is_open = false; 
+    bool m_is_open = false;
     int draggedRectIndex;
     std::vector<bool> selectedCategory;
     std::vector<std::vector<core::rect<s32>>> subCategoryRects;
@@ -76,7 +76,7 @@ private:
     bool m_rectsCreated = false;
     core::vector2d<s32> lastMousePos;
     core::rect<s32> xray_form, node_form;
-    
+
     CustomEditBox *xrayLineEdit = nullptr;
     CustomEditBox *nodeLineEdit = nullptr;
 
@@ -86,15 +86,15 @@ private:
 
 #endif
 
-using namespace irr; 
+using namespace irr;
 using namespace core;
 using namespace video;
 using namespace gui;
 using namespace io;
 using namespace scene;
 
-class CustomEditBox { 
-public: 
+class CustomEditBox {
+public:
     CustomEditBox(IGUIEnvironment* guienv, std::string settings, const char* s_name, rect<s32> form, const char* title)
     {
         this->settings = settings;
@@ -103,19 +103,19 @@ public:
         std::wstring wname = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(settings);
         editBox = guienv->addEditBox(wname.c_str(), core::rect<s32>(0, 0, 200, 30));
         editBox->setRelativePosition(rect<s32>(
-            form.UpperLeftCorner.X + 10, 
+            form.UpperLeftCorner.X + 10,
             form.UpperLeftCorner.Y + 10,
-            form.LowerRightCorner.X - 10, 
+            form.LowerRightCorner.X - 10,
             form.UpperLeftCorner.Y + 40
         ));
         std::wstring wtitle = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(title);
-        titleText = guienv->addStaticText(wtitle.c_str(), 
+        titleText = guienv->addStaticText(wtitle.c_str(),
             rect<s32>(
-                form.UpperLeftCorner.X + 10, 
+                form.UpperLeftCorner.X + 10,
                 form.UpperLeftCorner.Y + 10 - 20,
                 form.UpperLeftCorner.X + 10 + 200,
                 form.UpperLeftCorner.Y + 10
-            ), 
+            ),
             false);
 
         editBox->setDrawBackground(false);
@@ -145,7 +145,7 @@ public:
         ));
     }
 
-    void moveEditBox(s32 deltaX, s32 deltaY) 
+    void moveEditBox(s32 deltaX, s32 deltaY)
     {
         rect<s32> currentPosition = editBox->getRelativePosition();
         currentPosition.UpperLeftCorner.X += deltaX;
@@ -158,7 +158,7 @@ public:
     void Event(const SEvent& event, bool& dragging, vector2d<s32>& lastMousePos, rect<s32>& rectangle)
     {
         if (!rectangle.isPointInside(vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
-            return; 
+            return;
         }
 
         if (event.EventType == EET_MOUSE_INPUT_EVENT) {
@@ -193,7 +193,7 @@ public:
     inline void close() { editBox->setVisible(false); titleText->setVisible(false);}
     inline bool isVisible() { return editBox->isVisible(); }
 
-private: 
+private:
     IGUIEditBox* editBox;
     IGUIStaticText* titleText;
     const char* s_name;
