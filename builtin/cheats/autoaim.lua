@@ -1,7 +1,7 @@
 attack_enemies_only = true
 core.register_on_active_object_step(function(gcao)
     local player = core.localplayer
-    if (not core.settings:get_bool("autototem") or not player or not gcao or gcao.is_local_player or not gcao.is_player or not core.can_attack(gcao.id)) then return end
+    if (not core.settings:get_bool("autoaim") or not player or not gcao or gcao.is_local_player or not gcao.is_player or not core.can_attack(gcao.id)) then return end
     if (player:get_hp() <= 0 or gcao.hp <= 0) then return end
 	local is_enemy = not player:is_player_friendly(gcao.id)
     if (not is_enemy and attack_enemies_only == true) then
