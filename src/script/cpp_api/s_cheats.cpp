@@ -81,11 +81,8 @@ ScriptApiCheatsCategory::ScriptApiCheatsCategory(const std::string &name) : m_na
 
 ScriptApiCheatsCategory::~ScriptApiCheatsCategory()
 {
-	for (int i = 0; i < m_cheats.size(); i++)
+	for (int i = 0; i < m_cheats.size(); i++) 
 		delete m_cheats[i];
-		
-	for (int i = 0; i < m_cheat_settings.size(); i++) 
-		delete m_cheat_settings[i];
 }
 
 void ScriptApiCheatsCategory::read_cheats(lua_State *L)
@@ -168,7 +165,7 @@ void ScriptApiCheats::update_infotexts()
 void ScriptApiCheats::init_cheat_settings()
 {
     SCRIPTAPI_PRECHECKHEADER
-
+    
     warningstream << "Loading cheat_settings" << std::endl;
     lua_getglobal(L, "core");
     lua_getfield(L, -1, "cheat_settings");
@@ -205,8 +202,8 @@ void ScriptApiCheats::init_cheat_settings()
 									const char *setting_id = lua_tostring(L, -2);
 									const char *setting_name = nullptr;
 									std::vector<std::string *> setting_options;
-
-									lua_getfield(L, -1, "name");
+									
+									lua_getfield(L, -1, "name"); 
 									if (lua_isstring(L, -1)) {
 										setting_name = lua_tostring(L, -1);
 									}
@@ -259,7 +256,7 @@ void ScriptApiCheats::init_cheat_settings()
 									category->get_cheat_by_id(parent_name)->m_cheat_settings.push_back(cheat_setting);
 								}
 							}
-
+                            
                         } else {
 							warningstream << "CheatSettings: Unknown data type " << std::endl;
 						}
@@ -285,7 +282,7 @@ void ScriptApiCheats::init_cheats()
         lua_pop(L, 2);
         return;
     }
-
+	
     // Collecting keys in a vector
     std::vector<std::string> keys;
     lua_pushnil(L);  // First key
@@ -328,13 +325,13 @@ void ScriptApiCheats::toggle_cheat(ScriptApiCheatsCheat *cheat)
 
 ScriptApiCheatsCategory* ScriptApiCheats::get_category(const std::string &name) {
     for (auto& category : m_cheat_categories) {
-        if (category->m_name == name)
+        if (category->m_name == name) 
             return category;
     }
     return nullptr;
 }
 
-ScriptApiCheatsCheatSetting::ScriptApiCheatsCheatSetting(const std::string &name, const std::string &setting) :
+ScriptApiCheatsCheatSetting::ScriptApiCheatsCheatSetting(const std::string &name, const std::string &setting) : 
 	m_name(name),
 	m_setting(setting)
 {
@@ -387,14 +384,14 @@ void ScriptApiCheats::print_all_cheat_settings()
 				warningstream << "      Type: " << setting->m_type << std::endl;
 				warningstream << "      Parent: " << setting->m_parent << std::endl;
 
-			if (setting->m_type == "slider_int" || setting->m_type == "slider_float") {
-				warningstream << "    Min: " << setting->m_min << std::endl;
-				warningstream << "    Max: " << setting->m_max << std::endl;
-				warningstream << "    Steps: " << setting->m_steps << std::endl;
-			} 
-			if (setting->m_type == "text") {
-				warningstream << "    Size: " << setting->m_size << std::endl;
-			}
+				if (setting->m_type == "slider_int" || setting->m_type == "slider_float") {
+					warningstream << "      Min: " << setting->m_min << std::endl;
+					warningstream << "      Max: " << setting->m_max << std::endl;
+					warningstream << "      Steps: " << setting->m_steps << std::endl;
+				} 
+				if (setting->m_type == "text") {
+					warningstream << "      Size: " << setting->m_size << std::endl;
+				}
 
 				// Print options if available
 				if (!setting->m_options.empty() && setting->m_type == "selectionbox") {
