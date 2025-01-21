@@ -38,6 +38,12 @@ ScriptApiCheatsCheat::ScriptApiCheatsCheat(const std::string &name, const int &f
 {
 }
 
+ScriptApiCheatsCheat::~ScriptApiCheatsCheat()
+{
+	for (int i = 0; i < m_cheat_settings.size(); i++) 
+		delete m_cheat_settings[i];
+}
+
 void ScriptApiCheatsCheat::set_info_text(std::string infoText) {
 	m_info_text = infoText;
 }
@@ -64,6 +70,11 @@ void ScriptApiCheatsCheat::toggle(lua_State *L, int error_handler)
 		g_settings->setBool(m_setting, !is_enabled());
 }
 
+bool ScriptApiCheatsCheat::has_settings()
+{
+	return m_cheat_settings.size() > 0;
+}
+
 ScriptApiCheatsCategory::ScriptApiCheatsCategory(const std::string &name) : m_name(name)
 {
 }
@@ -72,8 +83,8 @@ ScriptApiCheatsCategory::~ScriptApiCheatsCategory()
 {
 	for (int i = 0; i < m_cheats.size(); i++)
 		delete m_cheats[i];
-
-	for (int i = 0; i < m_cheat_settings.size(); i++)
+		
+	for (int i = 0; i < m_cheat_settings.size(); i++) 
 		delete m_cheat_settings[i];
 }
 
@@ -104,6 +115,15 @@ void ScriptApiCheatsCategory::read_cheats(lua_State *L)
 	for (const auto &pair : cheat_pairs) {
 		m_cheats.push_back(pair.second);
 	}
+}
+
+ScriptApiCheatsCheat *ScriptApiCheatsCategory::get_cheat_by_id(const std::string &setting_id)
+{
+	for (auto& cheat : m_cheats) {
+        if (cheat->m_setting == setting_id) 
+            return cheat;
+    }
+    return nullptr;
 }
 
 ScriptApiCheats::~ScriptApiCheats()
@@ -236,7 +256,7 @@ void ScriptApiCheats::init_cheat_settings()
 									}
                         			lua_pop(L, 2); // Pop 'options' and setting table
 									cheat_setting->m_parent = parent_name;
-									category->m_cheat_settings.push_back(cheat_setting);
+									category->get_cheat_by_id(parent_name)->m_cheat_settings.push_back(cheat_setting);
 								}
 							}
 
@@ -326,6 +346,14 @@ ScriptApiCheatsCheatSetting::~ScriptApiCheatsCheatSetting()
 		delete *i;
 }
 
+void ScriptApiCheatsCheatSetting::toggle()
+{
+	if (g_settings->exists(m_setting)) {
+		set_value(!g_settings->getBool(m_setting));
+	} else {
+		set_value(true);
+	}
+}
 void ScriptApiCheatsCheatSetting::set_value(const bool &value)
 {
 	g_settings->setBool(m_setting, value);
@@ -350,31 +378,34 @@ void ScriptApiCheats::print_all_cheat_settings()
 
 		warningstream << "Category: " << category->m_name << std::endl;
 
-		for (ScriptApiCheatsCheatSetting *setting : category->m_cheat_settings) {
-			if (!setting) continue;
+		for (ScriptApiCheatsCheat *cheat : category->m_cheats) {
+			warningstream << "  Cheat: " << cheat->m_name << std::endl;
+			for (ScriptApiCheatsCheatSetting *setting : cheat->m_cheat_settings) {
+				if (!setting) continue;
 
-			warningstream << "  Cheat Setting: " << setting->m_name << std::endl;
-			warningstream << "    Type: " << setting->m_type << std::endl;
-			warningstream << "    Parent: " << setting->m_parent << std::endl;
+				warningstream << "    Cheat Setting: " << setting->m_name << std::endl;
+				warningstream << "      Type: " << setting->m_type << std::endl;
+				warningstream << "      Parent: " << setting->m_parent << std::endl;
 
 			if (setting->m_type == "slider_int" || setting->m_type == "slider_float") {
 				warningstream << "    Min: " << setting->m_min << std::endl;
 				warningstream << "    Max: " << setting->m_max << std::endl;
 				warningstream << "    Steps: " << setting->m_steps << std::endl;
-			}
+			} 
 			if (setting->m_type == "text") {
 				warningstream << "    Size: " << setting->m_size << std::endl;
 			}
 
-			// Print options if available
-			if (!setting->m_options.empty() && setting->m_type == "selectionbox") {
-				warningstream << "    Options: ";
-				for (std::string *option : setting->m_options) {
-					if (option) {
-						warningstream << *option << " ";
+				// Print options if available
+				if (!setting->m_options.empty() && setting->m_type == "selectionbox") {
+					warningstream << "      Options: ";
+					for (std::string *option : setting->m_options) {
+						if (option) {
+							warningstream << *option << " ";
+						}
 					}
+					warningstream << std::endl;
 				}
-				warningstream << std::endl;
 			}
 		}
 	}
