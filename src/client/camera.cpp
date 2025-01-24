@@ -714,7 +714,11 @@ void Camera::drawHealthESP()
 			continue;
 
         v3f textPos = obj->getSceneNode()->getAbsolutePosition();
-		textPos.Y += 9.0f;
+		if (g_settings->exists("enable_health_esp.type") && g_settings->get("enable_health_esp.type") == "Health Bar") {
+			textPos.Y += 9.0f;
+		} else {
+			textPos.Y += 22.0f;
+		}
         f32 transformed_pos[4] = { textPos.X, textPos.Y, textPos.Z, 1.0f };
 
         trans.multiplyWith1x4Matrix(transformed_pos);
