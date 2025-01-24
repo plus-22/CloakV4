@@ -701,7 +701,6 @@ void Camera::drawHealthESP()
     std::unordered_map<u16, ClientActiveObject*> allObjects;
     env.getAllActiveObjects(allObjects);
 	f32 fovScale = 72 / m_curr_fov_degrees;
-	warningstream << std::to_string(m_curr_fov_degrees) << ", " << std::to_string(fovScale) << std::endl;
     video::IVideoDriver *driver = RenderingEngine::get_video_driver();
     core::matrix4 trans = m_cameranode->getProjectionMatrix() * m_cameranode->getViewMatrix();
     v2u32 screensize = driver->getScreenSize();
