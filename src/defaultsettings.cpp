@@ -175,6 +175,7 @@ void set_default_settings()
 	settings->setDefault("enable_entity_esp", "true");
 	settings->setDefault("enable_entity_tracers", "false");
 	settings->setDefault("enable_player_esp", "true");
+	settings->setDefault("enable_player_esp.type", "Above Head");
 	settings->setDefault("enable_player_tracers", "true");
 	settings->setDefault("enable_node_esp", "false");
 	settings->setDefault("enable_node_tracers", "false");
@@ -215,7 +216,8 @@ void set_default_settings()
     settings->setDefault("nobob", "false");
 	settings->setDefault("show_friends_nametags", "false");
 	settings->setDefault("BHOP", "false");
-	settings->setDefault("hp_player_bar", "false");
+	settings->setDefault("enable_health_esp", "false");
+	settings->setDefault("enable_health_esp.players_only", "false");
 	settings->setDefault("anti_afk", "false");
 	settings->setDefault("panic", "false");
 

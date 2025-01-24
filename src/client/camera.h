@@ -230,7 +230,7 @@ public:
 
 	void drawNametags();
 
-	void drawPlayersHP();
+	void drawHealthESP();
 
 	inline void addArmInertia(f32 player_yaw);
 
