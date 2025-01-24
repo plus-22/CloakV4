@@ -166,7 +166,6 @@ void ScriptApiCheats::init_cheat_settings()
 {
     SCRIPTAPI_PRECHECKHEADER
     
-    warningstream << "Loading cheat_settings" << std::endl;
     lua_getglobal(L, "core");
     lua_getfield(L, -1, "cheat_settings");
     if (!lua_istable(L, -1)) {
@@ -180,7 +179,6 @@ void ScriptApiCheats::init_cheat_settings()
     while (lua_next(L, -2) != 0) {
         if (lua_isstring(L, -2)) {
             const char *category_name = lua_tostring(L, -2);
-            warningstream << "Category: " << category_name << std::endl;
 			ScriptApiCheatsCategory* category = get_category(category_name);
 			if (category == nullptr) {
 				warningstream << "CheatMenuSettings: Invalid category: " << category_name << std::endl;

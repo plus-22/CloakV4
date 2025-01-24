@@ -1,3 +1,22 @@
+/***************************************************************************************************
+ *                                          NewMenu.cpp:                                           *
+ *                                                                                                 *
+ *          The menu supports various interactive elements, such as categories, sliders,           * 
+ *      selection boxes, and dropdowns, using core::rect<s32> for mouse events and collisions      *
+ *                                                                                                 *
+ *                                  Core functionality includes:                                   *
+ *                                                                                                 *
+ * - Dynamic creation and cleanup of GUI elements via `create()` and `close()` methods.            *
+ * - Drawing methods (`drawCategory`, `drawSelectionBox`, etc.) for rendering menu components.     *
+ * - Event handling through `OnEvent()` for togglable cheats, sliders, and selection boxes.        *
+ * - Helper methods for geometric calculations and slider value mapping.                           *
+ *                                                                                                 *
+ *                            This code is cursed as fuck, but it works.                           *
+ *                       When you work on this file, increment the counter:                        *
+ *                                   Total hours spent here: 96                                    *
+ *                                                                                                 *
+ ***************************************************************************************************/
+
 #include "NewMenu.h"
 #include "settings.h"
 #include <iostream>
@@ -9,7 +28,7 @@ NewMenu::NewMenu(gui::IGUIEnvironment* env,
     : IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, 
     core::rect<s32>(0, 0, 0, 0)), 
     m_menumgr(menumgr), isDragging(false), draggedRectIndex(-1),
-    m_client(client), m_rectsCreated(false) 
+    m_client(client)
 {    
     infostream << "[NEWMENU] Successfully created" << std::endl;
     this->env = env;
@@ -35,10 +54,13 @@ void NewMenu::create()
         return;
     }
     if (!m_initialized) {
+        video::IVideoDriver* driver = Environment->getVideoDriver();
+        lastScreenSize = driver->getScreenSize();
         category_positions.resize(script->m_cheat_categories.size(), core::position2d<s32>(0, 0));
         categoryRects.resize(script->m_cheat_categories.size(), core::rect<s32>(0,0,0,0));
         dropdownRects.resize(script->m_cheat_categories.size(), core::rect<s32>(0,0,0,0));
         textRects.resize(script->m_cheat_categories.size(), core::rect<s32>(0,0,0,0));
+        selectionBoxRects.resize(script->m_cheat_categories.size());
         selectedCategory.resize(script->m_cheat_categories.size(), false);
         selectedCheat.resize(script->m_cheat_categories.size());
         dropdownHovered.resize(script->m_cheat_categories.size(), false);
@@ -57,10 +79,22 @@ void NewMenu::create()
         cheatSettingTextLasts.resize(script->m_cheat_categories.size());
         cheatSettingTextHovered.resize(script->m_cheat_categories.size());
         cheatSliderHovered.resize(script->m_cheat_categories.size());
+        selectionBoxHovered.resize(script->m_cheat_categories.size());
         cheat_setting_positions.resize(script->m_cheat_categories.size());
+        cheatSettingOptionHovered.resize(script->m_cheat_categories.size());
+        cheatSettingOptionRects.resize(script->m_cheat_categories.size());
 
         for (size_t i = 0; i < script->m_cheat_categories.size(); ++i) {
-            category_positions[i] = core::position2d<s32>(category_height / 2, category_height / 2 + ((category_height + category_height / 2) * i));
+            if (g_settings->exists("Category_Dropdown_" + std::to_string(i)) && g_settings->getBool("save_menu_category_positions")) {
+                selectedCategory[i] = g_settings->getBool("Category_Dropdown_" + std::to_string(i));
+            }
+            
+            if (g_settings->exists("Category_Position_" + std::to_string(i)) && g_settings->getBool("save_menu_category_positions")) {
+                v2f position = g_settings->getV2F("Category_Position_" + std::to_string(i));
+                category_positions[i] = core::position2d<s32>(position.X, position.Y);
+            } else {
+                category_positions[i] = core::position2d<s32>(category_height / 2, category_height / 2 + ((category_height + category_height / 2) * i));
+            }
             categoryRects[i] = core::rect<s32>(category_positions[i].X, category_positions[i].Y, 
                                             category_positions[i].X + category_width, category_positions[i].Y + category_height);
 
@@ -80,22 +114,33 @@ void NewMenu::create()
             cheatSettingRects[i].resize(script->m_cheat_categories[i]->m_cheats.size());
             cheatSliderRects[i].resize(script->m_cheat_categories[i]->m_cheats.size());
             cheatSliderBarRects[i].resize(script->m_cheat_categories[i]->m_cheats.size());
+            selectionBoxRects[i].resize(script->m_cheat_categories[i]->m_cheats.size());
             cheatSettingTextRects[i].resize(script->m_cheat_categories[i]->m_cheats.size());
             cheatSettingTextFields[i].resize(script->m_cheat_categories[i]->m_cheats.size());
             cheatSettingTextLasts[i].resize(script->m_cheat_categories[i]->m_cheats.size());
             cheatSettingTextHovered[i].resize(script->m_cheat_categories[i]->m_cheats.size());
             cheatSliderHovered[i].resize(script->m_cheat_categories[i]->m_cheats.size());
+            selectionBoxHovered[i].resize(script->m_cheat_categories[i]->m_cheats.size());
             cheat_setting_positions[i].resize(script->m_cheat_categories[i]->m_cheats.size());
+            cheatSettingOptionHovered[i].resize(script->m_cheat_categories[i]->m_cheats.size());
+            cheatSettingOptionRects[i].resize(script->m_cheat_categories[i]->m_cheats.size());
             for (size_t c = 0; c < script->m_cheat_categories[i]->m_cheats.size(); ++c) {
+                if (g_settings->exists("Cheat_Dropdown_" + std::to_string(i) + "_" + std::to_string(c)) && g_settings->getBool("save_menu_category_positions")) {
+                    selectedCheat[i][c] = g_settings->getBool("Cheat_Dropdown_" + std::to_string(i) + "_" + std::to_string(c));
+                }
                 cheatSettingRects[i][c].resize(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings.size());
                 cheatSliderRects[i][c].resize(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings.size());
+                selectionBoxRects[i][c].resize(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings.size());
                 cheatSliderBarRects[i][c].resize(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings.size());
                 cheatSettingTextRects[i][c].resize(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings.size());
                 cheatSettingTextFields[i][c].resize(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings.size());
                 cheatSettingTextLasts[i][c].resize(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings.size());
                 cheatSettingTextHovered[i][c].resize(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings.size(), false);
                 cheatSliderHovered[i][c].resize(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings.size(), false);
+                selectionBoxHovered[i][c].resize(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings.size(), false);
                 cheat_setting_positions[i][c].resize(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings.size());
+                cheatSettingOptionHovered[i][c].resize(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings.size());
+                cheatSettingOptionRects[i][c].resize(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings.size());
                 for (size_t s = 0; s < script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings.size(); ++s) {
                     if (script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings[s]->m_type == "text") {
                         std::wstring wname = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(g_settings->get(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings[s]->m_setting));
@@ -105,8 +150,15 @@ void NewMenu::create()
                         cheatSettingTextFields[i][c][s]->setWordWrap(true);
                         cheatSettingTextFields[i][c][s]->setMarkColor(video::SColor(173, 35, 45, 56), true);
                         cheatSettingTextFields[i][c][s]->setVisible(false);
+                    } else if (script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings[s]->m_type == "selectionbox") {
+                        for (size_t o = 0; o < script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings[s]->m_options.size(); ++o) {
+                            cheatSettingOptionHovered[i][c][s].resize(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings[s]->m_options.size(), false);
+                            cheatSettingOptionRects[i][c][s].resize(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings[s]->m_options.size());
+                        }
                     }
                 }
+                
+                moveMenu(i, category_positions[i]);
             }
         }
         m_initialized = true;
@@ -150,9 +202,6 @@ void NewMenu::close()
     m_is_open = false;
 }
 
-core::rect<s32> NewMenu::createRect(s32 x, s32 y) {
-    return core::rect<s32>(x, y, x + category_width, y + category_height);
-}
 
 double NewMenu::roundToNearestStep(double number, double m_min, double m_max, double m_steps)
 {
@@ -244,7 +293,7 @@ s32 NewMenu::respaceMenu(size_t i)
                     } else if (script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings[s]->m_type == "text") {
                         cheatSettingRects[i][c][s] = core::rect<s32>(cheat_setting_positions[i][c][s].X,                  cheat_setting_positions[i][c][s].Y, 
                                                                      cheat_setting_positions[i][c][s].X + category_width, cheat_setting_positions[i][c][s].Y + category_height * 4);
-                        cheatSettingTextFields[i][c][s]->setRelativePosition(rect<s32>(
+                        cheatSettingTextFields[i][c][s]->setRelativePosition(core::rect<s32>(
                             cheatSettingRects[i][c][s].UpperLeftCorner.X + (setting_bar_padding * 2) + setting_bar_width, 
                             cheatSettingRects[i][c][s].UpperLeftCorner.Y + category_height,
                             cheatSettingRects[i][c][s].LowerRightCorner.X - setting_bar_padding, 
@@ -271,6 +320,50 @@ s32 NewMenu::respaceMenu(size_t i)
     return last_height;
 }
 
+void NewMenu::moveMenu(size_t i, core::position2d<s32> new_position)
+{
+	s32 last_height = respaceMenu(i);
+    s32 screenWidth = Environment->getVideoDriver()->getScreenSize().Width;
+    s32 screenHeight = Environment->getVideoDriver()->getScreenSize().Height;
+    category_positions[i] = new_position;
+    s32 newX = category_positions[i].X;
+    s32 newY = category_positions[i].Y;
+
+    if (newX < 0) {
+        newX = 0;
+    } else if (newX + categoryRects[i].getWidth() > screenWidth) {
+        newX = screenWidth - categoryRects[i].getWidth();
+    }
+    s32 cheats_height = categoryRects[i].getHeight();
+    if (selectedCategory[i]){
+        cheats_height = last_height - categoryRects[i].UpperLeftCorner.Y;
+    }
+    for (size_t c = 0; c < cheatSettingTextFields[i].size(); ++c) {
+        g_settings->setBool("Category_Dropdown_" + std::to_string(i), selectedCategory[i]);
+        for (size_t s = 0; s < cheatSettingTextFields[i][c].size(); ++s) {
+            g_settings->setBool("Cheat_Dropdown_" + std::to_string(i) + "_" + std::to_string(c), selectedCheat[i][c]); 
+            if (cheatSettingTextFields[i][c][s] != nullptr) {
+                cheatSettingTextFields[i][c][s]->setVisible(selectedCheat[i][c]);
+            }
+        }
+    }
+    if (newY < 0) {
+        newY = 0;
+    } else if (newY + cheats_height > screenHeight) {
+        newY = screenHeight - cheats_height;
+    }
+    if (g_settings->exists("use_menu_grid") && g_settings->getBool("use_menu_grid") == true) {
+        newX = std::round(newX / (category_height / 2)) * (category_height / 2);
+        newY = std::round(newY / (category_height / 2)) * (category_height / 2);
+    }
+
+    category_positions[i] = core::position2d<s32>(newX, newY);
+    
+    respaceMenu(i);
+
+    g_settings->setV2F("Category_Position_" + std::to_string(i), v2f(newX, newY));
+}
+
 bool NewMenu::OnEvent(const irr::SEvent& event) 
 {
     if (!m_is_open) {
@@ -288,43 +381,22 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
     
     if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
         if (event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
+            if (isSelecting) {
+                for (size_t o = 0; o < script->m_cheat_categories[selectingCategoryIndex]->m_cheats[selectingCheatIndex]->m_cheat_settings[selectingSettingIndex]->m_options.size(); ++o) {
+                    if (cheatSettingOptionRects[selectingCategoryIndex][selectingCheatIndex][selectingSettingIndex][o].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
+                        g_settings->set(script->m_cheat_categories[selectingCategoryIndex]->m_cheats[selectingCheatIndex]->m_cheat_settings[selectingSettingIndex]->m_setting, 
+                            script->m_cheat_categories[selectingCategoryIndex]->m_cheats[selectingCheatIndex]->m_cheat_settings[selectingSettingIndex]->m_options[o]->c_str());
+                    }
+                }
+
+                isSelecting=false;
+                return true;
+            }
             for (size_t i = 0; i < script->m_cheat_categories.size(); ++i) {
                 if (dropdownRects[i].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
                     selectedCategory[i] = !selectedCategory[i];
-                    s32 screenWidth = Environment->getVideoDriver()->getScreenSize().Width;
-                    s32 screenHeight = Environment->getVideoDriver()->getScreenSize().Height;
-                    s32 newX = category_positions[i].X;
-                    s32 newY = category_positions[i].Y;
 
-                    if (newX < 0) {
-                        newX = 0;
-                    } else if (newX + categoryRects[i].getWidth() > screenWidth) {
-                        newX = screenWidth - categoryRects[i].getWidth();
-                    }
-                    s32 cheats_height = categoryRects[i].getHeight();
-                    if (selectedCategory[i]){
-                        cheats_height = cheatRects[i][cheatRects[i].size() - 1].LowerRightCorner.Y - category_positions[i].Y;
-                    }
-                    for (size_t c = 0; c < cheatSettingTextFields[i].size(); ++c) {
-                        for (size_t s = 0; s < cheatSettingTextFields[i][c].size(); ++s) {
-                            if (cheatSettingTextFields[i][c][s] != nullptr) {
-                                cheatSettingTextFields[i][c][s]->setVisible(selectedCategory[i] && selectedCheat[i][c]);
-                            }
-                        }
-                    }
-                    if (newY < 0) {
-                        newY = 0;
-                    } else if (newY + cheats_height > screenHeight) {
-                        newY = screenHeight - cheats_height;
-                    }
-                    if (g_settings->exists("use_menu_grid") && g_settings->getBool("use_menu_grid") == true) {
-                        newX = std::round(newX / (category_height / 2)) * (category_height / 2);
-                        newY = std::round(newY / (category_height / 2)) * (category_height / 2);
-                    }
-
-                    category_positions[i] = core::position2d<s32>(newX, newY);
-                    
-                    respaceMenu(i);
+                    moveMenu(i, category_positions[i]);
                     return true;
                 }
 
@@ -344,39 +416,7 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
                         if (cheatDropdownRects[i][c].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
                             selectedCheat[i][c] = !selectedCheat[i][c];
                             
-                            s32 last_height = respaceMenu(i);
-                            s32 screenWidth = Environment->getVideoDriver()->getScreenSize().Width;
-                            s32 screenHeight = Environment->getVideoDriver()->getScreenSize().Height;
-                            s32 newX = category_positions[i].X;
-                            s32 newY = category_positions[i].Y;
-
-                            if (newX < 0) {
-                                newX = 0;
-                            } else if (newX + categoryRects[i].getWidth() > screenWidth) {
-                                newX = screenWidth - categoryRects[i].getWidth();
-                            }
-                            s32 cheats_height = categoryRects[i].getHeight();
-                            if (selectedCategory[i]){
-                                cheats_height = last_height - categoryRects[i].UpperLeftCorner.Y;
-                            }
-                            for (size_t s = 0; s < cheatSettingTextFields[i][c].size(); ++s) {
-                                if (cheatSettingTextFields[i][c][s] != nullptr) {
-                                    cheatSettingTextFields[i][c][s]->setVisible(selectedCheat[i][c]);
-                                }
-                            }
-                            if (newY < 0) {
-                                newY = 0;
-                            } else if (newY + cheats_height > screenHeight) {
-                                newY = screenHeight - cheats_height;
-                            }
-                            if (g_settings->exists("use_menu_grid") && g_settings->getBool("use_menu_grid") == true) {
-                                newX = std::round(newX / (category_height / 2)) * (category_height / 2);
-                                newY = std::round(newY / (category_height / 2)) * (category_height / 2);
-                            }
-
-                            category_positions[i] = core::position2d<s32>(newX, newY);
-                            
-                            respaceMenu(i);
+                            moveMenu(i, category_positions[i]);
                             return true; 
                         }
 
@@ -384,11 +424,19 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
                             if (cheatSettingTextRects[i][c][s].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
                                 script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings[s]->toggle();
                             }
-                            if (cheatSliderRects[i][c][s].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
+                            if (cheatSliderRects[i][c][s].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y)) || cheatSliderBarRects[i][c][s].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
                                 draggedSliderCategoryIndex = i;
                                 draggedSliderCheatIndex = c;
                                 draggedSliderSettingIndex = s;
                                 isSliding = true;
+                                ScriptApiCheatsCheatSetting* cheatSetting = script->m_cheat_categories[draggedSliderCategoryIndex]->m_cheats[draggedSliderCheatIndex]->m_cheat_settings[draggedSliderSettingIndex];
+                                cheatSetting->set_value(calculateSliderValueFromPosition(cheatSliderBarRects[draggedSliderCategoryIndex][draggedSliderCheatIndex][draggedSliderSettingIndex], core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y), cheatSetting->m_min, cheatSetting->m_max, cheatSetting->m_steps));
+                            }
+                            if (selectionBoxRects[i][c][s].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
+                                selectingCategoryIndex = i;
+                                selectingCheatIndex = c;
+                                selectingSettingIndex = s;
+                                isSelecting = true;
                             }
                         }
                     }
@@ -404,34 +452,7 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
             draggedSliderSettingIndex = 0;
             return true;
         } else if (event.MouseInput.Event == irr::EMIE_MOUSE_MOVED && isDragging && draggedRectIndex != -1) {
-            s32 last_height = respaceMenu(draggedRectIndex);
-            s32 screenWidth = Environment->getVideoDriver()->getScreenSize().Width;
-            s32 screenHeight = Environment->getVideoDriver()->getScreenSize().Height;
-
-            s32 newX = event.MouseInput.X - offset.X;
-            s32 newY = event.MouseInput.Y - offset.Y;
-
-            if (newX < 0) {
-                newX = 0;
-            } else if (newX + categoryRects[draggedRectIndex].getWidth() > screenWidth) {
-                newX = screenWidth - categoryRects[draggedRectIndex].getWidth();
-            }
-            s32 cheats_height = categoryRects[draggedRectIndex].getHeight();
-            if (selectedCategory[draggedRectIndex]){
-                cheats_height = last_height - categoryRects[draggedRectIndex].UpperLeftCorner.Y;
-            } 
-            if (newY < 0) {
-                newY = 0;
-            } else if (newY + cheats_height > screenHeight) {
-                newY = screenHeight - cheats_height;
-            }
-            if (g_settings->exists("use_menu_grid") && g_settings->getBool("use_menu_grid") == true) {
-                newX = std::round(newX / (category_height / 2)) * (category_height / 2);
-                newY = std::round(newY / (category_height / 2)) * (category_height / 2);
-            }
-
-            category_positions[draggedRectIndex] = core::position2d<s32>(newX, newY);
-            respaceMenu(draggedRectIndex);
+            moveMenu(draggedRectIndex, core::vector2d<s32>(event.MouseInput.X - offset.X, event.MouseInput.Y - offset.Y));
 
             return true;
         } else if (event.MouseInput.Event == irr::EMIE_MOUSE_MOVED && isSliding) {
@@ -454,6 +475,11 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
                     for (size_t s = 0; s < script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings.size(); ++s) {
                         cheatSettingTextHovered[i][c][s] = cheatSettingTextRects[i][c][s].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y));
                         cheatSliderHovered[i][c][s] = cheatSliderRects[i][c][s].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y));
+                        selectionBoxHovered[i][c][s] = selectionBoxRects[i][c][s].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y));
+
+                        for (size_t o = 0; o < script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings[s]->m_options.size(); ++o) {
+                            cheatSettingOptionHovered[i][c][s][o] = cheatSettingOptionRects[i][c][s][o].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y));
+                        }
                     }
                 }
             }
@@ -573,8 +599,60 @@ void NewMenu::drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font, con
                             s32 textX = settingTextRect.UpperLeftCorner.X + (settingTextRect.getWidth() - textSize.Width) / 2;
                             s32 textY = settingTextRect.UpperLeftCorner.Y + (settingTextRect.getHeight() - textSize.Height) / 2;
 
-
                             font->draw(wSettingName.c_str(), core::rect<s32>(textX, textY, textX + textSize.Width, textY + textSize.Height), text_color);
+
+                            arrow_color = video::SColor(255, 255, 255, 255);
+                            if (selectionBoxHovered[i][cheat_index][s]) {
+                                arrow_color = video::SColor(255, 127, 127, 127);
+                            }
+
+                            selectionBoxRects[i][cheat_index][s] = core::rect<s32>( cheatSettingRects[i][cheat_index][s].UpperLeftCorner.X + (setting_bar_padding * 2) + setting_bar_width + selection_box_padding,
+                                                                                    cheatSettingRects[i][cheat_index][s].UpperLeftCorner.Y + category_height, 
+                                                                                    cheatSettingRects[i][cheat_index][s].LowerRightCorner.X - selection_box_padding,
+                                                                                    cheatSettingRects[i][cheat_index][s].LowerRightCorner.Y - selection_box_padding);
+
+                            core::rect<s32> textBox = core::rect<s32>(  cheatSettingRects[i][cheat_index][s].UpperLeftCorner.X + (setting_bar_padding * 2) + setting_bar_width + selection_box_padding,
+                                                                        cheatSettingRects[i][cheat_index][s].UpperLeftCorner.Y + category_height, 
+                                                                        cheatSettingRects[i][cheat_index][s].LowerRightCorner.X - category_height,
+                                                                        cheatSettingRects[i][cheat_index][s].LowerRightCorner.Y);
+
+                            core::rect<s32> dropdownBox = core::rect<s32>(  cheatSettingRects[i][cheat_index][s].LowerRightCorner.X - category_height,
+                                                                            cheatSettingRects[i][cheat_index][s].UpperLeftCorner.Y + category_height, 
+                                                                            (cheatSettingRects[i][cheat_index][s].LowerRightCorner.X - selection_box_padding),
+                                                                            cheatSettingRects[i][cheat_index][s].LowerRightCorner.Y - selection_box_padding);
+
+                            driver->draw2DRectangle(cheat_color, selectionBoxRects[i][cheat_index][s]);
+                            driver->draw2DRectangleOutline(selectionBoxRects[i][cheat_index][s], settingBarColor);
+                            driver->draw2DRectangleOutline(dropdownBox, settingBarColor);
+
+                            core::position2d<s32> dropdown_center(dropdownBox.UpperLeftCorner.X + dropdownBox.getWidth() / 2 , dropdownBox.UpperLeftCorner.Y + dropdownBox.getHeight() / 2);
+                            if (isSelecting && selectingCategoryIndex == i && selectingCheatIndex == cheat_index && selectingSettingIndex == s) {
+                                driver->draw2DLine(core::position2d<s32>(dropdown_center.X - (unit_size * 3), dropdown_center.Y - (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X, dropdown_center.Y + (unit_size * 1.5)), arrow_color);
+                                driver->draw2DLine(core::position2d<s32>(dropdown_center.X - (unit_size * 3), 1 + dropdown_center.Y - (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X, 1 + dropdown_center.Y + (unit_size * 1.5)), arrow_color);
+                                driver->draw2DLine(core::position2d<s32>(dropdown_center.X, dropdown_center.Y + (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X + (unit_size * 3), dropdown_center.Y - (unit_size * 1.5)), arrow_color);
+                                driver->draw2DLine(core::position2d<s32>(dropdown_center.X, 1 + dropdown_center.Y + (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X + (unit_size * 3), 1 + dropdown_center.Y - (unit_size * 1.5)), arrow_color);
+                            } else {
+                                driver->draw2DLine(core::position2d<s32>(dropdown_center.X - (unit_size * 3), dropdown_center.Y + (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X, dropdown_center.Y - (unit_size * 1.5)), arrow_color);
+                                driver->draw2DLine(core::position2d<s32>(dropdown_center.X - (unit_size * 3), 1 + dropdown_center.Y + (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X, 1 + dropdown_center.Y - (unit_size * 1.5)), arrow_color);
+                                driver->draw2DLine(core::position2d<s32>(dropdown_center.X, dropdown_center.Y - (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X + (unit_size * 3), dropdown_center.Y + (unit_size * 1.5)), arrow_color);
+                                driver->draw2DLine(core::position2d<s32>(dropdown_center.X, 1 + dropdown_center.Y - (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X + (unit_size * 3), 1 + dropdown_center.Y + (unit_size * 1.5)), arrow_color);
+                            }
+                            
+
+                            if (!g_settings->exists(cheatSetting->m_setting)) {
+                                std::string defaultValue = *(cheatSetting->m_options[0]);
+
+                                cheatSetting->set_value(defaultValue);
+                            }
+                            std::wstring wSelectedOption = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(g_settings->get(cheatSetting->m_setting));
+
+                            textSizeU32 = font->getDimension(wSelectedOption.c_str());
+                            textSize = core::dimension2d<s32>(textSizeU32.Width, textSizeU32.Height);
+
+                            textX = textBox.UpperLeftCorner.X + (textBox.getWidth() - textSize.Width) / 2;
+                            textY = textBox.UpperLeftCorner.Y + (textBox.getHeight() - textSize.Height) / 2;
+
+                            font->draw(wSelectedOption.c_str(), core::rect<s32>(textX, textY, textX + textSize.Width, textY + textSize.Height), arrow_color);
                         } else if (cheatSetting->m_type == "bool") {
                             if(g_settings->exists(cheatSetting->m_setting) && g_settings->getBool(cheatSetting->m_setting) == true) {
                                 text_color = video::SColor(255, 62, 100, 219);
@@ -588,8 +666,9 @@ void NewMenu::drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font, con
                             }
                             const std::string& settingName = cheatSetting->m_name;
                             std::wstring wSettingName = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(settingName);
-
-                            textSizeU32 = font->getDimension(wSettingName.c_str());
+                            
+                            gui::IGUIFont* dropFont = g_fontengine->getFont(g_fontengine->getFontSize(FM_HD) * 0.95, FM_HD);
+                            textSizeU32 = dropFont->getDimension(wSettingName.c_str());
                             core::dimension2d<s32> textSize(textSizeU32.Width, textSizeU32.Height);
 
                             core::rect<s32> settingTextRect = core::rect<s32>(cheatSettingRects[i][cheat_index][s].UpperLeftCorner.X + (setting_bar_padding * 2) + setting_bar_width,
@@ -600,8 +679,7 @@ void NewMenu::drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font, con
                             s32 textX = settingTextRect.UpperLeftCorner.X + (settingTextRect.getWidth() - textSize.Width) / 2;
                             s32 textY = settingTextRect.UpperLeftCorner.Y + (settingTextRect.getHeight() - textSize.Height) / 2;
 
-
-                            font->draw(wSettingName.c_str(), core::rect<s32>(textX, textY, textX + textSize.Width, textY + textSize.Height), text_color);
+                            dropFont->draw(wSettingName.c_str(), core::rect<s32>(textX, textY, textX + textSize.Width, textY + textSize.Height), text_color);
                         } else if (cheatSetting->m_type == "slider_int" || cheatSetting->m_type == "slider_float") {
                             std::string settingName = cheatSetting->m_name;
 
@@ -691,26 +769,69 @@ void NewMenu::drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font, con
     }
 }
 
+void NewMenu::drawSelectionBox(video::IVideoDriver * driver, gui::IGUIFont * font, const size_t i, const size_t c, const size_t s)
+{
+    GET_SCRIPT_POINTER
+    
+    const video::SColor option_color = video::SColor(255, 2, 5, 8);
+
+    for (size_t o = 0; o < script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings[s]->m_options.size(); o++) {
+        cheatSettingOptionRects[i][c][s][o] = core::rect<s32>(cheatSettingRects[i][c][s].UpperLeftCorner.X + (setting_bar_padding * 2) + setting_bar_width + selection_box_padding,
+                                                              cheatSettingRects[i][c][s].UpperLeftCorner.Y + (category_height - selection_box_padding) + ((o+1) * category_height), 
+                                                              (cheatSettingRects[i][c][s].LowerRightCorner.X - selection_box_padding),
+                                                              cheatSettingRects[i][c][s].LowerRightCorner.Y + ((o+1) * category_height));
+
+        driver->draw2DRectangle(option_color, cheatSettingOptionRects[i][c][s][o]);
+        std::wstring wOptionName = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings[s]->m_options[o]->c_str());
+        
+        core::dimension2d<u32> textSizeU32 = font->getDimension(wOptionName.c_str());
+        core::dimension2d<s32> textSize(textSizeU32.Width, textSizeU32.Height);
+
+        s32 textX = cheatSettingOptionRects[i][c][s][o].UpperLeftCorner.X + (cheatSettingOptionRects[i][c][s][o].getWidth() - textSize.Width) / 2;
+        s32 textY = cheatSettingOptionRects[i][c][s][o].UpperLeftCorner.Y + (cheatSettingOptionRects[i][c][s][o].getHeight() - textSize.Height) / 2;
+        video::SColor option_text_color = video::SColor(255, 255, 255, 255);
+        if (cheatSettingOptionHovered[i][c][s][o]) {
+            option_text_color = video::SColor(255, 127, 127, 127);
+        }
+        font->draw(wOptionName.c_str(), core::rect<s32>(textX, textY, textX + textSize.Width, textY + textSize.Height), option_text_color);
+    }
+    core::rect<s32> outlineBox = core::rect<s32>(cheatSettingRects[i][c][s].UpperLeftCorner.X + (setting_bar_padding * 2) + setting_bar_width + selection_box_padding,
+                                                  cheatSettingRects[i][c][s].UpperLeftCorner.Y + (category_height - selection_box_padding) + category_height, 
+                                                  (cheatSettingRects[i][c][s].LowerRightCorner.X - selection_box_padding),
+                                                  cheatSettingRects[i][c][s].LowerRightCorner.Y + (script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings[s]->m_options.size() * category_height));
+    driver->draw2DRectangleOutline(outlineBox, settingBarColor);
+}
+
 void NewMenu::draw() 
 {
+    if (m_client == nullptr || m_client->isShutdown()) {
+        return;
+    }
+
     GET_SCRIPT_POINTER
     video::IVideoDriver* driver = Environment->getVideoDriver();
     gui::IGUIFont* font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_HD);
     if (g_settings->exists("use_menu_grid") && g_settings->getBool("use_menu_grid") == true) {
         if (isDragging) {
-            for (int x = 0; x <= Environment->getVideoDriver()->getScreenSize().Width; x += category_height / 2) {
-                driver->draw2DLine(core::position2d<s32>(x, 0), core::position2d<s32>(x, Environment->getVideoDriver()->getScreenSize().Height), video::SColor(50, 255, 255, 255));
+            for (int x = 0; x <= driver->getScreenSize().Width; x += category_height / 2) {
+                driver->draw2DLine(core::position2d<s32>(x, 0), core::position2d<s32>(x, driver->getScreenSize().Height), video::SColor(50, 255, 255, 255));
             }
 
-            for (int y = 0; y <= Environment->getVideoDriver()->getScreenSize().Height; y += category_height / 2) {
-                driver->draw2DLine(core::position2d<s32>(0, y), core::position2d<s32>(Environment->getVideoDriver()->getScreenSize().Width, y), video::SColor(50, 255, 255, 255));
+            for (int y = 0; y <= driver->getScreenSize().Height; y += category_height / 2) {
+                driver->draw2DLine(core::position2d<s32>(0, y), core::position2d<s32>(driver->getScreenSize().Width, y), video::SColor(50, 255, 255, 255));
             }
         }
     }
     
     if (m_is_open) {
         for (size_t i = 0; i < script->m_cheat_categories.size(); i++) {
+            if (driver->getScreenSize() != lastScreenSize) {
+                moveMenu(i, category_positions[i]);
+            }
             drawCategory(driver, font, i);
+        }
+        if (isSelecting) {
+            drawSelectionBox(driver, font, selectingCategoryIndex, selectingCheatIndex, selectingSettingIndex);
         }
     }
 } 

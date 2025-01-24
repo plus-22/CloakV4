@@ -69,14 +69,14 @@ For Void users:
 
 Download source (this is the URL to the latest of source repository, which might not work at all times) using Git:
 
-    git clone --depth 1 https://github.com/plus-22/chimeraclient.git
-    cd chimeraclient
+    git clone --depth 1 https://github.com/teamacedia/cloakv4.git
+    cd cloakv4
 
 Download source, without using Git:
 
-    wget https://github.com/plus-22/chimeraclient/archive/master.tar.gz
+    wget https://github.com/teamacedia/cloakv4/archive/master.tar.gz
     tar xf master.tar.gz
-    cd chimeraclient-master
+    cd cloakv4-master
 
 ## Build
 

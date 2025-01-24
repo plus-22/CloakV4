@@ -1,4 +1,4 @@
-CORE_GIT=https://github.com/plus-22/chimeraclient
+CORE_GIT=https://github.com/teamacedia/cloakv4
 CORE_BRANCH=master
 CORE_NAME=minetest
 

@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <locale> 
 #include "log.h"
 
-class CustomEditBox;
 using namespace irr;
 using namespace gui;
 
@@ -57,13 +56,12 @@ public:
     virtual void draw() override;
 
     void drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font, const size_t category_index);
-    void subDrawCategory(video::IVideoDriver* driver, gui::IGUIFont* font);
+    void drawSelectionBox(video::IVideoDriver* driver, gui::IGUIFont* font, const size_t i, const size_t c, const size_t s);
     bool isOpen() { return m_is_open; }
     
     ~NewMenu();
 
 private:
-    core::rect<s32> createRect(s32 x, s32 y);
     double roundToNearestStep(double number, double m_min, double m_max, double m_steps);
     void calculateSliderSplit(const core::rect<s32>& sliderRect, double value, double minValue, double maxValue, core::rect<s32>& filledRect, core::rect<s32>& remainingRect);
     double calculateSliderValueFromPosition(const core::rect<s32>& sliderBarRect, const core::position2d<s32>& pointerPosition, double m_min, double m_max, double m_steps);
@@ -72,8 +70,8 @@ private:
     IMenuManager* m_menumgr; 
     bool isDragging = false;
     bool isSliding = false;
+    bool isSelecting = false;
     bool m_initialized = false;
-    core::vector2d<s32> rectPosition;
     const s32 category_height = 34;
     const s32 category_width = category_height * 5;
     const s32 setting_width = category_height * 4.6;
@@ -81,12 +79,15 @@ private:
     const s32 setting_bar_padding = category_height * 0.1;
     const s32 slider_height_padding = category_height * 0.4;
     const s32 slider_width_padding = category_height * 0.3;
-    const s32 selection_box_setting_height = category_height * 2;
+    const s32 selection_box_padding = category_height * 0.1;
     bool m_is_open = false; 
     int draggedRectIndex = 0;
     int draggedSliderCategoryIndex = 0;
     int draggedSliderCheatIndex = 0;
     int draggedSliderSettingIndex = 0;
+    int selectingCategoryIndex = 0;
+    int selectingCheatIndex = 0;
+    int selectingSettingIndex = 0;
     std::vector<bool> selectedCategory;
     std::vector<std::vector<bool>> selectedCheat;
     std::vector<bool> dropdownHovered;
@@ -95,6 +96,7 @@ private:
     std::vector<std::vector<bool>> cheatTextHovered;
     std::vector<std::vector<std::vector<bool>>> cheatSettingTextHovered;
     std::vector<std::vector<std::vector<bool>>> cheatSliderHovered;
+    std::vector<std::vector<std::vector<bool>>> selectionBoxHovered;
     std::vector<core::rect<s32>> categoryRects;
     std::vector<core::rect<s32>> dropdownRects;
     std::vector<core::rect<s32>> textRects;
@@ -105,146 +107,28 @@ private:
     std::vector<std::vector<std::vector<std::wstring>>> cheatSettingTextLasts;
     std::vector<std::vector<std::vector<core::rect<s32>>>> cheatSliderBarRects;
     std::vector<std::vector<std::vector<core::rect<s32>>>> cheatSettingTextRects;
+    std::vector<std::vector<std::vector<core::rect<s32>>>> selectionBoxRects;
     std::vector<std::vector<core::rect<s32>>> cheatTextRects;
     std::vector<std::vector<core::rect<s32>>> cheatDropdownRects;
-    std::vector<std::vector<core::rect<s32>>> subCategoryRects;
-    std::vector<std::vector<video::SColor>> subCategoryColors;
     std::vector<std::vector<std::vector<core::position2d<s32>>>> cheat_setting_positions;
     std::vector<core::position2d<s32>> category_positions;
     std::vector<std::vector<core::position2d<s32>>> cheat_positions;
+    std::vector<std::vector<std::vector<std::vector<bool>>>> cheatSettingOptionHovered;
+    std::vector<std::vector<std::vector<std::vector<core::rect<s32>>>>> cheatSettingOptionRects;
+    core::dimension2d<u32> lastScreenSize;
     s32 respaceMenu(size_t i);
+    void moveMenu(size_t i, core::position2d<s32> new_position);
     Client* m_client;
-    bool m_rectsCreated = false;
-    core::vector2d<s32> lastMousePos;
-    core::rect<s32> xray_form, node_form;
 
     gui::IGUIEnvironment* env;
-    video::SColor outlineColor = video::SColor(255, 255, 255, 255);
     video::SColor settingBackgroundColor = video::SColor(230, 1, 2, 0);
     video::SColor settingBarColor = video::SColor(255, 80, 120, 220);
     video::SColor sliderColor = video::SColor(255, 200, 200, 200);
     video::SColor sliderBarColor = video::SColor(255, 255, 255, 255);
     video::SColor sliderColorActive = video::SColor(255, 125, 125, 125);
     video::SColor sliderBarColorActive = video::SColor(255, 66, 111, 195);
-    std::vector<bool> subCategoryRectanglesVisible;
-    std::vector<core::rect<s32>> subCategoryRectangles;
 
     s32 subCategoryHeight = category_height * 3;
 };
 
 #endif
-
-using namespace irr; 
-using namespace core;
-using namespace video;
-using namespace gui;
-using namespace io;
-using namespace scene;
-
-class CustomEditBox { 
-public: 
-    CustomEditBox(IGUIEnvironment* guienv, std::string settings, const char* s_name, rect<s32> form, const char* title)
-    {
-        this->settings = settings;
-        this->title = title;
-        this->s_name = s_name;
-        std::wstring wname = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(settings);
-        editBox = guienv->addEditBox(wname.c_str(), core::rect<s32>(0, 0, 200, 30));
-        editBox->setRelativePosition(rect<s32>(
-            form.UpperLeftCorner.X + 10, 
-            form.UpperLeftCorner.Y + 10,
-            form.LowerRightCorner.X - 10, 
-            form.UpperLeftCorner.Y + 40
-        ));
-        std::wstring wtitle = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(title);
-        titleText = guienv->addStaticText(wtitle.c_str(), 
-            rect<s32>(
-                form.UpperLeftCorner.X + 10, 
-                form.UpperLeftCorner.Y + 10 - 20,
-                form.UpperLeftCorner.X + 10 + 200,
-                form.UpperLeftCorner.Y + 10
-            ), 
-            false);
-
-        editBox->setDrawBackground(false);
-        editBox->setMarkColor(video::SColor(173, 35, 45, 56), true);
-        editBox->setVisible(false);
-    }
-
-    void handleInput(const SEvent& event) {
-        if (event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown) {
-            if (event.KeyInput.Key == KEY_RETURN) {
-                std::wstring text = editBox->getText();
-                settings = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(text);
-                g_settings->set((std::string)s_name, settings);
-                close();
-            }
-        }
-    }
-
-    void updatePosition(rect<s32> newPosition)
-    {
-        editBox->setRelativePosition(newPosition);
-        titleText->setRelativePosition(rect<s32>(
-            newPosition.UpperLeftCorner.X,
-            newPosition.UpperLeftCorner.Y - 20,
-            newPosition.LowerRightCorner.X,
-            newPosition.UpperLeftCorner.Y
-        ));
-    }
-
-    void moveEditBox(s32 deltaX, s32 deltaY) 
-    {
-        rect<s32> currentPosition = editBox->getRelativePosition();
-        currentPosition.UpperLeftCorner.X += deltaX;
-        currentPosition.UpperLeftCorner.Y += deltaY;
-        currentPosition.LowerRightCorner.X += deltaX;
-        currentPosition.LowerRightCorner.Y += deltaY;
-        updatePosition(currentPosition);
-    }
-
-    void Event(const SEvent& event, bool& dragging, vector2d<s32>& lastMousePos, rect<s32>& rectangle)
-    {
-        if (!rectangle.isPointInside(vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
-            return; 
-        }
-
-        if (event.EventType == EET_MOUSE_INPUT_EVENT) {
-            switch (event.MouseInput.Event) {
-                case EMIE_LMOUSE_PRESSED_DOWN:
-                    dragging = true;
-                    lastMousePos = vector2d<s32>(event.MouseInput.X, event.MouseInput.Y);
-                    break;
-                case EMIE_LMOUSE_LEFT_UP:
-                    dragging = false;
-                    break;
-                case EMIE_MOUSE_MOVED:
-                    if (dragging) {
-                        s32 deltaX = event.MouseInput.X - lastMousePos.X;
-                        s32 deltaY = event.MouseInput.Y - lastMousePos.Y;
-                        rectangle.UpperLeftCorner.X += deltaX;
-                        rectangle.UpperLeftCorner.Y += deltaY;
-                        rectangle.LowerRightCorner.X += deltaX;
-                        rectangle.LowerRightCorner.Y += deltaY;
-                        moveEditBox(deltaX, deltaY);
-
-                        lastMousePos = vector2d<s32>(event.MouseInput.X, event.MouseInput.Y);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    inline void open() { editBox->setVisible(true); titleText->setVisible(true);}
-    inline void close() { editBox->setVisible(false); titleText->setVisible(false);}
-    inline bool isVisible() { return editBox->isVisible(); }
-
-private: 
-    IGUIEditBox* editBox;
-    IGUIStaticText* titleText;
-    const char* s_name;
-    const char* title;
-    std::string settings;
-};
