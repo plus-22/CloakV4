@@ -118,7 +118,7 @@ function core.register_cheat_setting(setting_name, parent_category, parent_setti
     }
 end
 
-core.register_cheat_setting("Mode", "Combat", "autoaim", "autoaim.mode", {type="selectionbox", options={"lock", "assist"}})
+core.register_cheat_setting("Mode", "Combat", "autoaim", "autoaim.mode", {type="selectionbox", options={"Lock", "Assist"}})
 core.register_cheat_setting("Distance", "Combat", "autoaim", "autoaim.distance", {type="slider_int", min=1, max=4, steps=4})
 core.register_cheat_setting("Speed", "Movement", "fast_move", "fast_move.speed", {type="slider_float", min=1.0, max=10.0, steps=100})
 core.register_cheat_setting("Speed", "Interact", "autohit", "autohit.speed", {type="slider_int", min=1, max=10, steps=10})

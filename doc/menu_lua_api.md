@@ -366,7 +366,7 @@ Settings
 * `core.settings:save()` -> nil, save all settings to config file
 
 For a complete list of methods of the `Settings` object see
-[lua_api.md](https://github.com/plus-22/chimeraclient/blob/master/doc/lua_api.md)
+[lua_api.md](https://github.com/teamacedia/cloakv4/blob/master/doc/lua_api.md)
 
 
 Worlds
