@@ -50,6 +50,11 @@ core.register_on_active_object_step(function(gcao)
     return true
 end)
 
+
+function core.get_send_speed(critspeed)
+    if core.settings:get_bool("critical_hits") then critspeed.y = -5 end
+return critspeed end
+core.register_cheat("Criticals", "Combat", "critical_hits")
 core.register_cheat("PlayerAura ", "Combat", "killaura.players")
 core.register_cheat("EntityAura", "Combat", "killaura.entities")
 core.register_cheat("AutoAssist", "Combat", "killaura.assist")
