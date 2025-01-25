@@ -65,8 +65,8 @@ core.cheats = {
 		["Silence"] = "silence",
 
 	},
-	["Exploits"] = {
-		["ShowFriends"] = "show_friends_nametags",
+	["Misc"] = {
+		["Nametags"] = "use_colored_nametags",
 		["AntiAFK"] = "anti_afk",
 		["Panic"] = "panic",
 	}

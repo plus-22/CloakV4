@@ -35,6 +35,13 @@ class ClientEnvironment;
 class IGameDef;
 struct collisionMoveResult;
 
+enum EntityRelationship {
+    FRIEND = 0,
+    ENEMY = 1,
+	ALLY = 2,
+	NEUTRAL = 3
+};
+
 enum class LocalPlayerAnimation
 {
 	NO_ANIM,
@@ -236,7 +243,7 @@ public:
 
 	bool isWaitingForReattach() const;
 
-	bool isPlayerFriendly(GenericCAO *playerObj);
+	EntityRelationship getEntityRelationship(GenericCAO *playerObj);
 
 	inline PlayerSettings &getPlayerSettings() { return m_player_settings; }
 

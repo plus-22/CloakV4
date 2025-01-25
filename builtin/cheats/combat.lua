@@ -27,7 +27,7 @@ core.register_on_active_object_step(function(gcao)
     local player = core.localplayer
 	if (not player or not gcao) then return end
 	if ((not core.settings:get_bool("killaura.entities") and not gcao.is_player) or (not core.settings:get_bool("killaura.players") and gcao.is_player)) then return end
-	if (gcao.is_local_player or gcao.hp <= 0 or player:get_hp() <= 0 or not core.can_attack(gcao.id) or not (not player:is_player_friendly(gcao.id))) then return end
+	if (gcao.is_local_player or gcao.hp <= 0 or player:get_hp() <= 0 or not core.can_attack(gcao.id) or not player:get_entity_relationship(gcao.id) == core.EntityRelationship.ENEMY) then return end
     local interval = get_punch_interval(player)
     if (player:get_time_from_last_punch() < interval) then return end
     local myPos = player:get_pos()

@@ -1013,70 +1013,83 @@ std::vector<std::string> splitString(const std::string& str, char delimiter) {
 
 void GenericCAO::updateNametag()
 {
-	/*
-	if (m_is_local_player) // No nametag for local player
-		return;
-	*/
-	Json::Value friends = {};
-	try {
-		friends = g_settings->getJson("friends");
-	} catch (std::exception& e) {
-		g_settings->set("friends", "{}");
-	}
+    if (m_prop.nametag.empty() || m_prop.nametag_color.getAlpha() == 0) {
+        // Delete nametag
+        if (m_nametag) {
+            m_client->getCamera()->removeNametag(m_nametag);
+            m_nametag = nullptr;
+        }
+        return;
+    }
 
-	Address serverAddress = m_client->getServerAddress();
-	std::string address = m_client->getAddressName().c_str();
-	u16 port = serverAddress.getPort();
-	std::string server_url = address + ":" + toPaddedString(port);
+    scene::ISceneNode *node = getSceneNode();
+    if (!node)
+        return;
 
-	std::string friendsList = friends[server_url].asString();
-	std::vector<std::string> friendNames = splitString(friendsList, ',');
+    v3f pos;
+    pos.Y = m_prop.selectionbox.MaxEdge.Y + 0.3f;
+	LocalPlayer* l_player = m_env->getLocalPlayer();
+    if (!m_nametag) {
+        // Add nametag
+        if (g_settings->getBool("use_colored_nametags")) {
+            EntityRelationship relationship = l_player->getEntityRelationship(this);
+            switch (relationship) {
+                case EntityRelationship::FRIEND: {
+                    v3f friend_esp_color = g_settings->getV3F("friend_esp_color");
+                    m_prop.nametag_color = video::SColor(255, friend_esp_color.X, friend_esp_color.Y, friend_esp_color.Z);
+                    break;
+                }
+                case EntityRelationship::ENEMY: {
+                    v3f enemy_esp_color = g_settings->getV3F("enemy_esp_color");
+                    m_prop.nametag_color = video::SColor(255, enemy_esp_color.X, enemy_esp_color.Y, enemy_esp_color.Z);
+                    break;
+                }
+                case EntityRelationship::ALLY: {
+                    v3f ally_esp_color = g_settings->getV3F("ally_esp_color");
+                    m_prop.nametag_color = video::SColor(255, ally_esp_color.X, ally_esp_color.Y, ally_esp_color.Z);
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
 
-	if (m_prop.nametag.empty() || m_prop.nametag_color.getAlpha() == 0) {
-		// Delete nametag
-		if (m_nametag) {
-			m_client->getCamera()->removeNametag(m_nametag);
-			m_nametag = nullptr;
-		}
-		return;
-	}
+        m_nametag = m_client->getCamera()->addNametag(node,
+            m_prop.nametag, m_prop.nametag_color,
+            m_prop.nametag_bgcolor, pos, nametag_images);
+    } else {
+        // Update nametag
+        if (g_settings->getBool("use_colored_nametags")) {
+            EntityRelationship relationship = l_player->getEntityRelationship(this);
+            switch (relationship) {
+                case EntityRelationship::FRIEND: {
+                    v3f friend_esp_color = g_settings->getV3F("friend_esp_color");
+                    m_prop.nametag_color = video::SColor(255, friend_esp_color.X, friend_esp_color.Y, friend_esp_color.Z);
+                    break;
+                }
+                case EntityRelationship::ENEMY: {
+                    v3f enemy_esp_color = g_settings->getV3F("enemy_esp_color");
+                    m_prop.nametag_color = video::SColor(255, enemy_esp_color.X, enemy_esp_color.Y, enemy_esp_color.Z);
+                    break;
+                }
+                case EntityRelationship::ALLY: {
+                    v3f ally_esp_color = g_settings->getV3F("ally_esp_color");
+                    m_prop.nametag_color = video::SColor(255, ally_esp_color.X, ally_esp_color.Y, ally_esp_color.Z);
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
 
-	scene::ISceneNode *node = getSceneNode();
-	if (!node)
-		return;
-
-	v3f pos;
-	pos.Y = m_prop.selectionbox.MaxEdge.Y + 0.3f;
-	if (!m_nametag) {
-		// Add nametag
-		if (g_settings->getBool("show_friends_nametags")) {
-			for (auto &it: friendNames) {
-				if (it == m_prop.nametag) {
-					m_prop.nametag_color = video::SColor(255, 0, 255, 0);
-				}
-			}
-		}
-		m_nametag = m_client->getCamera()->addNametag(node,
-			m_prop.nametag, m_prop.nametag_color,
-			m_prop.nametag_bgcolor, pos, nametag_images);
-	} else {
-		// Update nametag
-
-		if (g_settings->getBool("show_friends_nametags")) {
-			for (auto &it: friendNames) {
-				if (it == m_prop.nametag) {
-					m_prop.nametag_color = video::SColor(255, 0, 255, 0);
-				}
-			}
-		}
-
-		m_nametag->text = m_prop.nametag;
-		m_nametag->textcolor = m_prop.nametag_color;
-		m_nametag->bgcolor = m_prop.nametag_bgcolor;
-		m_nametag->pos = pos;
+        m_nametag->text = m_prop.nametag;
+        m_nametag->textcolor = m_prop.nametag_color;
+        m_nametag->bgcolor = m_prop.nametag_bgcolor;
+        m_nametag->pos = pos;
         m_nametag->setImages(nametag_images);
-	}
+    }
 }
+
 
 void GenericCAO::updateNodePos()
 {

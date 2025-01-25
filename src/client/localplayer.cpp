@@ -907,40 +907,19 @@ bool LocalPlayer::isWaitingForReattach() const
 	return m_cao && ! m_cao->getParent() && m_cao->m_waiting_for_reattach > 0;
 }
 
-std::string getShirtColor(GenericCAO *playerObj) {
-    // Get the textures of the player object
-    std::vector<std::string> textures = playerObj->getProperties().textures;
 
-    for (std::string& texture : textures) {
-        // Split the texture string from ')'
-        std::vector<std::string> parts = str_split(texture, ')');
-
-        for (std::string& part : parts) {
-            // Look for the keyword 'shirt' followed by '.png'
-            std::size_t shirt_pos = part.find("shirt.png");
-
-            if (shirt_pos != std::string::npos) {
-                // Return the final 6 characters as the color code
-                return part.substr(part.size() - 6);
-            }
-        }
-    }
-
-    return ""; // Nothing found
-}
-
-bool LocalPlayer::isPlayerFriendly(GenericCAO *playerObj) {
+EntityRelationship LocalPlayer::getEntityRelationship(GenericCAO *playerObj) {
 	if (!playerObj->isPlayer()) {
-		return false;
+		return EntityRelationship::NEUTRAL;
 	}
 
 	if (playerObj->isLocalPlayer()) {
-		return true;
+		return EntityRelationship::FRIEND;
 	}
 
 	GenericCAO *me = getCAO();
 	if (!me) {
-		return false;
+		return EntityRelationship::NEUTRAL;
 	}
 
 	if (!m_client->m_simple_singleplayer_mode) {
@@ -948,23 +927,6 @@ bool LocalPlayer::isPlayerFriendly(GenericCAO *playerObj) {
 		std::string address = m_client->getAddressName().c_str();
 		u16 port = serverAddress.getPort();
 		std::string server_url = address + ":" + toPaddedString(port);
-
-		std::vector<std::string> ctf_vec = str_split(g_settings->get("ctf_servers"), ',');
-		std::vector<std::string>::iterator it;
-
-		it = std::find(ctf_vec.begin(), ctf_vec.end(), server_url);
-
-		if (it != ctf_vec.end()) {
-			std::string myShirtColor = getShirtColor(me);
-
-			if (myShirtColor.empty()) {
-				return false;
-			}
-			std::string shirtColor = getShirtColor(playerObj);
-			if(!shirtColor.empty() && shirtColor == myShirtColor){
-				return true;
-			}
-		}
 
 		Json::Value friends = {};
 		try {
@@ -979,14 +941,51 @@ bool LocalPlayer::isPlayerFriendly(GenericCAO *playerObj) {
 			if (!playerName.empty()) {
 				for (std::vector<std::string>::iterator it = server_friends.begin(); it != server_friends.end(); ++it) {
 					if (playerName == *it) {
-						return true;
+						return EntityRelationship::FRIEND;
 					}
 				}
 			}
 		}
 
+		Json::Value enemies = {};
+		try {
+			enemies = g_settings->getJson("enemies");
+		} catch (std::exception& e) {
+			g_settings->set("enemies", "{}");
+		}
+
+		if (!enemies.isNull() && enemies.isMember(server_url) && enemies[server_url].isString()) {
+			std::vector<std::string> server_enemies = str_split(enemies[server_url].asString(), ',');
+			const std::string& playerName = playerObj->getName();
+			if (!playerName.empty()) {
+				for (std::vector<std::string>::iterator it = server_enemies.begin(); it != server_enemies.end(); ++it) {
+					if (playerName == *it) {
+						return EntityRelationship::ENEMY;
+					}
+				}
+			}
+		}
+
+		Json::Value allies = {};
+		try {
+			allies = g_settings->getJson("allies");
+		} catch (std::exception& e) {
+			g_settings->set("allies", "{}");
+		}
+
+		if (!allies.isNull() && allies.isMember(server_url) && allies[server_url].isString()) {
+			std::vector<std::string> server_allies = str_split(allies[server_url].asString(), ',');
+			const std::string& playerName = playerObj->getName();
+			if (!playerName.empty()) {
+				for (std::vector<std::string>::iterator it = server_allies.begin(); it != server_allies.end(); ++it) {
+					if (playerName == *it) {
+						return EntityRelationship::ALLY;
+					}
+				}
+			}
+		}
 	}
-	return false;
+	return EntityRelationship::NEUTRAL;
 }
 
 // 3D acceleration

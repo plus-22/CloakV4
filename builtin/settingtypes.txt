@@ -121,7 +121,9 @@ enable_player_esp (Player ESP) bool false
 
 enable_player_tracers (Player tracers) bool false
 
-friend_esp_color (Friends ESP color) string (255, 0, 255)
+friend_esp_color (Friend ESP color) string (255, 0, 255)
+
+allied_esp_color (Allied ESP color) string (0, 0, 255)
 
 enemy_esp_color (Enemy ESP color) string (255, 0, 0)
 
@@ -130,6 +132,8 @@ enable_health_esp (Show Players HP) bool false
 enable_health_esp.players_only (Show Players Only) bool false
 
 noweather (NoWeather) bool false
+
+autoteam (Auto Team) bool false
 
 [Controls]
 

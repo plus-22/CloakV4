@@ -650,9 +650,8 @@ int LuaLocalPlayer::l_get_object_or_nil(lua_State *L)
 	return 0;
 }
 
-// if isn't player, it'll return false
-// is_player_friendly(self, object_id)
-int LuaLocalPlayer::l_is_player_friendly(lua_State *L)
+// get_entity_relationship(self, object_id)
+int LuaLocalPlayer::l_get_entity_relationship(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
 	u16 object_id = lua_tointeger(L, 2);
@@ -660,9 +659,9 @@ int LuaLocalPlayer::l_is_player_friendly(lua_State *L)
 	ClientEnvironment &env = getClient(L)->getEnv();
 	GenericCAO *gcao = env.getGenericCAO(object_id);
 
-	bool friendly = player->isPlayerFriendly(gcao);
+	EntityRelationship relationship = player->getEntityRelationship(gcao);
 
-	lua_pushboolean(L, friendly);
+	lua_pushinteger(L, relationship);
 
 	return 1;
 }
@@ -747,7 +746,7 @@ const luaL_Reg LuaLocalPlayer::methods[] = {
 		luamethod(LuaLocalPlayer, set_pos),
 		luamethod(LuaLocalPlayer, get_pointed_thing),
 		luamethod(LuaLocalPlayer, get_object_or_nil),
-		luamethod(LuaLocalPlayer, is_player_friendly),
+		luamethod(LuaLocalPlayer, get_entity_relationship),
 		luamethod(LuaLocalPlayer, punch),
 		luamethod(LuaLocalPlayer, get_time_from_last_punch),
 		luamethod(LuaLocalPlayer, get_wielded_item_range),

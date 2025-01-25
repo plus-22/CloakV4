@@ -55,6 +55,7 @@ protected:
 	video::SColor entity_esp_color;
 	video::SColor friend_esp_color;
 	video::SColor enemy_esp_color;
+	video::SColor allied_esp_color;
 
 public:
 	RenderingCore(IrrlichtDevice *device, Client *client, Hud *hud,

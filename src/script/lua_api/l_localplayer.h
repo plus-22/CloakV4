@@ -133,8 +133,8 @@ private:
 	// get_object_or_nil(self)
 	static int l_get_object_or_nil(lua_State *L);
 
-	// is_player_friendly(self, object_id)
-	static int l_is_player_friendly(lua_State *L);
+	// get_entity_relationship(self, object_id)
+	static int l_get_entity_relationship(lua_State *L);
 
 	// punch(self, object_id)
 	static int l_punch(lua_State *L);

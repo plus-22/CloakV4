@@ -194,7 +194,9 @@ void set_default_settings()
 	settings->setDefault("coords", "true");
 	settings->setDefault("fullbright", "true");
 	settings->setDefault("friends", "{}");
-	settings->setDefault("ctf_servers", "");
+	settings->setDefault("enemies", "{}");
+	settings->setDefault("allies", "{}");
+	settings->setDefault("autoteam", "false");
 	settings->setDefault("killaura.players", "false");
 	settings->setDefault("killaura.entities", "false");
 	settings->setDefault("killaura.assist", "false");
@@ -214,7 +216,7 @@ void set_default_settings()
     settings->setDefault("no_force_rotate", "false");
     settings->setDefault("no_night", "false");
     settings->setDefault("nobob", "false");
-	settings->setDefault("show_friends_nametags", "false");
+	settings->setDefault("use_colored_nametags", "false");
 	settings->setDefault("BHOP", "false");
 	settings->setDefault("enable_health_esp", "false");
 	settings->setDefault("enable_health_esp.players_only", "false");
@@ -239,6 +241,7 @@ void set_default_settings()
 
 	settings->setDefault("entity_esp_color", "(255, 255, 255)");
 	settings->setDefault("friend_esp_color", "(255, 0, 255)");
+	settings->setDefault("allied_esp_color", "(0, 255, 0)");
 	settings->setDefault("enemy_esp_color", "(255, 0, 0)");
 
 	settings->setDefault("silence", "false");

@@ -272,7 +272,7 @@ void Game::panic()
     g_settings->setBool("no_force_rotate", false);
     g_settings->setBool("no_night", false);
     g_settings->setBool("nobob", false);
-	g_settings->setBool("show_friends_nametags", false);
+	g_settings->setBool("use_colored_nametags", false);
 	g_settings->setBool("BHOP", false);
 	g_settings->setBool("hp_player_bar", false);
 	g_settings->setBool("anti_afk", false);
