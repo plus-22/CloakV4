@@ -235,8 +235,8 @@ void CheatMenu::drawHUD(video::IVideoDriver *driver, double dtime)
 		return;
 
 	core::dimension2d<u32> screensize = driver->getScreenSize();
-	u32 y = 5;
-
+	u32 y = 5 + g_settings->getS32("cheat_hud.offset");
+	
 	std::sort(enabled_cheats.begin(), enabled_cheats.end(),
 			  [](const auto &a, const auto &b) {
 				  return a.second.Width > b.second.Width;
@@ -244,7 +244,7 @@ void CheatMenu::drawHUD(video::IVideoDriver *driver, double dtime)
 
 	Minimap *mapper = m_client->getMinimap();
 	if (mapper != nullptr && mapper->getModeIndex() != 0)
-		y = screensize.Height - 18;
+		y = (screensize.Height - 18) - g_settings->getS32("cheat_hud.offset");
 
 	std::vector<video::SColor> colors;
 
