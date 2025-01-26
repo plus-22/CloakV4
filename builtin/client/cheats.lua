@@ -125,7 +125,7 @@ core.register_cheat_setting("Speed", "Movement", "fast_move", "fast_move.speed",
 core.register_cheat_setting("Speed", "Interact", "autohit", "autohit.speed", {type="slider_int", min=1, max=10, steps=10})
 core.register_cheat_setting("Nodelist", "Render", "xray", "xray.nodes", {type="text", size=10})
 core.register_cheat_setting("Instant", "Interact", "fastdig", "fastdig.instant", {type="bool"})
-core.register_cheat_setting("Multiplier", "Movement", "step", "step.mult", {type="slider_float", min=1.0, max=5.0, steps=9})
+core.register_cheat_setting("Multiplier", "Movement", "step", "step.mult", {type="slider_float", min=1.0, max=3.5, steps=6})
 
 
 
