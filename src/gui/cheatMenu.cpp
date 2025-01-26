@@ -243,8 +243,12 @@ void CheatMenu::drawHUD(video::IVideoDriver *driver, double dtime)
 			  });
 
 	Minimap *mapper = m_client->getMinimap();
-	if (mapper != nullptr && mapper->getModeIndex() != 0)
+
+	bool renderBottom = (mapper != nullptr && mapper->getModeIndex() != 0) || g_settings->get("cheat_hud.position") == "Bottom";
+
+	if (renderBottom) {
 		y = (screensize.Height - 18) - g_settings->getS32("cheat_hud.offset");
+	}
 
 	std::vector<video::SColor> colors;
 
@@ -307,10 +311,10 @@ void CheatMenu::drawHUD(video::IVideoDriver *driver, double dtime)
 			m_font->draw(cheat_full_str.c_str(), cheat_bounds, colors[i], false, false);
 		}
 
-		if (mapper != nullptr && mapper->getModeIndex() == 0) {
-			y += dim.Height;
-		} else {
+		if (renderBottom) {
 			y -= dim.Height;
+		} else {
+			y += dim.Height;
 		}
 
 		i++;

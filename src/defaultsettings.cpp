@@ -185,6 +185,7 @@ void set_default_settings()
 	settings->setDefault("autorespawn", "false");
 	settings->setDefault("cheat_hud", "true");
 	settings->setDefault("cheat_hud.offset", "0");
+	settings->setDefault("cheat_hud.position", "Top");
 	settings->setDefault("fastdig", "false");
 	settings->setDefault("autodig", "false");
 	settings->setDefault("spamclick", "false");
