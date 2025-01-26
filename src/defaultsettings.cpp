@@ -222,6 +222,8 @@ void set_default_settings()
 	settings->setDefault("enable_health_esp.players_only", "false");
 	settings->setDefault("anti_afk", "false");
 	settings->setDefault("panic", "false");
+	settings->setDefault("step", "false");
+	settings->setDefault("step.mult", "2.0f");
 
 	settings->setDefault("esp.player.drawType", "0");
 	settings->setDefault("esp.player.edgeOpacity", "255");

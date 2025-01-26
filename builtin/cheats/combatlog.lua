@@ -9,4 +9,4 @@ minetest.register_on_damage_taken(function(hp)
 		end
     end
 end)
-minetest.register_cheat("CombatLog", "Combat", "be_a_bitch")
+minetest.register_cheat_with_infotext("CombatLog", "Combat", "be_a_bitch", "Min hp:")
