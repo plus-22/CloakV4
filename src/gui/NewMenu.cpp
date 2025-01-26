@@ -705,13 +705,13 @@ void NewMenu::drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font, con
 
                             if (cheatSetting->m_type == "slider_int") {
                                 std::ostringstream oss;
-                                oss << " ( " << round(g_settings->getFloat(cheatSetting->m_setting)) << " )"; 
+                                oss << " [" << round(g_settings->getFloat(cheatSetting->m_setting)) << "]"; 
                                 settingName = settingName + oss.str();
                             } else if (cheatSetting->m_type == "slider_float") {
                                 std::ostringstream oss;
                                 oss.precision(1);
                                 oss << std::fixed << g_settings->getFloat(cheatSetting->m_setting);
-                                settingName = settingName + "( " + oss.str() + " )";
+                                settingName = settingName + " [" + oss.str() + "]";
                             }
                             std::wstring wSettingName = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(settingName);
                             textSizeU32 = font->getDimension(wSettingName.c_str());

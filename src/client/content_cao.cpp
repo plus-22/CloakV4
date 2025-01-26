@@ -1905,7 +1905,7 @@ void GenericCAO::processMessage(const std::string &data)
 		// MT 0.4.10 legacy: send inverted for detault `true` if the server sends nothing
 		bool sneak = !readU8(is);
 		bool sneak_glitch = !readU8(is);
-bool new_move = !readU8(is);
+		bool new_move = !readU8(is);
 
 		float override_speed_climb = readF32(is);
 		float override_speed_crouch = readF32(is);
@@ -1926,6 +1926,12 @@ bool new_move = !readU8(is);
 		}
 
 		if (m_is_local_player) {
+			Client *client = m_env->getGameDef();
+
+			if (client->modsLoaded() && client->getScript()->on_recieve_physics_override(override_speed, override_jump, override_gravity, sneak, sneak_glitch, new_move, 
+			override_speed_climb, override_speed_crouch, override_liquid_fluidity, override_liquid_fluidity_smooth, override_liquid_sink, override_acceleration_default, override_acceleration_air))
+				return;
+
 			auto &phys = m_env->getLocalPlayer()->physics_override;
 			phys.speed = override_speed;
 			phys.jump = override_jump;
@@ -1940,6 +1946,8 @@ bool new_move = !readU8(is);
 			phys.liquid_sink = override_liquid_sink;
 			phys.acceleration_default = override_acceleration_default;
 			phys.acceleration_air = override_acceleration_air;
+
+
 		}
 	} else if (cmd == AO_CMD_SET_ANIMATION) {
 		// TODO: change frames send as v2s32 value

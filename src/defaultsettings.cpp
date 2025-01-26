@@ -212,6 +212,14 @@ void set_default_settings()
     settings->setDefault("no_hurt_cam", "false");
     settings->setDefault("autoaim", "false");
     settings->setDefault("autoaim.distance", "2");
+    settings->setDefault("velocity", "false");
+    settings->setDefault("velocity.jump", "1");
+    settings->setDefault("velocity.speed", "1");
+    settings->setDefault("velocity.speed_crouch", "1");
+    settings->setDefault("velocity.gravity", "1");
+    settings->setDefault("overrides", "false");
+    settings->setDefault("overrides.old_movement", "false");
+    settings->setDefault("overrides.sneak_glitch", "false");
 	
     settings->setDefault("no_force_rotate", "false");
     settings->setDefault("no_night", "false");

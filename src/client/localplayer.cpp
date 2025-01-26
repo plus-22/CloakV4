@@ -813,7 +813,11 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 			((in_liquid || in_liquid_stable) && fast_climb)) {
 		incH = incV = movement_acceleration_fast * BS * dtime;
 	} else {
-		incH = incV = movement_acceleration_default * physics_override.acceleration_default * BS * dtime;
+		if (g_settings->getBool("BHOP")) {
+			incH = incV = (movement_acceleration_default*100) * (physics_override.acceleration_default*100) * BS * dtime;
+		} else {
+			incH = incV = movement_acceleration_default * physics_override.acceleration_default * BS * dtime;
+		}
 	}
 
 	float slip_factor = 1.0f;
