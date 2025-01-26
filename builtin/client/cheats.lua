@@ -154,7 +154,7 @@ minetest.register_globalstep(function(dtime)
 
 		--CombatLog infotext
 		local combatlog_hp = minetest.settings:get("be_a_bitch.hp")
-		minetest.update_infotext("CombatLog", "Combat", "be_a_bitch", "Min HP:" .. combatlog_hp)
+		minetest.update_infotext("CombatLog", "Combat", "be_a_bitch", "Min HP:"  .. combatlog_hp)
 
 		--HealthESP infotext
 		if core.settings:get("enable_health_esp.type") == "Health Bar" then
