@@ -30,7 +30,7 @@ core.cheats = {
 		["EntityESP"] = "enable_entity_esp",
 		["EntityTracers"] = "enable_entity_tracers",
 		["PlayerESP"] = "enable_player_esp",
-		["HealthESP"] = "enable_health_esp",
+--		["HealthESP"] = "enable_health_esp",
 		["PlayerTracers"] = "enable_player_tracers",
 		["NodeESP"] = "enable_node_esp",
 		["NodeTracers"] = "enable_node_tracers",
@@ -125,3 +125,46 @@ core.register_cheat_setting("Speed", "Movement", "fast_move", "fast_move.speed",
 core.register_cheat_setting("Speed", "Interact", "autohit", "autohit.speed", {type="slider_int", min=1, max=10, steps=10})
 core.register_cheat_setting("Nodelist", "Render", "xray", "xray.nodes", {type="text", size=10})
 core.register_cheat_setting("Instant", "Interact", "fastdig", "fastdig.instant", {type="bool"})
+core.register_cheat_setting("Multiplier", "Movement", "step", "step.mult", {type="slider_float", min=1.0, max=3.5, steps=6})
+
+
+
+-- Some heats with infotexts
+core.register_cheat_with_infotext("Step", "Movement", "step", "Mult: 0")
+core.register_cheat_with_infotext("HealthESP", "Render", "enable_health_esp", "")
+
+
+
+
+-- Globalstep for infotexts (if u wanna)
+local update_interval = 0.25
+local timer = 0
+
+minetest.register_globalstep(function(dtime)
+    timer = timer + dtime
+
+    if timer >= update_interval then
+        timer = 0
+
+        --Starts here
+
+		--Step infotext
+		local step_mult = minetest.settings:get("step.mult")
+		core.update_infotext("Step", "Movement", "step", "Mult: " .. step_mult)
+
+		--CombatLog infotext
+		local combatlog_hp = minetest.settings:get("be_a_bitch.hp")
+		minetest.update_infotext("CombatLog", "Combat", "be_a_bitch", "Min HP:"  .. combatlog_hp)
+
+		--HealthESP infotext
+		if core.settings:get("enable_health_esp.type") == "Health Bar" then
+			core.update_infotext("HealthESP", "Render", "show_players_hp", "Health Bar")
+		else
+			core.update_infotext("HealthESP", "Render", "show_players_hp", "Above head")
+		end
+
+		--Ends here
+    end
+end)
+
+--How did you know I like adding comments?
