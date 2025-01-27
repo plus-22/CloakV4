@@ -1,8 +1,16 @@
 local awaiting_team = false
 local team_time = 5
+local invalid_game = false
 
 core.register_globalstep(function(dtime)
-	if core.localplayer then
+	if core.localplayer and not invalid_game then
+		if core.get_server_game() == "not_initialized" then return end
+
+		if core.get_server_game() ~= "capturetheflag" then
+			core.update_infotext("Auto Team", "Misc", "autoteam", "Invalid Game")
+			invalid_game = true
+			return
+		end
 		if core.settings:get_bool("autoteam") then
 			team_time = team_time + dtime
 		end
@@ -17,7 +25,7 @@ end)
 core.register_on_receiving_chat_message(function(message)
 	message = string.gsub(string.gsub(string.gsub(message, "(T@ctf_teams)", ""), "F", ""), "E", "")
 	
-	if string.sub(message, 1, 19) == "(T@ctf_teams)Team " then
+	if string.sub(message, 1, 19) == "(T@ctf_teams)Team " or string.sub(message, 1, 5) == "Team " then
 		local enemies = {}
 		local allies = {}
 		local team_strings = string.split(message, "\n")
