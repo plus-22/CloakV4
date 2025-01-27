@@ -51,6 +51,7 @@ public:
 	~ScriptApiCheatsCheat();
 	std::string m_name;
 	std::string m_info_text;
+	std::string m_description;
 	void set_info_text(std::string infoText);
 	std::string get_info_text();
 	bool is_enabled();
@@ -84,6 +85,8 @@ public:
 	void update_infotexts();
 	void toggle_cheat(ScriptApiCheatsCheat *cheat);
 	void print_all_cheat_settings(); // New function to print cheat settings
+
+	void get_description();
 
 	bool m_cheats_loaded = false;
 	std::vector<ScriptApiCheatsCategory *> m_cheat_categories;

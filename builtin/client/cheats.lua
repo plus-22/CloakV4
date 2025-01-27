@@ -73,6 +73,7 @@ core.cheats = {
 }
 
 core.infotexts = {}
+core.descriptions = {}
 
 function core.register_cheat(cheatname, category, func)
 	core.cheats[category] = core.cheats[category] or {}
@@ -91,6 +92,11 @@ function core.update_infotext(cheatname, category, func, infotext)
 	core.update_infotexts()
 end
 
+function core.register_cheat_with_description(cheatname, category, func, description)
+	core.descriptions[category] = core.descriptions[category] or {}
+	core.descriptions[category][cheatname] = description
+	core.get_description()
+end
 core.cheat_settings = {}
 
 function core.register_cheat_setting(setting_name, parent_category, parent_setting, setting_id, setting_data)
@@ -129,13 +135,21 @@ core.register_cheat_setting("Multiplier", "Movement", "step", "step.mult", {type
 core.register_cheat_setting("Y Offset", "Render", "cheat_hud", "cheat_hud.offset", {type="slider_int", min=0, max=200, steps=41})
 core.register_cheat_setting("Position", "Render", "cheat_hud", "cheat_hud.position", {type="selectionbox", options={"Top", "Bottom"}})
 
-
-
 -- Some heats with infotexts
 core.register_cheat_with_infotext("Step", "Movement", "step", "Mult: 0")
 core.register_cheat_with_infotext("HealthESP", "Render", "enable_health_esp", "")
 
 
+core.register_cheat_with_description("FastDig", "Interact", "fastdig", "The player starts breaking blocks faster")
+core.register_cheat_with_description("FastPlace", "Interact", "fastplace", "Player can place blocks faster")
+core.register_cheat_with_description("AutoDig", "Interact", "autodig", "Player can dig blocks without mouse press")
+core.register_cheat_with_description("AutoPlace", "Interact", "autoplace", "Auto place blocks")
+core.register_cheat_with_description("InstantBreak","Interact", "instant_break", "Digging without calldown")
+core.register_cheat_with_description("FastHit", "Interact", "spamclick", "Hit faster")
+core.register_cheat_with_description("AutoHit","Interact", "autohit", "Auto hit")
+core.register_cheat_with_description("AutoTool", "Interact", "autotool", "Auto tool")
+
+-- continue with cheat description
 
 
 -- Globalstep for infotexts (if u wanna)

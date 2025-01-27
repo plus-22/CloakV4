@@ -36,7 +36,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "NewMenu.h"
 
-
 NewMenu::NewMenu(gui::IGUIEnvironment* env, 
     gui::IGUIElement* parent, 
     s32 id, IMenuManager* menumgr, 
@@ -518,10 +517,10 @@ void NewMenu::drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font, con
     ///////////////////////// DRAW CATEGORY HEADER /////////////////////////
     video::SColor arrow_color = video::SColor(255, 255, 255, 255);
     video::SColor text_color = video::SColor(255, 255, 255, 255);
-    if (dropdownHovered[i] == true) {
+    if (dropdownHovered[i]) {
         arrow_color = video::SColor(255, 127, 127, 127);
     }
-    if (textHovered[i] == true) {
+    if (textHovered[i]) {
         text_color = video::SColor(255, 127, 127, 127);
     }
 
@@ -545,18 +544,20 @@ void NewMenu::drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font, con
     core::position2d<s32> dropdown_center(dropdownRects[i].UpperLeftCorner.X + dropdownRects[i].getWidth() / 2 ,dropdownRects[i].UpperLeftCorner.Y + dropdownRects[i].getHeight() / 2);
 
     if (selectedCategory[i]) {
+        
         driver->draw2DLine(core::position2d<s32>(dropdown_center.X - (unit_size * 3), dropdown_center.Y + (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X, dropdown_center.Y - (unit_size * 1.5)), arrow_color);
         driver->draw2DLine(core::position2d<s32>(dropdown_center.X - (unit_size * 3), 1 + dropdown_center.Y + (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X, 1 + dropdown_center.Y - (unit_size * 1.5)), arrow_color);
         driver->draw2DLine(core::position2d<s32>(dropdown_center.X, dropdown_center.Y - (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X + (unit_size * 3), dropdown_center.Y + (unit_size * 1.5)), arrow_color);
         driver->draw2DLine(core::position2d<s32>(dropdown_center.X, 1 + dropdown_center.Y - (unit_size * 1.5)), core::position2d<s32>(dropdown_center.X + (unit_size * 3), 1 + dropdown_center.Y + (unit_size * 1.5)), arrow_color);
         ///////////////////////// DRAW CHEATS /////////////////////////
         for (size_t cheat_index = 0; cheat_index < script->m_cheat_categories[i]->m_cheats.size(); ++cheat_index) {
+
             arrow_color = video::SColor(255, 255, 255, 255);
             text_color = video::SColor(255, 255, 255, 255);
-            if (cheatDropdownHovered[i][cheat_index] == true) {
+            if (cheatDropdownHovered[i][cheat_index]) {
                 arrow_color = video::SColor(255, 127, 127, 127);
             }
-            if (cheatTextHovered[i][cheat_index] == true) {
+            if (cheatTextHovered[i][cheat_index]) {
                 text_color = video::SColor(255, 127, 127, 127);
             }
             if (script->m_cheat_categories[i]->m_cheats[cheat_index]->is_enabled()) {
@@ -570,12 +571,31 @@ void NewMenu::drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font, con
 
             textSizeU32 = font->getDimension(wCheatName.c_str());
             core::dimension2d<s32> textSize(textSizeU32.Width, textSizeU32.Height);
-
             s32 textX = cheatTextRects[i][cheat_index].UpperLeftCorner.X + (cheatTextRects[i][cheat_index].getWidth() - textSize.Width) / 2;
             s32 textY = cheatTextRects[i][cheat_index].UpperLeftCorner.Y + (cheatTextRects[i][cheat_index].getHeight() - textSize.Height) / 2;
 
-
             font->draw(wCheatName.c_str(), core::rect<s32>(textX, textY, textX + textSize.Width, textY + textSize.Height), text_color);
+            if (cheatTextHovered[i][cheat_index] && g_settings->getBool("use_hints")) {
+                std::wstring wCheatDes = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(script->m_cheat_categories[i]->m_cheats[cheat_index]->m_description);
+                core::dimension2d<u32> textSizeU32_des = font->getDimension(wCheatDes.c_str());
+                core::dimension2d<s32> textSize_des(textSizeU32.Width, textSizeU32.Height);
+                const s32 padding = 4;
+                s32 backgroundX = cheatRects[i][cheat_index].LowerRightCorner.X + textSize_des.Width - padding;
+                s32 backgroundY = cheatRects[i][cheat_index].UpperLeftCorner.Y + textSize_des.Height + (unit_size * 1.5) + 5 - padding;
+                s32 backgroundWidth = textSizeU32_des.Width + 2 * padding;
+                s32 backgroundHeight = textSize_des.Height + 2 * padding;
+
+                if (!wCheatDes.empty()) {
+                    driver->draw2DRectangle(video::SColor(210, 50, 80, 175), core::rect<s32>(backgroundX, backgroundY, backgroundX + backgroundWidth, backgroundY + backgroundHeight));
+                }
+
+                s32 textXD = backgroundX + padding;
+                s32 textYD = backgroundY + padding;
+
+                font->draw(wCheatDes.c_str(), 
+                        core::rect<s32>(textXD, textYD, textXD + textSize_des.Width, textYD + textSize_des.Height), 
+                        video::SColor(255, 255, 255, 255));
+            }
             if (script->m_cheat_categories[i]->m_cheats[cheat_index]->has_settings()) {
                 core::position2d<s32> dropdown_center(cheatDropdownRects[i][cheat_index].UpperLeftCorner.X + cheatDropdownRects[i][cheat_index].getWidth() / 2, 
                                                       cheatDropdownRects[i][cheat_index].UpperLeftCorner.Y + cheatDropdownRects[i][cheat_index].getHeight() / 2);
@@ -705,13 +725,13 @@ void NewMenu::drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font, con
 
                             if (cheatSetting->m_type == "slider_int") {
                                 std::ostringstream oss;
-                                oss << " [" << round(g_settings->getFloat(cheatSetting->m_setting)) << "]"; 
+                                oss << " ( " << round(g_settings->getFloat(cheatSetting->m_setting)) << " )"; 
                                 settingName = settingName + oss.str();
                             } else if (cheatSetting->m_type == "slider_float") {
                                 std::ostringstream oss;
                                 oss.precision(1);
                                 oss << std::fixed << g_settings->getFloat(cheatSetting->m_setting);
-                                settingName = settingName + " [" + oss.str() + "]";
+                                settingName = settingName + "( " + oss.str() + " )";
                             }
                             std::wstring wSettingName = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(settingName);
                             textSizeU32 = font->getDimension(wSettingName.c_str());

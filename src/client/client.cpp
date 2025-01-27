@@ -263,6 +263,8 @@ void Client::loadMods()
 	// Initialize info texts
 	m_script->update_infotexts();
 
+	m_script->get_description();
+
 	// Create objects if they're ready
 	if (m_state == LC_Ready)
 		m_script->on_client_ready(m_env.getLocalPlayer());

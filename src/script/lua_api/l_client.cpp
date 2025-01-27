@@ -957,6 +957,12 @@ int ModApiClient::l_update_infotexts(lua_State *L)
 	return 1;
 }
 
+int ModApiClient::l_get_description(lua_State* L) {
+	getClient(L)->getScript()->get_description();
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 void ModApiClient::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_current_modname);
@@ -1004,4 +1010,5 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(send_inventory_fields);
 	API_FCT(send_nodemeta_fields);
 	API_FCT(update_infotexts);
+	API_FCT(get_description);
 }

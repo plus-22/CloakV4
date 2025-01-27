@@ -150,6 +150,7 @@ void set_default_settings()
 	settings->setDefault("cheat_menu_entry_width", "165");
     settings->setDefault("use_old_menu", "false");
     settings->setDefault("use_menu_grid", "true");
+	settings->setDefault("use_hints", "true");
     settings->setDefault("save_menu_category_positions", "true");
     settings->setDefault("newmenu_draw_type_full", "false");
     settings->setDefault("newmenu_draw_type_small", "false");

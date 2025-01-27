@@ -127,13 +127,18 @@ allied_esp_color (Allied ESP color) string (0, 0, 255)
 
 enemy_esp_color (Enemy ESP color) string (255, 0, 0)
 
+[**ESP HP Settings]
+
 enable_health_esp (Show Players HP) bool false
 
 enable_health_esp.players_only (Show Players Only) bool false
 
-noweather (NoWeather) bool false
-
+[** CTF only]
 autoteam (Auto Team) bool false
+
+[** Mineclone?]
+
+noweather (NoWeather) bool false
 
 [Controls]
 

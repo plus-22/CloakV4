@@ -162,6 +162,36 @@ void ScriptApiCheats::update_infotexts()
 	lua_pop(L, 2); // Pop 'core.infotexts' and 'core'
 }
 
+void ScriptApiCheats::get_description()
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "core");
+
+	lua_getfield(L, -1, "descriptions");
+	if (!lua_istable(L, -1)) {
+		lua_pop(L, 2);
+		return;
+	}
+
+	for (ScriptApiCheatsCategory *category : m_cheat_categories) {
+		lua_getfield(L, -1, category->m_name.c_str());
+		if (lua_istable(L, -1)) {
+			for (auto &cheat : category->m_cheats) {
+				lua_getfield(L, -1, cheat->m_name.c_str());
+				if (lua_isstring(L, -1)) {
+					cheat->m_description = lua_tostring(L, -1);
+				}
+
+				lua_pop(L, 1);
+			}
+		}
+		lua_pop(L, 1);
+	}
+
+	lua_pop(L, 2);
+}
+
 void ScriptApiCheats::init_cheat_settings()
 {
     SCRIPTAPI_PRECHECKHEADER
