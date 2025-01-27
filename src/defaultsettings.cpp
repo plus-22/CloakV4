@@ -223,6 +223,7 @@ void set_default_settings()
     settings->setDefault("overrides", "false");
     settings->setDefault("overrides.old_movement", "false");
     settings->setDefault("overrides.sneak_glitch", "false");
+	settings->setDefault("be_a_bitch.hp", "4");
 	
     settings->setDefault("no_force_rotate", "false");
     settings->setDefault("no_night", "false");
