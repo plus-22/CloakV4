@@ -123,13 +123,23 @@ core.register_on_receiving_chat_message(function(message)
 	local game_match = string.match(message, "game:%s*([^|]+)")
 	if game_match then
 		game = game_match:gsub("%s+", ""):lower()
-	end
 
-	if awaiting_status then
-		awaiting_status = false
-		return true
-	else
-		return false
+		if awaiting_status then
+			awaiting_status = false
+			return true
+		else
+			return false
+		end
+	end
+	
+	if string.sub(message, 1, 24) == "— JMA Capture the Flag" then
+		game = "capturetheflag"
+		if awaiting_status then
+			awaiting_status = false
+			return true
+		else
+			return false
+		end
 	end
 end)
 
