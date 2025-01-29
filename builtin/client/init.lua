@@ -17,7 +17,6 @@ dofile(clientpath .. "cheats.lua")
 dofile(clientpath .. "wasplib.lua")
 
 dofile(cheatspath .. "combat.lua")
-dofile(cheatspath .. "autoaim.lua")
 dofile(cheatspath .. "autoteam.lua")
 dofile(cheatspath .. "crystalspam.lua")
 dofile(cheatspath .. "inventory.lua")

@@ -200,6 +200,8 @@ void set_default_settings()
 	settings->setDefault("enemies", "{}");
 	settings->setDefault("allies", "{}");
 	settings->setDefault("autoteam", "false");
+	settings->setDefault("orbit", "false");
+    settings->setDefault("orbit.radius", "2");
 	settings->setDefault("killaura.players", "false");
 	settings->setDefault("killaura.entities", "false");
 	settings->setDefault("killaura.assist", "false");
@@ -225,6 +227,10 @@ void set_default_settings()
     settings->setDefault("overrides.sneak_glitch", "false");
 	settings->setDefault("be_a_bitch.hp", "4");
 	
+    settings->setDefault("targeting.distance", "4");
+    settings->setDefault("targeting.target_mode", "Lowest HP");
+    settings->setDefault("targeting.target_type", "Players");
+    settings->setDefault("targeting.enemies_only", "true");
     settings->setDefault("no_force_rotate", "false");
     settings->setDefault("no_night", "false");
     settings->setDefault("nobob", "false");

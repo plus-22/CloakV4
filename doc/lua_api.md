@@ -7902,6 +7902,7 @@ child will follow movement and rotation of that bone.
     * `clicker` is another `ObjectRef` which has clicked
     * note: this is called `right_click` for historical reasons only
 * `get_hp()`: returns number of health points
+* `get_id()`: returns player cao id
 * `set_hp(hp, reason)`: set number of health points
     * See reason in register_on_player_hpchange
     * Is limited to the range of 0 ... 65535 (2^16 - 1)

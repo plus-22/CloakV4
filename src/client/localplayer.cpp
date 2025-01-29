@@ -915,8 +915,11 @@ bool LocalPlayer::isWaitingForReattach() const
 
 
 EntityRelationship LocalPlayer::getEntityRelationship(GenericCAO *playerObj) {
-	if (!playerObj->isPlayer()) {
+	if (playerObj == nullptr) {
 		return EntityRelationship::NEUTRAL;
+	}
+	if (!playerObj->isPlayer()) {
+		return EntityRelationship::ENEMY;//return EntityRelationship::NEUTRAL;
 	}
 
 	if (playerObj->isLocalPlayer()) {

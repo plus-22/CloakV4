@@ -677,6 +677,8 @@ Methods:
     * returns player speed vector
 * `get_hp()`
     * returns player HP
+* `get_id()`
+    * returns player cao ID
 * `get_name()`
     * returns player name
 * `get_wield_index()`
