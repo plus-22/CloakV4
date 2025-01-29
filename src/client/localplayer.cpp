@@ -991,7 +991,7 @@ EntityRelationship LocalPlayer::getEntityRelationship(GenericCAO *playerObj) {
 			}
 		}
 	}
-	return EntityRelationship::NEUTRAL;
+	return EntityRelationship::ENEMY;
 }
 
 // 3D acceleration
