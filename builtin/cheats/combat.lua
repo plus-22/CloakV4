@@ -26,6 +26,70 @@ core.register_cheat_setting("Distance", "Combat", "orbit", "targeting.distance",
 core.register_cheat_setting("Radius", "Combat", "orbit", "orbit.radius", {type="slider_float", min=1, max=3, steps=5})
 core.register_cheat_setting("Enemies Only", "Combat", "orbit", "targeting.enemies_only", {type="bool"})
 
+--------------- Functions -------------------
+function is_valid_target(obj, target_type, max_distance)
+    local target_pos = obj:get_pos()
+    local distance = vector.distance(ppos, target_pos)
+    if distance > max_distance then
+        return false
+    end
+
+    return ((target_type == "Entities" and not obj:is_player()) or 
+            (target_type == "Players" and obj:is_player()) or 
+            target_type == "Both") and
+           (core.localplayer:get_entity_relationship(obj:get_id()) == core.EntityRelationship.ENEMY) and
+           (obj:get_hp() > 0) and 
+           core.can_attack(obj:get_id())
+end
+
+function get_best_target(objects, target_mode, target_type, max_distance)
+    local best_target = nil
+    local best_value = target_mode == "Lowest HP" and math.huge or 0 -- Initialize based on mode
+
+    for _, obj in ipairs(objects) do
+        if is_valid_target(obj, target_type, max_distance) then
+            local value = target_mode == "Nearest" and vector.distance(ppos, obj:get_pos()) or obj:get_hp()
+            local is_better = (target_mode == "Nearest" and value < best_value) or
+                              (target_mode == "Lowest HP" and value < best_value) or
+                              (target_mode == "Highest HP" and value > best_value)
+
+            if is_better then
+                best_value = value
+                best_target = obj
+            end
+        end
+    end
+
+    return best_target
+end
+
+function get_punch_interval(player)
+    local interval_str = core.settings:get("punch_interval")
+    local interval
+    if interval_str == "auto" then
+        interval = player:get_wielded_item():get_tool_capabilities().full_punch_interval + 0.1
+    else
+        interval = tonumber(interval_str) or 0.1
+    end
+
+    if interval <= 0 then
+        interval = 0.1
+    end
+
+    if core.settings:get_bool("spamclick") then
+        local multiplier = tonumber(core.settings:get("spamclick_multiplier")) or 6
+        interval = interval / multiplier
+    end
+
+    return interval
+end
+
+function core.get_send_speed(critspeed)
+    if core.settings:get_bool("critical_hits") then 
+        critspeed.y = -5 
+    end
+    return critspeed
+end
 core.register_globalstep(function(dtime)
 	if core.settings:get_bool("killaura") then
 		local target_mode = core.settings:get("targeting.target_mode")
@@ -56,41 +120,6 @@ core.register_globalstep(function(dtime)
 	local objects = core.get_nearby_objects(tonumber(core.settings:get("targeting.distance")))
 	local target_enemy = nil
 
-	local function is_valid_target(obj, target_type, max_distance)
-		local target_pos = obj:get_pos()
-		local distance = vector.distance(ppos, target_pos)
-		if distance > max_distance then
-			return false
-		end
-	
-		return ((target_type == "Entities" and not obj:is_player()) or 
-				(target_type == "Players" and obj:is_player()) or 
-				target_type == "Both") and
-			   (core.localplayer:get_entity_relationship(obj:get_id()) == core.EntityRelationship.ENEMY) and
-			   (obj:get_hp() > 0) and 
-			   core.can_attack(obj:get_id())
-	end
-	
-	local function get_best_target(objects, target_mode, target_type, max_distance)
-		local best_target = nil
-		local best_value = target_mode == "Lowest HP" and math.huge or 0 -- Initialize based on mode
-	
-		for _, obj in ipairs(objects) do
-			if is_valid_target(obj, target_type, max_distance) then
-				local value = target_mode == "Nearest" and vector.distance(ppos, obj:get_pos()) or obj:get_hp()
-				local is_better = (target_mode == "Nearest" and value < best_value) or
-								  (target_mode == "Lowest HP" and value < best_value) or
-								  (target_mode == "Highest HP" and value > best_value)
-	
-				if is_better then
-					best_value = value
-					best_target = obj
-				end
-			end
-		end
-	
-		return best_target
-	end
 	
 	if core.settings:get("targeting.target_mode") then
 		local target_mode = core.settings:get("targeting.target_mode")
@@ -101,26 +130,7 @@ core.register_globalstep(function(dtime)
 	end
 
 	if target_enemy and core.settings:get_bool("killaura") then
-		local function get_punch_interval(player)
-			local interval_str = core.settings:get("punch_interval")
-			local interval
-			if interval_str == "auto" then
-				interval = player:get_wielded_item():get_tool_capabilities().full_punch_interval + 0.1
-			else
-				interval = tonumber(interval_str) or 0.1
-			end
 		
-			if (interval <= 0) then
-				interval = 0.1
-			end
-		
-			if (core.settings:get_bool("spamclick")) then
-				local multiplier = tonumber(core.settings:get("spamclick_multiplier")) or 6
-				interval = interval / multiplier
-			end
-		
-			return interval
-		end
 		local interval = get_punch_interval(player)
 
 		if player:get_time_from_last_punch() > interval then
@@ -190,9 +200,7 @@ core.register_globalstep(function(dtime)
 	end
 end)
 
-function core.get_send_speed(critspeed)
-    if core.settings:get_bool("critical_hits") then critspeed.y = -5 end
-return critspeed end
+
 
 core.register_cheat("Criticals", "Combat", "critical_hits")
 
