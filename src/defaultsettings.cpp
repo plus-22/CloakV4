@@ -242,6 +242,7 @@ void set_default_settings()
 	settings->setDefault("panic", "false");
 	settings->setDefault("step", "false");
 	settings->setDefault("step.mult", "2.0f");
+	settings->setDefault("enable_entity_esp.custom_color", "true");
 
 	settings->setDefault("esp.player.drawType", "0");
 	settings->setDefault("esp.player.edgeOpacity", "255");

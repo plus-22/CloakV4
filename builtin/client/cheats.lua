@@ -127,6 +127,7 @@ end
 --core.register_cheat_setting("Mode", "Combat", "autoaim", "autoaim.mode", {type="selectionbox", options={"Lock", "Assist"}})   i'll work on this later
 core.register_cheat_setting("Type", "Render", "enable_health_esp", "enable_health_esp.type", {type="selectionbox", options={"Health Bar", "Above Head"}})
 core.register_cheat_setting("Players Only", "Render", "enable_health_esp", "enable_health_esp.players_only", {type="bool"})
+core.register_cheat_setting("Status color", "Render", "enable_entity_esp", "enable_entity_esp.custom_color", {type="bool"})
 core.register_cheat_setting("Speed", "Movement", "fast_move", "fast_move.speed", {type="slider_float", min=1.0, max=10.0, steps=100})
 core.register_cheat_setting("Speed", "Interact", "autohit", "autohit.speed", {type="slider_int", min=1, max=10, steps=10})
 core.register_cheat_setting("Nodelist", "Render", "xray", "xray.nodes", {type="text", size=10})

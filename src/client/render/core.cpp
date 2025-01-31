@@ -227,7 +227,11 @@ void RenderingCore::drawTracersAndESP()
 					color = friend_esp_color;
 					break;
 				case EntityRelationship::ENEMY:
-					color = enemy_esp_color;
+					if (!is_player && (g_settings->getBool("enable_entity_esp.custom_color"))) {
+						color = enemy_esp_color;
+					} else {
+						color = entity_esp_color;
+					}
 					break;
 				case EntityRelationship::ALLY:
 					color = allied_esp_color;
