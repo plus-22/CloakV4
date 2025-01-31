@@ -14,6 +14,7 @@ core.register_cheat_setting("Target Mode", "Combat", "autoaim", "targeting.targe
 core.register_cheat_setting("Target Type", "Combat", "autoaim", "targeting.target_type", {type="selectionbox", options={"Players", "Entities", "Both"}})
 core.register_cheat_setting("Distance", "Combat", "autoaim", "targeting.distance", {type="slider_int", min=1, max=10, steps=10})
 core.register_cheat_setting("Enemies Only", "Combat", "autoaim", "targeting.enemies_only", {type="bool"})
+core.register_cheat_setting("Y offset", "Combat", "autoaim", "autoaim.y_offset", {type="slider_int", min=-5, max=10, steps=16})
 
 --------------- Orbit -------------------
 
@@ -155,6 +156,8 @@ core.register_globalstep(function(dtime)
 
 	if target_enemy and core.settings:get_bool("autoaim") then
 		local enemyPos = target_enemy:get_pos();
+		enemyPos.y = enemyPos.y - 1
+		enemyPos.y = enemyPos.y + minetest.settings:get("autoaim.y_offset")/10
 		ws.aim(enemyPos)
 	end
 
