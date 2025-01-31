@@ -27,7 +27,7 @@ core.register_cheat_setting("Radius", "Combat", "orbit", "orbit.radius", {type="
 core.register_cheat_setting("Enemies Only", "Combat", "orbit", "targeting.enemies_only", {type="bool"})
 
 --------------- Functions -------------------
-function is_valid_target(obj, target_type, max_distance)
+function is_valid_target(obj, target_type, max_distance,ppos)
     local target_pos = obj:get_pos()
     local distance = vector.distance(ppos, target_pos)
     if distance > max_distance then
@@ -42,12 +42,12 @@ function is_valid_target(obj, target_type, max_distance)
            core.can_attack(obj:get_id())
 end
 
-function get_best_target(objects, target_mode, target_type, max_distance)
+function get_best_target(objects, target_mode, target_type, max_distance, player)
     local best_target = nil
     local best_value = target_mode == "Lowest HP" and math.huge or 0 -- Initialize based on mode
-
+	local ppos = player:get_pos()
     for _, obj in ipairs(objects) do
-        if is_valid_target(obj, target_type, max_distance) then
+        if is_valid_target(obj, target_type, max_distance, ppos) then
             local value = target_mode == "Nearest" and vector.distance(ppos, obj:get_pos()) or obj:get_hp()
             local is_better = (target_mode == "Nearest" and value < best_value) or
                               (target_mode == "Lowest HP" and value < best_value) or
@@ -90,6 +90,12 @@ function core.get_send_speed(critspeed)
     end
     return critspeed
 end
+function extendPoint(yaw, distance)
+	local radYaw = math.rad(yaw)
+	local dir = vector.new(math.cos(radYaw), 0, math.sin(radYaw))
+	dir = vector.multiply(dir, distance)
+	return dir
+end
 core.register_globalstep(function(dtime)
 	if core.settings:get_bool("killaura") then
 		local target_mode = core.settings:get("targeting.target_mode")
@@ -116,6 +122,7 @@ core.register_globalstep(function(dtime)
 	end
 
     local player = core.localplayer
+	if not player then return end
     local ppos = core.localplayer:get_pos()
 	local objects = core.get_nearby_objects(tonumber(core.settings:get("targeting.distance")))
 	local target_enemy = nil
@@ -126,7 +133,7 @@ core.register_globalstep(function(dtime)
 		local target_type = core.settings:get("targeting.target_type")
 		local max_distance = tonumber(core.settings:get("targeting.distance")) + 0.5
 	
-		target_enemy = get_best_target(objects, target_mode, target_type, max_distance)
+		target_enemy = get_best_target(objects, target_mode, target_type, max_distance, player)
 	end
 
 	if target_enemy and core.settings:get_bool("killaura") then
@@ -156,8 +163,6 @@ core.register_globalstep(function(dtime)
 
 		local distance = tonumber(core.settings:get("orbit.radius")) - 0.5
 
-		local ppos=minetest.localplayer:get_pos()
-
 		local dir=vector.direction(ppos,opos)
 		local yyaw=0;
 		if dir.x < 0 then
@@ -167,12 +172,7 @@ core.register_globalstep(function(dtime)
 		end
 		yyaw = ws.round2(math.deg(yyaw),2)
 
-		local function extendPoint(yaw, distance)
-			local radYaw = math.rad(yaw)
-			local dir = vector.new(math.cos(radYaw), 0, math.sin(radYaw))
-			dir = vector.multiply(dir, distance)
-			return dir
-		end
+		
 
 		local target_pos = vector.add(extendPoint(yyaw-90, distance), opos)
 		target_pos.y = ppos.y
