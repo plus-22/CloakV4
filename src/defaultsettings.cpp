@@ -226,7 +226,6 @@ void set_default_settings()
     settings->setDefault("overrides.old_movement", "false");
     settings->setDefault("overrides.sneak_glitch", "false");
 	settings->setDefault("be_a_bitch.hp", "4");
-	
     settings->setDefault("targeting.distance", "4");
     settings->setDefault("targeting.target_mode", "Lowest HP");
     settings->setDefault("targeting.target_type", "Players");

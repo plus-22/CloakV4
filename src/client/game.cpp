@@ -3441,9 +3441,9 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	updateChat(dtime);
 
 
-	if (g_settings->getBool("panic")) {
+	if (g_settings->getBool("panic"))
 		panic();
-	}
+	
 	/*
 		Inventory
 	*/
@@ -3674,9 +3674,8 @@ void Game::drawScene(ProfilerGraph *graph, RunStats *stats, f32 dtime)
 	/*
 		Damage flash
 	*/
-	if (this->runData.damage_flash > 0.0f) {
+	if (this->runData.damage_flash > 0.0f && ! g_settings->getBool("no_hurt_cam")) {
 		video::SColor color(this->runData.damage_flash, 180, 0, 0);
-        if (! g_settings->getBool("no_hurt_cam"))
 		this->driver->draw2DRectangle(color,
 					core::rect<s32>(0, 0, screensize.X, screensize.Y),
 					NULL);
@@ -3731,8 +3730,8 @@ void Game::readSettings()
 	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
 	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity", 0.001f, 10.0f);
 	m_cache_joystick_frustum_sensitivity = std::max(g_settings->getFloat("joystick_frustum_sensitivity"), 0.001f);
-	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time", 0.16f, 2.0f);
-	m_repeat_dig_time                    = g_settings->getFloat("repeat_dig_time", 0.0f, 2.0f);
+	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time");
+	m_repeat_dig_time                    = g_settings->getFloat("repeat_dig_time");
 
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");
