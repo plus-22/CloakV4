@@ -694,6 +694,7 @@ void Camera::drawNametags()
 	}
 }
 
+/// @brief 
 void Camera::drawHealthESP()
 {
     ClientEnvironment &env = m_client->getEnv();
@@ -708,7 +709,7 @@ void Camera::drawHealthESP()
     for (auto &it : allObjects) {
         ClientActiveObject *cao = it.second;
         GenericCAO *obj = dynamic_cast<GenericCAO *>(cao);
-		if (obj->isLocalPlayer())
+		if (obj->isLocalPlayer() || !obj->canAttack(1))
 			continue;
 		if (!obj->isPlayer() && g_settings->getBool("enable_health_esp.players_only"))
 			continue;
