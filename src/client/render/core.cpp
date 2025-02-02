@@ -216,7 +216,7 @@ void RenderingCore::drawTracersAndESP()
 				continue;
 			}
 
-			EntityRelationship relationship = player->getEntityRelationship(obj);
+						EntityRelationship relationship = player->getEntityRelationship(obj);
 			bool is_player = obj->isPlayer();
 			bool draw_esp = is_player ? draw_player_esp : draw_entity_esp;
 			bool draw_tracers = is_player ? draw_player_tracers : draw_entity_tracers;
@@ -227,11 +227,11 @@ void RenderingCore::drawTracersAndESP()
 					color = friend_esp_color;
 					break;
 				case EntityRelationship::ENEMY:
-					if (!is_player && (g_settings->getBool("enable_entity_esp.custom_color"))) {
-						color = enemy_esp_color;
-					} else {
-						color = entity_esp_color;
-					}
+        			if (!is_player && (!g_settings->getBool("enable_entity_esp.custom_color"))) {
+            			color = entity_esp_color;
+        			} else {
+            			color = enemy_esp_color;
+        			}
 					break;
 				case EntityRelationship::ALLY:
 					color = allied_esp_color;
