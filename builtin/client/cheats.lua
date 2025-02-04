@@ -69,6 +69,7 @@ core.cheats = {
 		["Nametags"] = "use_colored_nametags",
 		["AntiAFK"] = "anti_afk",
 		["Panic"] = "panic",
+		["Hints"] = "use_hints",
 	}
 }
 
@@ -136,11 +137,22 @@ core.register_cheat_setting("Multiplier", "Movement", "step", "step.mult", {type
 core.register_cheat_setting("Y Offset", "Render", "cheat_hud", "cheat_hud.offset", {type="slider_int", min=0, max=200, steps=41})
 core.register_cheat_setting("Position", "Render", "cheat_hud", "cheat_hud.position", {type="selectionbox", options={"Top", "Bottom"}})
 
--- Some heats with infotexts
+-- Some cheats with infotexts
 core.register_cheat_with_infotext("Step", "Movement", "step", "Mult: 0")
 core.register_cheat_with_infotext("HealthESP", "Render", "enable_health_esp", "")
 
 
+--Combat
+core.register_cheat_with_description("AntiKnockback", "Combat", "antiknockback", "Ignore knockback")
+core.register_cheat_with_description("AttachmentFloat", "Combat", "float_above_parent", "Puts the camera one node higher when attached to an entity")
+core.register_cheat_with_description("AutoTotem", "Combat", "autototem", "Automatically puts a totem in your offhand")
+core.register_cheat_with_description("Autoaim", "Combat", "autoaim", "Aims at a specified target")
+core.register_cheat_with_description("CombatLog", "Combat", "be_a_bitch", "Logs off when certain HP is reached")
+core.register_cheat_with_description("Criticals", "Combat", "critical_hits", "Does critical hits in mcl2/mcla")
+core.register_cheat_with_description("CrystalSpam", "Combat", "crystalspam", "Puts end crystals under the nearest player")
+core.register_cheat_with_description("Killaura", "Combat", "killaura", "Attacks a specified target")
+core.register_cheat_with_description("Orbit", "Combat", "orbit", "Moves around a specified target")
+--Interact
 core.register_cheat_with_description("FastDig", "Interact", "fastdig", "No block break cooldown")
 core.register_cheat_with_description("FastPlace", "Interact", "fastplace", "No block placement cooldown")
 core.register_cheat_with_description("AutoDig", "Interact", "autodig", "Player can dig blocks without mouse press")
@@ -149,11 +161,75 @@ core.register_cheat_with_description("InstantBreak","Interact", "instant_break",
 core.register_cheat_with_description("FastHit", "Interact", "spamclick", "Hit faster while holding")
 core.register_cheat_with_description("AutoHit","Interact", "autohit", "Auto hit when looking at entity")
 core.register_cheat_with_description("AutoTool", "Interact", "autotool", "Selects the best tool for an action")
+--Inventory
+core.register_cheat_with_description("Enderchest", "Inventory", minetest.open_enderchest, "Preview enderchest content in mcl/mcla")
+core.register_cheat_with_description("Hand", "Inventory", minetest.open_handslot, "Open hand formspec in mcl/mcla")
+--Misc
+core.register_cheat_with_description("AntiAFK", "Misc", "anti_afk", "Prevent afk by moving")
+core.register_cheat_with_description("Auto Team", "Misc", "autoteam", "Sets allied players to your team in ctf")
+core.register_cheat_with_description("Nametags", "Misc", "use_colored_nametags", "Sets player nametag colors based on their friend/enemy status")
+core.register_cheat_with_description("Panic", "Misc", "panic", "Disables all detectable cheats")
+core.register_cheat_with_description("Hints", "Misc", "use_hints", "Enable cheat hints")
+--Movement
+core.register_cheat_with_description("AirJump", "Movement", "airjump", "Jump on air")
+core.register_cheat_with_description("AntiSlip", "Movement", "antislip", "Walk on slippery blocks without slipping")
+core.register_cheat_with_description("AutoForward", "Movement", "continuous_forward", "Walk forward automatically")
+core.register_cheat_with_description("AutoJump", "Movement", "autojump", "Jump automatically")
+core.register_cheat_with_description("AutoSneak", "Movement", "autosneak", "Always sneak")
+core.register_cheat_with_description("BunnyHop", "Movement", "BHOP", "No jump acceleration time and always jump")
+core.register_cheat_with_description("FastMove", "Movement", "fast_move", "Toggle fast (req. PrivBypass)")
+core.register_cheat_with_description("Flight", "Movement", "free_move", "Toggle flight (req. PrivBypass)")
+core.register_cheat_with_description("Freecam", "Movement", "freecam", "Spectator mode")
+core.register_cheat_with_description("Jesus", "Movement", "jesus", "Walk on liquids")
+core.register_cheat_with_description("JetPack", "Movement", "jetpack", "AirJump but you fall after jumping")
+core.register_cheat_with_description("NoSlow", "Movement", "noslow", "Sneaking doesn't slow you down")
+core.register_cheat_with_description("Noclip", "Movement", "noclip", "Walk through walls (req. PrivBypass & Flight)")
+core.register_cheat_with_description("Overrides", "Movement", "overrides", "Movement overrides")
+core.register_cheat_with_description("PitchMove", "Movement", "pitch_move", "While flying, you move where you're pointing")
+core.register_cheat_with_description("Spider", "Movement", "spider", "Climb walls")
+core.register_cheat_with_description("Step", "Movement", "step", "Climbs the block you're facing")
+core.register_cheat_with_description("Velocity", "Movement", "velocity", "Various velocity overrides")
+--Player
+core.register_cheat_with_description("AutoRespawn", "Player", "autorespawn", "Respawn after dying")
+core.register_cheat_with_description("NoFallDamage", "Player", "nofalldamage", "Receive no fall damage")
+core.register_cheat_with_description("NoForceRotate", "Player", "noforcerotate", "Prevent server from changing the player's view direction")
+core.register_cheat_with_description("NoViewBob", "Player", "nobob", "Disable view bobbing")
+core.register_cheat_with_description("PrivBypass", "Player", "priv_bypass", "Bypass fly, noclip, fast and wireframe rendering")
+core.register_cheat_with_description("QuickMenu", "Player", "use_old_menu", "Add a menu for quicker access to cheats")
+core.register_cheat_with_description("Reach", "Player", "reach", "Increase reach")
+--Render
+core.register_cheat_with_description("BrightNight", "Render", "no_night", "Always daytime")
+core.register_cheat_with_description("CheatHUD", "Render", "cheathud", "List enabled cheats")
+core.register_cheat_with_description("Coords", "Render", "coords", "Render coordinates in the bottom left corner")
+core.register_cheat_with_description("EntityESP", "Render", "enable_entity_esp", "See entities through walls")
+core.register_cheat_with_description("EntityTracers", "Render", "enable_entity_tracers", "Draw tracers to entities")
+core.register_cheat_with_description("Fullbright", "Render", "fullbright", "No darkness")
+core.register_cheat_with_description("HUDBypass", "Render", "hudbypass", "Allows player to toggle hud elements disabled by the game")
+core.register_cheat_with_description("HealthESP", "Render", "show_players_hp", "Shows player and entities' HP")
+core.register_cheat_with_description("NoDrownCam", "Render", "small_post_effect_color", "Disables drowning camera effect")
+core.register_cheat_with_description("NoHurtCam", "Render", "no_hurt_cam", "Disables hurt camera effect")
+core.register_cheat_with_description("NoRender", "Render", "norender.particles", "Don't render particles")
+core.register_cheat_with_description("NodeESP", "Render", "enable_node_esp", "See specified nodes through walls")
+core.register_cheat_with_description("NodeTracers", "Render", "enable_node_tracers", "Draw tracers to specified nodes")
+core.register_cheat_with_description("PlayerESP", "Render", "enable_player_esp", "See players through walls")
+core.register_cheat_with_description("PlayerTracers", "Render", "enable_player_tracers", "Draw tracers to players")
+core.register_cheat_with_description("TunnelESP", "Render", "enable_tunnel_esp", "See tunnels through walls")
+core.register_cheat_with_description("TunnelTracers", "Render", "enable_tunnel_tracers", "Draw tracers to tunnels")
+core.register_cheat_with_description("Xray", "Render", "xray", "Don't render specific nodes")
+--World
+core.register_cheat_with_description("AutoTNT", "World", "autotnt", "Puts TNT on the ground")
+core.register_cheat_with_description("BlockLava", "World", "blocklava", "Replace lava with the block you're holding")
+core.register_cheat_with_description("BlockWater", "World", "blockwater", "Replace water with the block you're holding")
+core.register_cheat_with_description("Replace", "World", "replace", "When you break a block it gets replaced by the block you're holding")
+core.register_cheat_with_description("Scaffold", "World", "scaffold", "Puts blocks below you")
+core.register_cheat_with_description("ScaffoldPlus", "World", "scaffoldplus", "Puts even more blocks under you")
+core.register_cheat_with_description("Silence", "World", "silence", "Disables sound")
+
 
 -- continue with cheat description
 
 
--- Globalstep for infotexts (if u wanna)
+-- Globalstep for infotexts
 local update_interval = 0.25
 local timer = 0
 

@@ -1387,11 +1387,7 @@ if (g_settings->getBool("use_old_menu")) {
 	} else if (wasKeyPressed(KeyType::TOGGLE_CHAT)) {
 		m_game_ui->toggleChat(client);
 	} else if (wasKeyDown(KeyType::TOGGLE_CHEAT_MENU)) {
-		if (g_settings->getBool("use_old_menu")) {
-			m_game_ui->toggleCheatMenu();
-		} else {
-			new_menu->create();
-		}
+		new_menu->create();
 	} else if (wasKeyPressed(KeyType::TOGGLE_FOG)) {
 		toggleFog();
 	} else if (wasKeyDown(KeyType::TOGGLE_UPDATE_CAMERA)) {

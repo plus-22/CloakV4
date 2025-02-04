@@ -271,7 +271,7 @@ void GameUI::updateChatSize()
 
     int cwidth;
         if (g_settings->getBool("use_old_menu")) {
-            cwidth = g_settings->getU32("cheat_menu_entry_width");
+            cwidth = g_settings->getU32("cheat_menu_entry_width")+5;
         } else {
             cwidth = 0;
         }

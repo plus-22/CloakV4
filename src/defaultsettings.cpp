@@ -137,17 +137,18 @@ void set_default_settings()
 
 	// Cheat Menu
 	settings->setDefault("cheat_menu_font", "FM_HD");
-	settings->setDefault("cheat_menu_bg_color", "(43, 55, 69)"); //greyish
+	settings->setDefault("cheat_menu_bg_color", "(10, 15, 20)"); //greyish
 	settings->setDefault("cheat_menu_bg_color_alpha", "173");
-	settings->setDefault("cheat_menu_active_bg_color", "(53, 118, 189)"); //blueish
+	settings->setDefault("cheat_menu_active_bg_color", "(50, 80, 175)"); //blueish
 	settings->setDefault("cheat_menu_active_bg_color_alpha", "210");
 	settings->setDefault("cheat_menu_font_color", "(255, 255, 255)"); //white
 	settings->setDefault("cheat_menu_font_color_alpha", "195");
 	settings->setDefault("cheat_menu_selected_font_color", "(0, 0, 0)"); //black
 	settings->setDefault("cheat_menu_selected_font_color_alpha", "235");
 	settings->setDefault("cheat_menu_head_height", "40");
-	settings->setDefault("cheat_menu_entry_height", "35");
+	settings->setDefault("cheat_menu_entry_height", "25");
 	settings->setDefault("cheat_menu_entry_width", "165");
+	settings->setDefault("cheat_menu_debug_on", "false");
     settings->setDefault("use_old_menu", "false");
     settings->setDefault("use_menu_grid", "true");
 	settings->setDefault("use_hints", "true");
@@ -202,6 +203,7 @@ void set_default_settings()
 	settings->setDefault("autoteam", "false");
 	settings->setDefault("orbit", "false");
     settings->setDefault("orbit.radius", "2");
+	settings->setDefault("killaura", "false");
 	settings->setDefault("killaura.players", "false");
 	settings->setDefault("killaura.entities", "false");
 	settings->setDefault("killaura.assist", "false");

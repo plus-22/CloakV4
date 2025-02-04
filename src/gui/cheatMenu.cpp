@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/client.h"
 #include "client/minimap.h"
 #include "client/fontengine.h"
+#include "client/gameui.h"
 #include "cheatMenu.h"
 #include <cstddef>
 #include <iostream>
@@ -118,14 +119,14 @@ void CheatMenu::drawRect(video::IVideoDriver *driver, std::string name,
 void CheatMenu::drawEntry(video::IVideoDriver *driver, std::string name, int number,
 		bool selected, bool active, CheatMenuEntryType entry_type)
 {
-	int x = m_gap, y = m_gap, width = m_entry_width, height = m_entry_height;
+	int x = m_gap+5, y = m_gap+5, width = m_entry_width, height = m_entry_height;
 	video::SColor *bgcolor = &m_bg_color, *fontcolor = &m_font_color;
 	if (entry_type == CHEAT_MENU_ENTRY_TYPE_HEAD) {
 		bgcolor = &m_active_bg_color;
 		height = m_head_height;
 	} else {
 		bool is_category = entry_type == CHEAT_MENU_ENTRY_TYPE_CATEGORY;
-		y += m_head_height +
+		y += m_head_height +	
 			 (number + (is_category ? 0 : m_selected_category)) *
 					 (m_entry_height);
 		x += (is_category ? 0 : m_gap + m_entry_width);
@@ -155,51 +156,76 @@ int negmod(int n, int base)
 
 void CheatMenu::draw(video::IVideoDriver *driver, bool show_debug)
 {
-	CHEAT_MENU_GET_SCRIPTPTR
+    CHEAT_MENU_GET_SCRIPTPTR
 
-	if (! show_debug)
-		drawEntry(driver, PROJECT_NAME_C, 0, false, false, CHEAT_MENU_ENTRY_TYPE_HEAD);
-	int category_count = 0;
-	for (auto category = script->m_cheat_categories.begin();
-				category != script->m_cheat_categories.end(); category++) {
-		bool is_selected = category_count == m_selected_category;
-		drawEntry(driver, (*category)->m_name, category_count, is_selected, false,
-						CHEAT_MENU_ENTRY_TYPE_CATEGORY);
-		if (is_selected && m_cheat_layer) {
-				int cheat_n = (*category)->m_cheats.size();
-				int height = driver->getScreenSize().Height;
-				int target = height / (m_entry_height) + 1; // +1 for the "and more" effect
-				int target_normal =
-						(height - (m_selected_category * (m_entry_height)))
-						/ (m_entry_height);
+    m_head_height = (!show_debug ? 1 : g_settings->getU32("cheat_menu_head_height"));
+    int category_count = 0;
 
-				if (cheat_n < target_normal) {
-					int cheat_count = 0;
-					for (auto cheat = (*category)->m_cheats.begin();
-									cheat != (*category)->m_cheats.end(); cheat++) {
-							drawEntry(driver, (*cheat)->m_name, cheat_count,
-											cheat_count == m_selected_cheat,
-											(*cheat)->is_enabled());
-							cheat_count++;
-					}
-				} else {
-					int base = m_selected_cheat - m_selected_category - 1;
-					int drawn = 0;
-					for (int i = base; i < base + target; i++, drawn++) {
-						int idx = negmod(i, cheat_n);
-						ScriptApiCheatsCheat *cheat = (*category)->m_cheats[idx];
-						int y = (drawn * (m_entry_height));
-						drawRect(driver, cheat->m_name,
-										m_gap * 2 + m_entry_width, y,
-										m_entry_width, m_entry_height,
-										cheat->is_enabled(),
-										idx == m_selected_cheat);
-					}
-			}
-		}
-		category_count++;
-	}
+    // Calculate dimensions for the category section outline
+    int category_section_x = m_gap+5; // Starting X position
+    int category_section_y = m_gap+5+m_head_height; // Starting Y position
+    int category_section_width = m_entry_width; // Width of categories
+    int category_section_height = (m_head_height + (m_entry_height * script->m_cheat_categories.size()))-m_head_height; // Total height based on number of categories
+
+    // Define padding for the outline and thickness
+    const int padding = 1; // Space between outline and categories
+    const int outline_thickness = 3; // Thickness of the outline
+
+    // Draw multiple rectangles to create a thicker outline
+    for (int i = 0; i < outline_thickness; ++i) {
+        driver->draw2DRectangleOutline(
+            core::rect<s32>(
+                category_section_x - padding - i, 
+                category_section_y - padding - i,
+                category_section_x + category_section_width + padding + i,
+                category_section_y + category_section_height + padding + i),
+            m_active_bg_color); // Use selected font color for outline
+    }
+
+    for (auto category = script->m_cheat_categories.begin();
+             category != script->m_cheat_categories.end(); category++) {
+        bool is_selected = category_count == m_selected_category;
+        drawEntry(driver, (*category)->m_name, category_count, is_selected, false,
+                    CHEAT_MENU_ENTRY_TYPE_CATEGORY);
+        
+        if (is_selected && m_cheat_layer) {
+            int cheat_n = (*category)->m_cheats.size();
+            int height = driver->getScreenSize().Height;
+            int target = height / (m_entry_height) + 1; // +1 for "and more" effect
+            int target_normal =
+                (height - (m_selected_category * (m_entry_height)))
+                / (m_entry_height);
+
+            if (cheat_n < target_normal) {
+                int cheat_count = 0;
+                for (auto cheat = (*category)->m_cheats.begin();
+                             cheat != (*category)->m_cheats.end(); cheat++) {
+                    drawEntry(driver, (*cheat)->m_name, cheat_count,
+                                    cheat_count == m_selected_cheat,
+                                    (*cheat)->is_enabled());
+                    cheat_count++;
+                }
+            } else {
+                int base = m_selected_cheat - m_selected_category - 1;
+                int drawn = 0;
+                for (int i = base; i < base + target; i++, drawn++) {
+                    int idx = negmod(i, cheat_n);
+                    ScriptApiCheatsCheat *cheat = (*category)->m_cheats[idx];
+                    int y = (drawn * (m_entry_height));
+                    drawRect(driver, cheat->m_name,
+                                    m_gap * 2 + m_entry_width, y,
+                                    m_entry_width, m_entry_height,
+                                    cheat->is_enabled(),
+                                    idx == m_selected_cheat);
+                }
+            }
+        }
+        category_count++;
+    }
 }
+
+
+
 
 void CheatMenu::drawHUD(video::IVideoDriver *driver, double dtime)
 {
