@@ -57,7 +57,7 @@ public:
 
     virtual bool OnEvent(const irr::SEvent& event);
     virtual void draw() override;
-
+    void drawHints(video::IVideoDriver* driver, gui::IGUIFont* font, const size_t i);
     void drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font, const size_t category_index);
     void drawSelectionBox(video::IVideoDriver* driver, gui::IGUIFont* font, const size_t i, const size_t c, const size_t s);
     bool isOpen() { return m_is_open; }
@@ -130,7 +130,8 @@ private:
     video::SColor sliderBarColor = video::SColor(255, 255, 255, 255);
     video::SColor sliderColorActive = video::SColor(255, 125, 125, 125);
     video::SColor sliderBarColorActive = video::SColor(255, 66, 111, 195);
-
+    video::SColor option_color = video::SColor(255, 2, 5, 8);
+    
     s32 subCategoryHeight = category_height * 3;
 };
 
