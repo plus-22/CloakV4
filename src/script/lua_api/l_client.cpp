@@ -957,9 +957,19 @@ int ModApiClient::l_update_infotexts(lua_State *L)
 	return 1;
 }
 
-int ModApiClient::l_get_description(lua_State* L) {
+int ModApiClient::l_get_description(lua_State* L)
+{
 	getClient(L)->getScript()->get_description();
 	lua_pushboolean(L, true);
+	return 1;
+}
+
+int ModApiClient::l_on_client_initialize(lua_State* L)
+{
+	if (Game::init_) {
+		lua_pushboolean(L, Game::init_);
+	}
+
 	return 1;
 }
 
@@ -1011,4 +1021,5 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(send_nodemeta_fields);
 	API_FCT(update_infotexts);
 	API_FCT(get_description);
+	API_FCT(on_client_initialize);
 }

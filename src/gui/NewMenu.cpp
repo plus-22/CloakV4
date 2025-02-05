@@ -868,11 +868,11 @@ void NewMenu::draw()
     gui::IGUIFont* font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_HD);
     if (g_settings->exists("use_menu_grid") && g_settings->getBool("use_menu_grid") == true) {
         if (isDragging) {
-            for (int x = 0; x <= driver->getScreenSize().Width; x += category_height / 2) {
+            for (size_t x = 0; x <= driver->getScreenSize().Width; x += category_height / 2) {
                 driver->draw2DLine(core::position2d<s32>(x, 0), core::position2d<s32>(x, driver->getScreenSize().Height), video::SColor(50, 255, 255, 255));
             }
 
-            for (int y = 0; y <= driver->getScreenSize().Height; y += category_height / 2) {
+            for (size_t y = 0; y <= driver->getScreenSize().Height; y += category_height / 2) {
                 driver->draw2DLine(core::position2d<s32>(0, y), core::position2d<s32>(driver->getScreenSize().Width, y), video::SColor(50, 255, 255, 255));
             }
         }

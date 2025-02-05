@@ -278,6 +278,8 @@ void Game::panic()
 	g_settings->setBool("anti_afk", false);
 }
 
+bool Game::init_ = false;
+
 bool Game::startup(bool *kill,
 		InputHandler *input,
 		RenderingEngine *rendering_engine,
@@ -328,6 +330,8 @@ bool Game::startup(bool *kill,
 
 	m_rendering_engine->initialize(client, hud);
 
+	init_ = true;
+	
 	return true;
 }
 

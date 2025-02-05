@@ -164,6 +164,8 @@ private:
 
 	static int l_get_description(lua_State* L);
 
+	static int l_on_client_initialize(lua_State* L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 };

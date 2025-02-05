@@ -848,6 +848,8 @@ public:
 		return input->wasKeyReleased(k);
 	}
 
+	static bool init_;
+
 #ifdef __ANDROID__
 	void handleAndroidChatInput();
 #endif
