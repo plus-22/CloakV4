@@ -166,3 +166,4 @@ Menus can be toggled with the "QuickMenu" cheat in Player category.
 - [Compiling on GNU/Linux](doc/compiling/linux.md)
 - [Compiling on Windows](doc/compiling/windows.md)
 - [Compiling on MacOS](doc/compiling/macos.md)
+- [Compiling on Android](doc/android.md)
