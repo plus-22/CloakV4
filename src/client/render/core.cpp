@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/mapblock_mesh.h"
 #include "script/scripting_client.h"
 
+
 static const v3s16 directions[6] = {
     v3s16(0, 0, -1),  // Front
     v3s16(0, 0, 1), // Back
@@ -392,7 +393,7 @@ void RenderingCore::DrawHUD(PipelineContext &context)
 		if (context.draw_crosshair)
 			context.hud->drawCrosshair();
 
-		context.hud->drawHotbar(context.client->getEnv().getLocalPlayer()->getWieldIndex());
+		//context.hud->drawHotbar(context.client->getEnv().getLocalPlayer()->getWieldIndex());
 		context.hud->drawLuaElements(context.client->getCamera()->getOffset());
 		context.client->getCamera()->drawNametags();
 		if (g_settings->getBool("enable_health_esp")) {

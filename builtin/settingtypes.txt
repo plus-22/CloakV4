@@ -751,6 +751,9 @@ language (Language) enum   ,be,bg,ca,cs,da,de,el,en,eo,es,et,eu,fi,fr,gd,gl,hu,i
 #    edge pixels when images are scaled by non-integer sizes.
 gui_scaling (GUI scaling) float 1.0 0.5 20
 
+#    Enables smooth scrolling.
+smooth_scrolling (Smooth scrolling) bool true
+
 #    Enables animation of inventory items.
 inventory_items_animations (Inventory items animations) bool false
 
@@ -788,6 +791,12 @@ hud_scaling (HUD scaling) float 1.0 0.5 20
 #    Whether name tag backgrounds should be shown by default.
 #    Mods may still set a background.
 show_nametag_backgrounds (Show name tag backgrounds by default) bool true
+
+#    Whether to show the client debug info (has the same effect as hitting F5).
+show_debug (Show debug info) bool false
+
+#    Radius to use when the block bounds HUD feature is set to near blocks.
+show_block_bounds_radius_near (Block bounds HUD radius) int 4 0 1000
 
 [**Chat]
 
@@ -881,6 +890,9 @@ server_url (Server URL) string https://minetest.net
 
 #    Automatically report to the serverlist.
 server_announce (Announce server) bool false
+
+#    Send names of online players to the serverlist. If disabled only the player count is revealed.
+server_announce_send_players (Send player names to the server list) bool true
 
 #    Announce to this serverlist.
 serverlist_url (Serverlist URL) string servers.minetest.net
@@ -1896,11 +1908,11 @@ shader_path (Shader path) path
 #    The rendering back-end.
 #    Note: A restart is required after changing this!
 #    OpenGL is the default for desktop, and OGLES2 for Android.
-#    Shaders are supported by everything but OGLES1.
-video_driver (Video driver) enum  ,opengl,opengl3,ogles1,ogles2
+video_driver (Video driver) enum  ,opengl,opengl3,ogles2
 
-#    Distance in nodes at which transparency depth sorting is enabled
-#    Use this to limit the performance impact of transparency depth sorting
+#    Distance in nodes at which transparency depth sorting is enabled.
+#    Use this to limit the performance impact of transparency depth sorting.
+#    Set to 0 to disable it entirely.
 transparency_sorting_distance (Transparency Sorting Distance) int 16 0 128
 
 #    Radius of cloud area stated in number of 64 node cloud squares.
@@ -2060,9 +2072,6 @@ client_unload_unused_data_timeout (Mapblock unload timeout) float 600.0 0.0
 #    Set to -1 for unlimited amount.
 client_mapblock_limit (Mapblock limit) int 7500 -1 2147483647
 
-#    Whether to show the client debug info (has the same effect as hitting F5).
-show_debug (Show debug info) bool false
-
 #    Maximum number of blocks that are simultaneously sent per client.
 #    The maximum total count is calculated dynamically:
 #    max_total = ceil((#clients + max_users) * per_client / 4)
@@ -2072,9 +2081,8 @@ max_simultaneous_block_sends_per_client (Maximum simultaneous block sends per cl
 #    This determines how long they are slowed down after placing or removing a node.
 full_block_send_enable_min_time_from_building (Delay in sending blocks after building) float 2.0 0.0
 
-#    Maximum number of packets sent per send step, if you have a slow connection
-#    try reducing it, but don't reduce it to a number below double of targeted
-#    client number.
+#    Maximum number of packets sent per send step in the low-level networking code.
+#    You generally don't need to change this, however busy servers may benefit from a higher number.
 max_packets_per_iteration (Max. packets per iteration) int 1024 1 65535
 
 #    Compression level to use when sending mapblocks to the client.
