@@ -29,6 +29,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <locale> 
 #include "log.h"
 
+struct Sprite
+{
+    int x = 0, y = 0;
+    int width = 0;
+    int height = 0;
+
+    core::rect<s32> get_rect() {return core::rect<s32>(x, y, x + width, y + height);}
+    bool isDragging = false;
+
+    bool changedPos = false;
+
+    void save(s32 screenWidth, s32 screenHeight) {
+        if (x < 0) {
+            x = 0;
+        } else if (y + height > screenHeight) {
+            y = screenHeight - height;
+        }
+
+        g_settings->setV2F("coords_sprite", v2f(x, y));
+    }
+};
+
 using namespace irr;
 using namespace gui;
 
@@ -63,6 +85,7 @@ public:
     bool isOpen() { return m_is_open; }
     
     ~NewMenu();
+    static Sprite coords_sprite;
 
 private:
     double roundToNearestStep(double number, double m_min, double m_max, double m_steps);

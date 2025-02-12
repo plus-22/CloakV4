@@ -36,6 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "NewMenu.h"
 
+Sprite NewMenu::coords_sprite = Sprite();
+
 NewMenu::NewMenu(gui::IGUIEnvironment* env, 
     gui::IGUIElement* parent, 
     s32 id, IMenuManager* menumgr, 
@@ -47,6 +49,18 @@ NewMenu::NewMenu(gui::IGUIEnvironment* env,
 {    
     infostream << "[NEWMENU] Successfully created" << std::endl;
     this->env = env;
+		
+	coords_sprite.width = 140;
+	coords_sprite.height = 30;
+
+    if (!g_settings->exists("coords_sprite")) {
+        coords_sprite.x = 5;
+        coords_sprite.y = (Environment->getVideoDriver()->getScreenSize().Height - coords_sprite.height / 2 + g_fontengine->getTextHeight() - coords_sprite.height);
+    } else {
+        v2f data = g_settings->getV2F("coords_sprite");
+        coords_sprite.x = data[0];
+        coords_sprite.y = data[1];
+    }
 }
 
 NewMenu::~NewMenu()
@@ -381,6 +395,7 @@ void NewMenu::moveMenu(size_t i, core::position2d<s32> new_position)
 
 bool NewMenu::OnEvent(const irr::SEvent& event) 
 {
+    s32 screenWidth = Environment->getVideoDriver()->getScreenSize().Width, screenHeight = Environment->getVideoDriver()->getScreenSize().Height;
     if (!m_is_open) {
         return false;
     }
@@ -396,6 +411,12 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
     
     if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
         if (event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
+
+        if (coords_sprite.get_rect().isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
+            coords_sprite.isDragging = true;
+            offset = core::vector2d<s32>(event.MouseInput.X - coords_sprite.x, event.MouseInput.Y - coords_sprite.y);
+            return true;
+        }
             if (isSelecting) {
                 for (size_t o = 0; o < script->m_cheat_categories[selectingCategoryIndex]->m_cheats[selectingCheatIndex]->m_cheat_settings[selectingSettingIndex]->m_options.size(); ++o) {
                     if (cheatSettingOptionRects[selectingCategoryIndex][selectingCheatIndex][selectingSettingIndex][o].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
@@ -461,6 +482,7 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
             }
             return false; 
         } else if (event.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
+            coords_sprite.isDragging = false;
             isDragging = false;
             isSliding = false;
             draggedRectIndex = -1;
@@ -470,12 +492,17 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
             return true;
         } else if (event.MouseInput.Event == irr::EMIE_MOUSE_MOVED && isDragging && draggedRectIndex != -1) {
             moveMenu(draggedRectIndex, core::vector2d<s32>(event.MouseInput.X - offset.X, event.MouseInput.Y - offset.Y));
-
             return true;
         } else if (event.MouseInput.Event == irr::EMIE_MOUSE_MOVED && isSliding) {
             ScriptApiCheatsCheatSetting* cheatSetting = script->m_cheat_categories[draggedSliderCategoryIndex]->m_cheats[draggedSliderCheatIndex]->m_cheat_settings[draggedSliderSettingIndex];
             cheatSetting->set_value(calculateSliderValueFromPosition(cheatSliderBarRects[draggedSliderCategoryIndex][draggedSliderCheatIndex][draggedSliderSettingIndex], core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y), cheatSetting->m_min, cheatSetting->m_max, cheatSetting->m_steps));
             
+        } else if (event.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
+            if (coords_sprite.isDragging) {
+                coords_sprite.x = event.MouseInput.X - offset.X;
+                coords_sprite.y = event.MouseInput.Y - offset.Y;
+                coords_sprite.save(screenWidth, screenHeight);
+            }
         } else if (event.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
             for (size_t i = 0; i < script->m_cheat_categories.size(); ++i) {
 
@@ -891,5 +918,6 @@ void NewMenu::draw()
         if (isSelecting) {
             drawSelectionBox(driver, font, selectingCategoryIndex, selectingCheatIndex, selectingSettingIndex);
         }
+        driver->draw2DRectangleOutline(core::rect<s32>(coords_sprite.x, coords_sprite.y, coords_sprite.x + coords_sprite.width, coords_sprite.y + coords_sprite.height), video::SColor(255, 255, 0, 255));
     }
 } 
