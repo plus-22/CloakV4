@@ -18,8 +18,8 @@ It has not been tested extensively, so it may not be stable. If any bug or error
 
 # Features
 ### Menus
-  - Quick Menu: Dragonfire cheat menu. Use arrow keys to navegate through it and enter key to toggle cheats.
-  - Click Menu: Use F8 key to open it. It displays different windows for each category and they can be moved. This menu was first implemented in [MineBoost Client](https://www.github.com/FoxLoveFire/MineBoost) by [Maintainer_ / FoxLoveFire](https://github.com/FoxLoveFire/), all credit goes to him.
+  - Quick Menu: Dragonfire cheat menu. Use arrow keys to navigate through it and enter key to toggle cheats.
+  - Click Menu: Use F8 key to open it. It displays different windows for each category. Each window can be moved. This menu was first implemented in [MineBoost Client](https://www.github.com/FoxLoveFire/MineBoost) by [Maintainer_ / FoxLoveFire](https://github.com/FoxLoveFire/), all credit goes to him.
 
 
 Menus can be toggled with the "QuickMenu" cheat in Player category.
