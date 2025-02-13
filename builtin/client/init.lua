@@ -25,4 +25,5 @@ dofile(cheatspath .. "worldutil.lua")
 dofile(cheatspath .. "autototem.lua")
 dofile(cheatspath .. "combatlog.lua")
 dofile(cheatspath .. "autostaff.lua")
+dofile(cheatspath .. "misc.lua")
 assert(loadfile(commonpath .. "item_s.lua"))({}) -- Just for push/read node functions

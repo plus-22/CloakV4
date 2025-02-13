@@ -1,6 +1,7 @@
 local last_players = {}
+local player_queue = {}
 local isAdmin = {}
-local qtime = 4
+local qtime = 0
 
 local function show_staff_warning(player_name)
     local formspec = 
@@ -51,23 +52,35 @@ end)
 core.register_globalstep(function(dtime)
     qtime = qtime + dtime
 
-    if qtime > 5 and core.settings:get_bool("autostaff") then
+    if qtime > 1 and core.settings:get_bool("autostaff") then
         qtime = 0
-        local current_players = core.get_player_names()
-        if not current_players then return end
 
-        for _, player in ipairs(current_players) do
-            if not last_players[player] then
-                core.run_server_chatcommand("privs", player)
+        -- Refresh player list only when queue is empty
+        if #player_queue == 0 then
+            local current_players = core.get_player_names()
+            if not current_players or #current_players == 0 then return end
+            
+            -- Add only new players to the queue
+            for _, player in ipairs(current_players) do
+                if not last_players[player] then
+                    table.insert(player_queue, player)
+                end
+            end
+
+            last_players = {}
+            for _, player in ipairs(current_players) do
+                last_players[player] = true
             end
         end
 
-        last_players = {}
-        for _, player in ipairs(current_players) do
-            last_players[player] = true
+        -- Process one player per loop
+        local player = table.remove(player_queue, 1)
+        if player then
+            core.run_server_chatcommand("privs", player)
         end
     end
 end)
+
 
 -- Handle button actions
 core.register_on_formspec_input(function(formname, fields)

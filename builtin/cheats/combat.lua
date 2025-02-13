@@ -45,7 +45,7 @@ end
 
 function get_best_target(objects, target_mode, target_type, max_distance, player)
     local best_target = nil
-    local best_value = target_mode == "Lowest HP" and math.huge or 0 -- Initialize based on mode
+    local best_value = target_mode == "Highest HP" and 0 or math.huge -- Initialize based on mode
 	local ppos = player:get_pos()
     for _, obj in ipairs(objects) do
         if is_valid_target(obj, target_type, max_distance, ppos) then

@@ -204,6 +204,10 @@ void set_default_settings()
 	settings->setDefault("autostaff", "true");
 	settings->setDefault("autostaff.warn_staff", "true");
 	settings->setDefault("autoteam", "false");
+	settings->setDefault("auto_heal", "true");
+	settings->setDefault("auto_heal.hp", "15");
+	settings->setDefault("auto_heal.delay", "0.1");
+	settings->setDefault("auto_heal.cooldown", "0.5");
 	settings->setDefault("orbit", "false");
     settings->setDefault("orbit.radius", "2");
 	settings->setDefault("crystalspam", "false");

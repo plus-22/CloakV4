@@ -280,6 +280,7 @@ void Game::panic()
     g_settings->setBool("autototem", false);
     g_settings->setBool("panic", false);
     g_settings->setBool("autoteam", false);
+    g_settings->setBool("auto_heal", false);
     g_settings->setBool("orbit", false);
     g_settings->setBool("velocity", false);
     g_settings->setBool("overrides", false);
