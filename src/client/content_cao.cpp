@@ -1042,8 +1042,13 @@ void GenericCAO::updateNametag()
                     break;
                 }
                 case EntityRelationship::ALLY: {
-                    v3f ally_esp_color = g_settings->getV3F("ally_esp_color");
-                    m_prop.nametag_color = video::SColor(255, ally_esp_color.X, ally_esp_color.Y, ally_esp_color.Z);
+                    v3f allied_esp_color = g_settings->getV3F("allied_esp_color");
+                    m_prop.nametag_color = video::SColor(255, allied_esp_color.X, allied_esp_color.Y, allied_esp_color.Z);
+                    break;
+                }
+				case EntityRelationship::STAFF: {
+                    v3f staff_esp_color = g_settings->getV3F("staff_esp_color");
+                    m_prop.nametag_color = video::SColor(255, staff_esp_color.X, staff_esp_color.Y, staff_esp_color.Z);
                     break;
                 }
                 default:
@@ -1070,8 +1075,13 @@ void GenericCAO::updateNametag()
                     break;
                 }
                 case EntityRelationship::ALLY: {
-                    v3f ally_esp_color = g_settings->getV3F("ally_esp_color");
-                    m_prop.nametag_color = video::SColor(255, ally_esp_color.X, ally_esp_color.Y, ally_esp_color.Z);
+                    v3f allied_esp_color = g_settings->getV3F("allied_esp_color");
+                    m_prop.nametag_color = video::SColor(255, allied_esp_color.X, allied_esp_color.Y, allied_esp_color.Z);
+                    break;
+                }
+				case EntityRelationship::STAFF: {
+                    v3f staff_esp_color = g_settings->getV3F("staff_esp_color");
+                    m_prop.nametag_color = video::SColor(255, staff_esp_color.X, staff_esp_color.Y, staff_esp_color.Z);
                     break;
                 }
                 default:

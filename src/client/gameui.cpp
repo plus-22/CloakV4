@@ -127,8 +127,14 @@ void GameUI::update(const RunStats &stats, Client *client, MapDrawControl *draw_
 			<< (player_position.X / BS)
 			<< ", " << (player_position.Y / BS)
 			<< ", " << (player_position.Z / BS);
+
+		if (g_settings->exists("coords_sprite")) {
+			v2f data = g_settings->getV2F("coords_sprite");
+			m_guitext_coords->setRelativePosition(core::rect<s32>(data[0], data[1], screensize.X, screensize.Y));
+		} else {
+			m_guitext_coords->setRelativePosition(core::rect<s32>(5, screensize.Y - 5 - g_fontengine->getTextHeight(), screensize.X, screensize.Y));
+		}
 		setStaticText(m_guitext_coords, utf8_to_wide(os.str()).c_str());
-		m_guitext_coords->setRelativePosition(core::rect<s32>(5, screensize.Y - 5 - g_fontengine->getTextHeight(), screensize.X, screensize.Y));
 	}
 
 	m_guitext_coords->setVisible(show_coords);
@@ -413,5 +419,10 @@ void GameUI::clearText()
 	if (m_guitext_profiler) {
 		m_guitext_profiler->remove();
 		m_guitext_profiler = nullptr;
+	}
+	
+	if (m_guitext_coords) {
+		m_guitext_coords->remove();
+		m_guitext_coords = nullptr;
 	}
 }

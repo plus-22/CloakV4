@@ -97,48 +97,26 @@ use_menu_grid (Use grid in cheat menu) bool true
 save_menu_category_positions (Save cheat menu category positions and dropdowns) bool true
 
 [**Xray]
-xray (XRay) bool false
 
 xray.nodes (XRay Nodes) string default:stone,mcl_core:stone
 
 [**Node ESP]
 
-enable_node_esp (NodeESP) bool false
-
 node_esp_nodes (NodeESP Nodes) string
 
 [**Entities]
-
-enable_entity_esp (Entity ESP) bool false
-
-enable_entity_tracers (Entity tracers) bool false
 
 entity_esp_color (Entity ESP color) string (255, 255, 255)
 
 [**Players]
 
-enable_player_esp (Player ESP) bool false
-
-enable_player_tracers (Player tracers) bool false
-
 friend_esp_color (Friend ESP color) string (255, 0, 255)
 
-allied_esp_color (Allied ESP color) string (0, 0, 255)
+allied_esp_color (Allied ESP color) string (0, 255, 0)
+
+staff_esp_color (Allied ESP color) string (0, 0, 255)
 
 enemy_esp_color (Enemy ESP color) string (255, 0, 0)
-
-[**ESP HP Settings]
-
-enable_health_esp (Show Players HP) bool false
-
-enable_health_esp.players_only (Show Players Only) bool false
-
-[** CTF only]
-autoteam (Auto Team) bool false
-
-[** Mineclone?]
-
-noweather (NoWeather) bool false
 
 [Controls]
 

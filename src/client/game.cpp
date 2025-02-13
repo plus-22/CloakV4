@@ -224,59 +224,80 @@ Game::~Game()
 
 void Game::panic()
 {
-	g_settings->setBool("xray", false);
-	g_settings->setBool("autosneak", false);
-	g_settings->setBool("instant_break", false);
-	g_settings->setBool("antiknockback", false);
-	g_settings->setBool("float_above_parent", false);
-	g_settings->setBool("freecam", false);
-	g_settings->setBool("norender.particles", false);
-	g_settings->setBool("norender.particle_spawners", false);
-	g_settings->setBool("jesus", false);
-	g_settings->setBool("no_slow", false);
-	g_settings->setBool("jetpack", false);
-	g_settings->setBool("antislip", false);
-	g_settings->setBool("airjump", false);
-	g_settings->setBool("spider", false);
-	g_settings->setBool("hud_flags_bypass", false);
-	g_settings->setBool("enable_entity_esp", false);
-	g_settings->setBool("enable_entity_tracers", false);
-	g_settings->setBool("enable_player_esp", false);
-	g_settings->setBool("enable_player_tracers", false);
-	g_settings->setBool("enable_node_esp", false);
-	g_settings->setBool("enable_node_tracers", false);
-	g_settings->setBool("enable_tunnel_esp", false);
-	g_settings->setBool("enable_tunnel_tracers", false);
-	g_settings->setBool("autorespawn", false);
-	g_settings->setBool("cheat_hud", false);
-	g_settings->setBool("fastdig", false);
-	g_settings->setBool("autodig", false);
-	g_settings->setBool("spamclick", false);
-	g_settings->setBool("autohit", false);
-	g_settings->setBool("fastplace", false);
-	g_settings->setBool("autoplace", false);
-	g_settings->setBool("prevent_natural_damage", false);
-	g_settings->setBool("coords", false);
-	g_settings->setBool("fullbright", false);
-	g_settings->setBool("killaura.players", false);
-	g_settings->setBool("killaura.entities", false);
-	g_settings->setBool("killaura.assist", false);
-	g_settings->setBool("reach", false);
-	g_settings->setBool("priv_bypass_extra", false);
+    g_settings->setBool("xray", false);
+    g_settings->setBool("autosneak", false);
+    g_settings->setBool("instant_break", false);
+    g_settings->setBool("antiknockback", false);
+    g_settings->setBool("float_above_parent", false);
+    g_settings->setBool("freecam", false);
+    g_settings->setBool("norender.particles", false);
+    g_settings->setBool("norender.particle_spawners", false);
+    g_settings->setBool("jesus", false);
+    g_settings->setBool("no_slow", false);
+    g_settings->setBool("jetpack", false);
+    g_settings->setBool("antislip", false);
+    g_settings->setBool("airjump", false);
+    g_settings->setBool("spider", false);
+    g_settings->setBool("hud_flags_bypass", false);
+    g_settings->setBool("enable_entity_esp", false);
+    g_settings->setBool("enable_entity_tracers", false);
+    g_settings->setBool("enable_player_esp", false);
+    g_settings->setBool("enable_player_tracers", false);
+    g_settings->setBool("enable_node_esp", false);
+    g_settings->setBool("enable_node_tracers", false);
+    g_settings->setBool("enable_tunnel_esp", false);
+    g_settings->setBool("enable_tunnel_tracers", false);
+    g_settings->setBool("autorespawn", false);
+    g_settings->setBool("cheat_hud", false);
+    g_settings->setBool("fastdig", false);
+    g_settings->setBool("autodig", false);
+    g_settings->setBool("spamclick", false);
+    g_settings->setBool("autohit", false);
+    g_settings->setBool("fastplace", false);
+    g_settings->setBool("autoplace", false);
+    g_settings->setBool("prevent_natural_damage", false);
+    g_settings->setBool("coords", false);
+    g_settings->setBool("fullbright", false);
+    g_settings->setBool("reach", false);
+    g_settings->setBool("priv_bypass_extra", false);
     g_settings->setBool("priv_bypass", false);
-	g_settings->setBool("autotool", false);
+    g_settings->setBool("autotool", false);
     g_settings->setBool("dont_point_nodes", false);
-	g_settings->setBool("small_post_effect_color", false);
+    g_settings->setBool("small_post_effect_color", false);
     g_settings->setBool("no_hurt_cam", false);
     g_settings->setBool("autoaim", false);
     g_settings->setBool("no_force_rotate", false);
     g_settings->setBool("no_night", false);
     g_settings->setBool("nobob", false);
-	g_settings->setBool("use_colored_nametags", false);
-	g_settings->setBool("BHOP", false);
-	g_settings->setBool("hp_player_bar", false);
-	g_settings->setBool("anti_afk", false);
+    g_settings->setBool("use_colored_nametags", false);
+    g_settings->setBool("BHOP", false);
+    g_settings->setBool("enable_health_esp", false);
+    g_settings->setBool("anti_afk", false);
+    g_settings->setBool("killaura", false);
+    g_settings->setBool("critical_hits", false);
+    g_settings->setBool("be_a_bitch", false);
+    g_settings->setBool("crystalspam", false);
+    g_settings->setBool("autototem", false);
+    g_settings->setBool("panic", false);
+    g_settings->setBool("autoteam", false);
+    g_settings->setBool("auto_heal", false);
+    g_settings->setBool("orbit", false);
+    g_settings->setBool("velocity", false);
+    g_settings->setBool("overrides", false);
+    g_settings->setBool("step", false);
+    g_settings->setBool("silence", false);
+    g_settings->setBool("scaffold", false);
+    g_settings->setBool("scaffold_plus", false);
+    g_settings->setBool("block_water", false);
+    g_settings->setBool("block_lava", false);
+    g_settings->setBool("autotnt", false);
+    g_settings->setBool("nuke", false);
+    g_settings->setBool("replace", false);
+    g_settings->setBool("autoeject", false);
+    g_settings->setBool("autoplanks", false);
+    g_settings->setBool("autorefill", false);
 }
+
 
 bool Game::init_ = false;
 
@@ -2208,11 +2229,16 @@ void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation 
 
 void Game::handleClientEvent_ShowLocalFormSpec(ClientEvent *event, CameraOrientation *cam)
 {
-	FormspecFormSource *fs_src = new FormspecFormSource(*event->show_formspec.formspec);
-	LocalFormspecHandler *txt_dst =
-		new LocalFormspecHandler(*event->show_formspec.formname, client);
-	GUIFormSpecMenu::create(m_game_ui->getFormspecGUI(), client, m_rendering_engine->get_gui_env(),
-			&input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound_manager.get());
+	if (event->show_formspec.formspec->empty()) {
+		auto formspec = m_game_ui->getFormspecGUI();
+		if (formspec && (event->show_formspec.formname->empty() || *(event->show_formspec.formname) == m_game_ui->getFormspecName())) {
+			formspec->quitMenu();
+		}
+	} else {
+		FormspecFormSource *fs_src = new FormspecFormSource(*event->show_formspec.formspec);
+		LocalFormspecHandler *txt_dst = new LocalFormspecHandler(*event->show_formspec.formname, client);
+		GUIFormSpecMenu::create(m_game_ui->getFormspecGUI(), client, m_rendering_engine->get_gui_env(), &input->joystick, fs_src, txt_dst, client->getFormspecPrepend(), sound_manager.get());
+	}
 
 	delete event->show_formspec.formspec;
 	delete event->show_formspec.formname;
