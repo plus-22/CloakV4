@@ -68,6 +68,7 @@ core.cheats = {
 	["Misc"] = {
 		["Nametags"] = "use_colored_nametags",
 		["AntiAFK"] = "anti_afk",
+		["AntiAdmin"] = "autostaff",
 		["Panic"] = "panic",
 		["Hints"] = "use_hints",
 	}
@@ -146,7 +147,7 @@ core.register_cheat_with_infotext("HealthESP", "Render", "enable_health_esp", ""
 core.register_cheat_with_description("AntiKnockback", "Combat", "antiknockback", "Ignore knockback")
 core.register_cheat_with_description("AttachmentFloat", "Combat", "float_above_parent", "Puts the camera one node higher when attached to an entity")
 core.register_cheat_with_description("AutoTotem", "Combat", "autototem", "Automatically puts a totem in your offhand")
-core.register_cheat_with_description("Autoaim", "Combat", "autoaim", "Aims at a specified target")
+core.register_cheat_with_description("AutoAim", "Combat", "autoaim", "Aims at a specified target")
 core.register_cheat_with_description("CombatLog", "Combat", "be_a_bitch", "Logs off when certain HP is reached")
 core.register_cheat_with_description("Criticals", "Combat", "critical_hits", "Does critical hits in mcl2/mcla")
 core.register_cheat_with_description("CrystalSpam", "Combat", "crystalspam", "Puts end crystals under the nearest player")
@@ -165,7 +166,9 @@ core.register_cheat_with_description("AutoTool", "Interact", "autotool", "Select
 core.register_cheat_with_description("Enderchest", "Inventory", minetest.open_enderchest, "Preview enderchest content in mcl/mcla")
 core.register_cheat_with_description("Hand", "Inventory", minetest.open_handslot, "Open hand formspec in mcl/mcla")
 --Misc
-core.register_cheat_with_description("AntiAFK", "Misc", "anti_afk", "Prevent afk by moving")
+core.register_cheat_with_description("Anti AFK", "Misc", "anti_afk", "Prevent afk by moving")
+core.register_cheat_with_description("Auto Staff", "Misc", "autostaff", "Automatically check player privs and assign them as a staff.")
+core.register_cheat_setting("Warn Staff", "Misc", "autostaff", "autostaff.warn_staff", {type="bool"})
 core.register_cheat_with_description("Auto Team", "Misc", "autoteam", "Sets allied players to your team in ctf")
 core.register_cheat_with_description("Nametags", "Misc", "use_colored_nametags", "Sets player nametag colors based on their friend/enemy status")
 core.register_cheat_with_description("Panic", "Misc", "panic", "Disables all detectable cheats")

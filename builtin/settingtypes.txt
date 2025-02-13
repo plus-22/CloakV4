@@ -123,7 +123,9 @@ enable_player_tracers (Player tracers) bool false
 
 friend_esp_color (Friend ESP color) string (255, 0, 255)
 
-allied_esp_color (Allied ESP color) string (0, 0, 255)
+allied_esp_color (Allied ESP color) string (0, 255, 0)
+
+staff_esp_color (Allied ESP color) string (0, 0, 255)
 
 enemy_esp_color (Enemy ESP color) string (255, 0, 0)
 

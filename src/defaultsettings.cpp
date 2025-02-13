@@ -200,9 +200,15 @@ void set_default_settings()
 	settings->setDefault("friends", "{}");
 	settings->setDefault("enemies", "{}");
 	settings->setDefault("allies", "{}");
+	settings->setDefault("staff", "{}");
+	settings->setDefault("autostaff", "true");
+	settings->setDefault("autostaff.warn_staff", "true");
 	settings->setDefault("autoteam", "false");
 	settings->setDefault("orbit", "false");
     settings->setDefault("orbit.radius", "2");
+	settings->setDefault("crystalspam", "false");
+	settings->setDefault("combatlog", "false");
+	settings->setDefault("critical_hits", "false");
 	settings->setDefault("killaura", "false");
 	settings->setDefault("killaura.players", "false");
 	settings->setDefault("killaura.entities", "false");
@@ -265,6 +271,7 @@ void set_default_settings()
 	settings->setDefault("entity_esp_color", "(255, 255, 255)");
 	settings->setDefault("friend_esp_color", "(255, 0, 255)");
 	settings->setDefault("allied_esp_color", "(0, 255, 0)");
+	settings->setDefault("staff_esp_color", "(0, 0, 255)");
 	settings->setDefault("enemy_esp_color", "(255, 0, 0)");
 
 	settings->setDefault("silence", "false");

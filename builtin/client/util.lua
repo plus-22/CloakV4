@@ -29,6 +29,10 @@ function core.parse_num(n)
 	return false, "Invalid number (" .. n .. ")"
 end
 
+function core.close_formspec(formname)
+	return core.show_formspec(formname, "")
+end
+
 function core.find_item(item, mini, maxi)
 	for index, stack in ipairs(core.get_inventory("current_player").main) do
 		if (not mini or index >= mini) and (not maxi or index <= maxi) and stack:get_name() == item then
@@ -89,7 +93,7 @@ function core.add_to_player_list(setting, name)
 	return true, "Added " .. name .. " to the list."
 end
 
-function core.remove_from_player_list(setting, server_url, name)
+function core.remove_from_player_list(setting, name)
 	local server_url = core.get_server_url()
 	if not server_url then
 		return
@@ -101,7 +105,7 @@ function core.remove_from_player_list(setting, server_url, name)
 		return false, name .. " is not on the list."
 	end
 	table.remove(list, index)
-	core.set_player_list(setting, server_url, list)
+	core.set_player_list(setting, list)
 	return true, "Removed " .. name .. " from the list."
 end
 
