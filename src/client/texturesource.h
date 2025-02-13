@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes.h"
+#include <ITexture.h>
 #include <SColor.h>
 #include <string>
 #include <vector>
