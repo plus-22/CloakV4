@@ -47,8 +47,27 @@ core.register_globalstep(function(dtime)
     end
 
 	if item and item:get_count() > 0 and def and def.node_placement_prediction ~= "" then
-		if core.settings:get_bool("scaffold") then
+		if core.settings:get_bool("scaffold") or core.settings:get_bool("scaffold_plus") then
 			core.settings:set_bool("scaffold.active", true)
+			local control = core.localplayer and core.localplayer:get_control()
+			uptime = uptime + dtime
+			if control and control.jump then
+				if uptime > tonumber(core.settings:get("scaffold.jump_delay")) / 2 then
+					local node_above = core.get_node_or_nil(vector.round(vector.add(pos, {x = 0, y = 2.4, z = 0})))
+					if node_above and node_above.name == "air" then
+						uptime = 0
+						pos = vector.add(pos, {x = 0, y = 1, z = 0})
+						core.localplayer:set_pos(pos)
+					end
+				end
+			else
+				uptime = tonumber(core.settings:get("scaffold.jump_delay")) / 2
+			end
+		else
+			core.settings:set_bool("scaffold.active", false)
+		end
+
+		if core.settings:get_bool("scaffold") then
 			local p = vector.round(vector.add(pos, {x = 0, y = -0.6, z = 0}))
 			local node = core.get_node_or_nil(p)
 			if not node or core.get_node_def(node.name).buildable_to then
@@ -56,7 +75,6 @@ core.register_globalstep(function(dtime)
 			end
 		end
 		if core.settings:get_bool("scaffold_plus") then
-			core.settings:set_bool("scaffold.active", true)
 			local z = pos.z
 			local positions = {
 				{x = 0, y = -0.6, z = 0},
@@ -121,6 +139,7 @@ core.register_globalstep(function(dtime)
 end)
 
 core.register_cheat("Scaffold", "World", "scaffold")
+core.register_cheat_setting("Jump Delay", "World", "scaffold", "scaffold.jump_delay", {type="slider_float", min=0.0, max=0.8, steps=9})
 core.register_cheat("ScaffoldPlus", "World", "scaffold_plus")
 core.register_cheat("BlockWater", "World", "block_water")
 core.register_cheat("BlockLava", "World", "block_lava")

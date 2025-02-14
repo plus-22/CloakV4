@@ -253,6 +253,7 @@ void set_default_settings()
 	settings->setDefault("panic", "false");
 	settings->setDefault("step", "false");
 	settings->setDefault("scaffold.active", "false");
+	settings->setDefault("scaffold.jump_delay", "0.2");
 	settings->setDefault("step.mult", "2.0f");
 	settings->setDefault("enable_entity_esp.custom_color", "true");
 	settings->setDefault("autoaim.y_offset", "0");

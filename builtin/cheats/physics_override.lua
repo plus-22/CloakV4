@@ -30,6 +30,12 @@ core.register_globalstep(function()
 		core.localplayer:set_physics_override(override)
 	end
 
+	if core.settings:get_bool("scaffold.active") then
+		local override = core.localplayer:get_physics_override()
+		override.jump = 0
+		core.localplayer:set_physics_override(override)
+	end
+
 	if core.settings:get_bool("overrides.old_movement") then
 		core.settings:set_bool("overrides.sneak_glitch", true)
 	end
