@@ -285,6 +285,7 @@ void Game::panic()
     g_settings->setBool("velocity", false);
     g_settings->setBool("overrides", false);
     g_settings->setBool("step", false);
+    g_settings->setBool("scaffold.active", false);
     g_settings->setBool("silence", false);
     g_settings->setBool("scaffold", false);
     g_settings->setBool("scaffold_plus", false);

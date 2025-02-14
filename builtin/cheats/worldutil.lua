@@ -48,6 +48,7 @@ core.register_globalstep(function(dtime)
 
 	if item and item:get_count() > 0 and def and def.node_placement_prediction ~= "" then
 		if core.settings:get_bool("scaffold") then
+			core.settings:set_bool("scaffold.active", true)
 			local p = vector.round(vector.add(pos, {x = 0, y = -0.6, z = 0}))
 			local node = core.get_node_or_nil(p)
 			if not node or core.get_node_def(node.name).buildable_to then
@@ -55,6 +56,7 @@ core.register_globalstep(function(dtime)
 			end
 		end
 		if core.settings:get_bool("scaffold_plus") then
+			core.settings:set_bool("scaffold.active", true)
 			local z = pos.z
 			local positions = {
 				{x = 0, y = -0.6, z = 0},
@@ -96,6 +98,8 @@ core.register_globalstep(function(dtime)
                     else end
 			end
 		end
+	else
+		core.settings:set_bool("scaffold.active", false)
 	end
 	if core.settings:get_bool("nuke") then
 		local i = 0

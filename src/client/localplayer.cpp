@@ -392,7 +392,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	float player_stepheight = (m_cao == nullptr) ? 0.0f :
     ((touching_ground ? m_cao->getStepHeight() : (0.2f * BS)) * 
     (g_settings->getBool("step") ? g_settings->getFloat("step.mult") : 
-    (g_settings->getBool("scaffold") ? 2.0f : 1.0f)));
+    (g_settings->getBool("scaffold.active") ? 2.0f : 1.0f)));
 
 
 
