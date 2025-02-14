@@ -419,11 +419,26 @@ int ModApiClient::l_set_fast_speed(lua_State *L)
 int ModApiClient::l_place_node(lua_State *L)
 {
 	Client *client = getClient(L);
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	const NodeDefManager *nodedef = client->ndef();
+	ItemStack selected_item, hand_item;
+	player->getWieldedItem(&selected_item, &hand_item);
+	const ItemDefinition &selected_def = selected_item.getDefinition(getGameDef(L)->idef());
 	v3s16 pos = read_v3s16(L, 1);
 	PointedThing pointed;
 	pointed.type = POINTEDTHING_NODE;
-	pointed.node_abovesurface = pos;
+	pointed.node_abovesurface = pos + v3s16(0, 1, 0);
 	pointed.node_undersurface = pos;
+	// Add node to client map
+	content_t id;
+	bool found = nodedef->getId(selected_def.node_placement_prediction, id);
+	if (!found) {
+		client->interact(INTERACT_PLACE, pointed);
+		return 0;
+	}
+	
+	MapNode n(id, 0, 0);
+	client->addNode(pos, n);
 	client->interact(INTERACT_PLACE, pointed);
 	return 0;
 }

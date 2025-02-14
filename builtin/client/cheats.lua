@@ -194,7 +194,7 @@ core.register_cheat_description("Step", "Movement", "step", "Climbs the block yo
 core.register_cheat_description("Velocity", "Movement", "velocity", "Various velocity overrides")
 --Player
 core.register_cheat_description("AutoRespawn", "Player", "autorespawn", "Respawn after dying")
-core.register_cheat_description("NoFallDamage", "Player", "nofalldamage", "Receive no fall damage")
+core.register_cheat_description("NoFallDamage", "Player", "prevent_natural_damage", "Receive no fall damage")
 core.register_cheat_description("NoForceRotate", "Player", "noforcerotate", "Prevent server from changing the player's view direction")
 core.register_cheat_description("NoViewBob", "Player", "nobob", "Disable view bobbing")
 core.register_cheat_description("PrivBypass", "Player", "priv_bypass", "Bypass fly, noclip, fast and wireframe rendering")
