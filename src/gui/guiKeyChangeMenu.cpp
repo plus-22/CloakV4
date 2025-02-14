@@ -29,6 +29,7 @@
 #include <IGUIButton.h>
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
+#include <IVideoDriver.h>
 #include "settings.h"
 #include <algorithm>
 
@@ -120,13 +121,9 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	removeAllChildren();
 	key_used_text = nullptr;
 
-	const float s = m_gui_scale;
-	DesiredRect = core::rect<s32>(
-		screensize.X / 2 - 1075 * s / 2,
-		screensize.Y / 2 - 430 * s / 2,
-		screensize.X / 2 + 1075 * s / 2,
-		screensize.Y / 2 + 430 * s / 2
-	);
+	ScalingInfo info = getScalingInfo(screensize, v2u32(1075, 430));
+	const float s = info.scale;
+	DesiredRect = info.rect;
 	recalculateAbsolutePosition(false);
 
 	v2s32 size = DesiredRect.getSize();

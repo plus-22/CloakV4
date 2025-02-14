@@ -116,6 +116,8 @@ void *ServerThread::run()
 		m_server->setAsyncFatalError(e.what());
 	} catch (LuaError &e) {
 		m_server->setAsyncFatalError(e);
+	} catch (ModError &e) {
+		m_server->setAsyncFatalError(e.what());
 	}
 
 	float dtime = 0.0f;
@@ -142,6 +144,8 @@ void *ServerThread::run()
 			m_server->setAsyncFatalError(e.what());
 		} catch (LuaError &e) {
 			m_server->setAsyncFatalError(e);
+		} catch (ModError &e) {
+			m_server->setAsyncFatalError(e.what());
 		}
 
 		dtime = 1e-6f * (porting::getTimeUs() - t0);
@@ -254,11 +258,7 @@ Server::Server(
 	m_simple_singleplayer_mode(simple_singleplayer_mode),
 	m_dedicated(dedicated),
 	m_async_fatal_error(""),
-	m_con(std::make_shared<con::Connection>(PROTOCOL_ID,
-			512,
-			CONNECTION_TIMEOUT,
-			m_bind_addr.isIPv6(),
-			this)),
+	m_con(con::createMTP(CONNECTION_TIMEOUT, m_bind_addr.isIPv6(), this)),
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
@@ -551,7 +551,6 @@ void Server::start()
 	m_thread->stop();
 
 	// Initialize connection
-	m_con->SetTimeoutMs(30);
 	m_con->Serve(m_bind_addr);
 
 	// Start thread
@@ -623,8 +622,6 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 		Update uptime
 	*/
 	m_uptime_counter->increment(dtime);
-
-	handlePeerChanges();
 
 	/*
 		Update time of day and overall game time
@@ -780,6 +777,12 @@ void Server::AsyncRunStep(float dtime, bool initial_step)
 	{
 		//infostream<<"Server: Checking added and deleted active objects"<<std::endl;
 		MutexAutoLock envlock(m_env_mutex);
+
+		// This guarantees that each object recomputes its cache only once per server step,
+		// unless get_effective_observers is called.
+		// If we were to update observer sets eagerly in set_observers instead,
+		// the total costs of calls to set_observers could theoretically be higher.
+		m_env->invalidateActiveObjectObserverCaches();
 
 		{
 			ClientInterface::AutoLock clientlock(m_clients);
@@ -1071,6 +1074,8 @@ void Server::Receive(float timeout)
 				// and a faster server-step is better than busy waiting.
 				if (remaining_time_us() < 1000.0f)
 					break;
+				else
+					continue;
 			}
 
 			peer_id = pkt.getPeerId();
@@ -1153,7 +1158,7 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	*/
 	{
 		NetworkPacket notice_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, PEER_ID_INEXISTENT);
-		notice_pkt << (u8) PLAYER_LIST_ADD << (u16) 1 << std::string(player->getName());
+		notice_pkt << (u8) PLAYER_LIST_ADD << (u16) 1 << player->getName();
 		m_clients.sendToAll(&notice_pkt);
 	}
 	{
@@ -1248,21 +1253,20 @@ void Server::onMapEditEvent(const MapEditEvent &event)
 	m_unsent_map_edit_queue.push(new MapEditEvent(event));
 }
 
-void Server::peerAdded(con::Peer *peer)
+void Server::peerAdded(con::IPeer *peer)
 {
-	verbosestream<<"Server::peerAdded(): peer->id="
-			<<peer->id<<std::endl;
+	verbosestream << "Server::peerAdded(): id=" << peer->id << std::endl;
 
-	m_peer_change_queue.push(con::PeerChange(con::PEER_ADDED, peer->id, false));
+	m_clients.CreateClient(peer->id);
 }
 
-void Server::deletingPeer(con::Peer *peer, bool timeout)
+void Server::deletingPeer(con::IPeer *peer, bool timeout)
 {
-	verbosestream<<"Server::deletingPeer(): peer->id="
-			<<peer->id<<", timeout="<<timeout<<std::endl;
+	verbosestream << "Server::deletingPeer(): id=" << peer->id
+		<< ", timeout=" << timeout << std::endl;
 
 	m_clients.event(peer->id, CSE_Disconnect);
-	m_peer_change_queue.push(con::PeerChange(con::PEER_REMOVED, peer->id, timeout));
+	DeleteClient(peer->id, timeout ? CDR_TIMEOUT : CDR_LEAVE);
 }
 
 bool Server::getClientConInfo(session_t peer_id, con::rtt_stat_type type, float* retval)
@@ -1304,34 +1308,6 @@ const ClientDynamicInfo *Server::getClientDynamicInfo(session_t peer_id)
 		return nullptr;
 
 	return &client->getDynamicInfo();
-}
-
-void Server::handlePeerChanges()
-{
-	while(!m_peer_change_queue.empty())
-	{
-		con::PeerChange c = m_peer_change_queue.front();
-		m_peer_change_queue.pop();
-
-		verbosestream<<"Server: Handling peer change: "
-				<<"id="<<c.peer_id<<", timeout="<<c.timeout
-				<<std::endl;
-
-		switch(c.type)
-		{
-		case con::PEER_ADDED:
-			m_clients.CreateClient(c.peer_id);
-			break;
-
-		case con::PEER_REMOVED:
-			DeleteClient(c.peer_id, c.timeout?CDR_TIMEOUT:CDR_LEAVE);
-			break;
-
-		default:
-			FATAL_ERROR("Invalid peer change event received!");
-			break;
-		}
-	}
 }
 
 void Server::printToConsoleOnly(const std::string &text)
@@ -2054,18 +2030,11 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 	// Removed objects
 	pkt << static_cast<u16>(removed_objects.size());
 
-	std::vector<u16> sounds_to_stop;
-
 	for (auto &it : removed_objects) {
 		const auto [gone, id] = it;
 		ServerActiveObject *obj = m_env->getActiveObject(id);
 
-		// Stop sounds if objects go out of range.
-		// This fixes https://github.com/minetest/minetest/issues/8094.
-		// We may not remove sounds if an entity was removed on the server.
-		// See https://github.com/minetest/minetest/issues/14422.
-		if (!gone) // just out of range for client, not gone on server?
-			sounds_to_stop.push_back(id);
+
 
 		pkt << id;
 
@@ -2075,8 +2044,10 @@ void Server::SendActiveObjectRemoveAdd(RemoteClient *client, PlayerSAO *playersa
 			obj->m_known_by_count--;
 	}
 
-	if (!sounds_to_stop.empty())
-		stopAttachedSounds(client->peer_id, sounds_to_stop);
+	// Note: Do yet NOT stop or remove object-attached sounds where the object goes out
+	// of range (client side). Such sounds would need to be re-sent when coming into range.
+	// Currently, the client will initiate m_playing_sounds clean ups indirectly by
+	// "Server::handleCommand_RemovedSounds".
 
 	// Added objects
 	pkt << static_cast<u16>(added_objects.size());
@@ -2258,37 +2229,6 @@ void Server::fadeSound(s32 handle, float step, float gain)
 	// Remove sound reference
 	if (gain <= 0 || psound.clients.empty())
 		m_playing_sounds.erase(it);
-}
-
-void Server::stopAttachedSounds(session_t peer_id,
-	const std::vector<u16> &object_ids)
-{
-	assert(peer_id != PEER_ID_INEXISTENT);
-	assert(!object_ids.empty());
-
-	auto cb = [&] (const s32 id, ServerPlayingSound &sound) -> bool {
-		if (!CONTAINS(object_ids, sound.object))
-			return false;
-
-		auto clients_it = sound.clients.find(peer_id);
-		if (clients_it == sound.clients.end())
-			return false;
-
-		NetworkPacket pkt(TOCLIENT_STOP_SOUND, 4);
-		pkt << id;
-		Send(peer_id, &pkt);
-
-		sound.clients.erase(clients_it);
-		// delete if client list empty
-		return sound.clients.empty();
-	};
-
-	for (auto it = m_playing_sounds.begin(); it != m_playing_sounds.end(); ) {
-		if (cb(it->first, it->second))
-			it = m_playing_sounds.erase(it);
-		else
-			++it;
-	}
 }
 
 void Server::sendRemoveNode(v3s16 p, std::unordered_set<u16> *far_players,
@@ -2527,7 +2467,7 @@ bool Server::addMediaFile(const std::string &filename,
 	const char *supported_ext[] = {
 		".png", ".jpg", ".bmp", ".tga",
 		".ogg",
-		".x", ".b3d", ".obj",
+		".x", ".b3d", ".obj", ".gltf",
 		// Custom translation file format
 		".tr",
 		NULL
@@ -2964,9 +2904,6 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 			PlayerSAO *playersao = player->getPlayerSAO();
 			assert(playersao);
 
-			playersao->clearChildAttachments();
-			playersao->clearParentAttachment();
-
 			// inform connected clients
 			const std::string &player_name = player->getName();
 			NetworkPacket notice(TOCLIENT_UPDATE_PLAYER_LIST, 0, PEER_ID_INEXISTENT);
@@ -3212,14 +3149,11 @@ std::string Server::getStatusString()
 	bool first = true;
 	os << " | clients: ";
 	if (m_env) {
-		std::vector<session_t> clients = m_clients.getClientIDs();
-		for (session_t client_id : clients) {
-			RemotePlayer *player = m_env->getPlayer(client_id);
+		std::vector<std::string> player_names = m_clients.getPlayerNames();
 
-			// Get name of player
-			const char *name = player ? player->getName() : "<unknown>";
+		std::sort(player_names.begin(), player_names.end());
 
-			// Add name to information string
+		for (const std::string& name : player_names) {
 			if (!first)
 				os << ", ";
 			else

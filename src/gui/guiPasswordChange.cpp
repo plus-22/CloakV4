@@ -24,6 +24,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <IGUIButton.h>
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
+#include <IVideoDriver.h>
 
 #include "porting.h"
 #include "gettext.h"
@@ -62,14 +63,9 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	/*
 		Calculate new sizes and positions
 	*/
-	const float s = m_gui_scale;
-
-	DesiredRect = core::rect<s32>(
-		screensize.X / 2 - 580 * s / 2,
-		screensize.Y / 2 - 300 * s / 2,
-		screensize.X / 2 + 580 * s / 2,
-		screensize.Y / 2 + 300 * s / 2
-	);
+	ScalingInfo info = getScalingInfo(screensize, v2u32(580, 300));
+	const float s = info.scale;
+	DesiredRect = info.rect;
 	recalculateAbsolutePosition(false);
 
 	v2s32 size = DesiredRect.getSize();

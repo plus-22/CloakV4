@@ -12,7 +12,7 @@ set(CLANG_MINIMUM_VERSION "7.0.1")
 # You should not need to edit these manually, use util/bump_version.sh
 set(VERSION_MAJOR 5)
 set(VERSION_MINOR 9)
-set(VERSION_PATCH 0)
+set(VERSION_PATCH 1)
 set(VERSION_EXTRA "cloakv4" CACHE STRING "Stuff to append to version string")
 
 # Change to false for releases
@@ -282,6 +282,8 @@ add_subdirectory(lib/sha256)
 if(BUILD_UNITTESTS OR BUILD_BENCHMARKS)
 	add_subdirectory(lib/catch2)
 endif()
+
+add_subdirectory(lib/tiniergltf)
 
 # Subdirectories
 # Be sure to add all relevant definitions above this

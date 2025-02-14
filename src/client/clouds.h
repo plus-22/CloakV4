@@ -19,13 +19,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "irrlichttypes_bloated.h"
 #include "constants.h"
 #include "irr_ptr.h"
-#include "irrlichttypes_extrabloated.h"
 #include "skyparams.h"
 #include <iostream>
+#include <ISceneNode.h>
+#include <SMaterial.h>
+#include <SMeshBuffer.h>
 
 class IShaderSource;
+
+namespace irr::scene
+{
+	class ISceneManager;
+}
 
 // Menu clouds
 class Clouds;
@@ -133,8 +141,8 @@ private:
 	{
 		float height_bs    = m_params.height    * BS;
 		float thickness_bs = m_params.thickness * BS;
-		m_box = aabb3f(-BS * 1000000.0f, height_bs - BS * m_camera_offset.Y, -BS * 1000000.0f,
-				BS * 1000000.0f, height_bs + thickness_bs - BS * m_camera_offset.Y, BS * 1000000.0f);
+		m_box = aabb3f(-BS * 1000000.0f, height_bs, -BS * 1000000.0f,
+				BS * 1000000.0f, height_bs + thickness_bs, BS * 1000000.0f);
 	}
 
 	void updateMesh();
@@ -144,6 +152,11 @@ private:
 	}
 
 	bool gridFilled(int x, int y) const;
+
+	// Are the clouds 3D?
+	inline bool is3D() const {
+		return m_enable_3d && m_params.thickness >= 0.01f;
+	}
 
 	video::SMaterial m_material;
 	irr_ptr<scene::SMeshBuffer> m_meshbuffer;
