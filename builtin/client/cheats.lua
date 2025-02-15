@@ -262,6 +262,10 @@ minetest.register_globalstep(function(dtime)
 			core.update_infotext("HealthESP", "Render", "show_players_hp", "Above head")
 		end
 
+		--AppleAura infotext
+		if minetest.settings:get_bool("appleaura") then
+			core.update_infotext("AppleAura", "Misc", "appleaura", tonumber(minetest.settings:get("appleaura.range")))
+		end
 		--Ends here
     end
 end)
