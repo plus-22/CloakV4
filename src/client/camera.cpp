@@ -499,7 +499,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 tool_reload_ratio)
 		m_curr_fov_degrees = m_cache_fov;
 	}
 	
-	if (g_settings->getBool("fov_change")) {
+	if (g_settings->getBool("fov_setting")) {
 		m_curr_fov_degrees = rangelim(g_settings->getFloat("fov.step"), 1.0f, 160.0f);
 	} else {
 		m_curr_fov_degrees = rangelim(m_curr_fov_degrees, 1.0f, 160.0f);
