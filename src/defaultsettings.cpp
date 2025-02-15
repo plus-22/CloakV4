@@ -153,6 +153,8 @@ void set_default_settings()
 	// Cheats
 	settings->setDefault("xray", "false");
 	settings->setDefault("xray.nodes", "default:stone,mcl_core:stone");
+	settings->setDefault("fov_setting", "true");
+	settings->setDefault("fov_step", "72.0f");
 	settings->setDefault("autosneak", "false");
 	settings->setDefault("instant_break", "false");
 	settings->setDefault("antiknockback", "false");
@@ -250,6 +252,8 @@ void set_default_settings()
 	settings->setDefault("step.mult", "2.0f");
 	settings->setDefault("enable_entity_esp.custom_color", "true");
 	settings->setDefault("autoaim.y_offset", "0");
+	settings->setDefault("fov_setting", "true");
+	settings->setDefault("fov.step", "1.0f");
 
 	settings->setDefault("esp.player.drawType", "0");
 	settings->setDefault("esp.player.edgeOpacity", "255");

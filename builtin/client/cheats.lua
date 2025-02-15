@@ -39,6 +39,7 @@ core.cheats = {
 		["NoRender"] = "norender.particles",
         ["NoDrownCam"] = "small_post_effect_color", 
         ["BrightNight"] = "no_night",
+		["FOV"] = "fov_setting",
 	},
 	["Interact"] = {
 		["FastDig"] = "fastdig",
@@ -134,6 +135,7 @@ core.register_cheat_setting("Status color", "Render", "enable_entity_esp", "enab
 --core.register_cheat_setting("Speed", "Interact", "autohit", "autohit.speed", {type="slider_int", min=1, max=10, steps=10})
 core.register_cheat_setting("Nodelist", "Render", "xray", "xray.nodes", {type="text", size=10})
 --core.register_cheat_setting("Instant", "Interact", "fastdig", "fastdig.instant", {type="bool"})
+core.register_cheat_setting("Field Of View", "Render", "fov_setting", "fov.step", {type="slider_int", min=72, max=160, steps = 89});
 core.register_cheat_setting("Multiplier", "Movement", "step", "step.mult", {type="slider_float", min=1.0, max=3.5, steps=6})
 core.register_cheat_setting("Y Offset", "Render", "cheat_hud", "cheat_hud.offset", {type="slider_int", min=0, max=200, steps=41})
 core.register_cheat_setting("Position", "Render", "cheat_hud", "cheat_hud.position", {type="selectionbox", options={"Top", "Bottom"}})
