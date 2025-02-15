@@ -1090,12 +1090,6 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 
 void Client::interact(InteractAction action, const PointedThing& pointed)
 {
-	if(m_state != LC_Ready) {
-		errorstream << "Client::interact() "
-				"Canceled (not connected)"
-				<< std::endl;
-		return;
-	}
 
 	LocalPlayer *myplayer = m_env.getLocalPlayer();
 	if (myplayer == NULL)
@@ -1109,6 +1103,21 @@ void Client::interact(InteractAction action, const PointedThing& pointed)
 		}
 	}
 
+	interact(action, pointed, myplayer->getWieldIndex());
+}
+void Client::interact(InteractAction action, const PointedThing& pointed, const u16 index)
+{
+	if(m_state != LC_Ready) {
+		errorstream << "Client::interact() "
+				"Canceled (not connected)"
+				<< std::endl;
+		return;
+	}
+
+	LocalPlayer *myplayer = m_env.getLocalPlayer();
+	if (myplayer == NULL)
+		return;
+	
 	/*
 		[0] u16 command
 		[2] u8 action
@@ -1121,7 +1130,7 @@ void Client::interact(InteractAction action, const PointedThing& pointed)
 	NetworkPacket pkt(TOSERVER_INTERACT, 1 + 2 + 0);
 
 	pkt << (u8)action;
-	pkt << myplayer->getWieldIndex();
+	pkt << index;
 
 	std::ostringstream tmp_os(std::ios::binary);
 	pointed.serialize(tmp_os);

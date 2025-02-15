@@ -239,6 +239,7 @@ public:
 	void Send(NetworkPacket* pkt);
 
 	void interact(InteractAction action, const PointedThing &pointed);
+	void interact(InteractAction action, const PointedThing &pointed, const u16 index);
 
 	void sendNodemetaFields(v3s16 p, const std::string &formname,
 		const StringMap &fields);

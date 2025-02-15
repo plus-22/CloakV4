@@ -88,6 +88,7 @@ public:
 		KILLAURA,
 		FREECAM,
         AUTOAIM,
+        SCAFFOLD,
 
 		// hotbar
 		SLOT_1,

@@ -443,6 +443,57 @@ int ModApiClient::l_place_node(lua_State *L)
 	return 0;
 }
 
+// place_node_at_index(pos, index)
+int ModApiClient::l_place_node_at_index(lua_State *L)
+{
+	Client *client = getClient(L);
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	const NodeDefManager *nodedef = client->ndef();
+
+	// Read position argument (required)
+	v3s16 pos = read_v3s16(L, 1);
+
+	// Read index argument (required)
+	u16 index = luaL_checkinteger(L, 2); // Ensures a valid number is provided
+
+	// Get the correct item stack at the specified index
+	ItemStack selected_item, hand_item;
+	player->getWieldedItem(&selected_item, &hand_item);
+
+	const InventoryList *mlist = player->inventory.getList("main");
+	const InventoryList *hlist = player->inventory.getList("hand");
+
+	if (mlist && index < mlist->getSize())
+		selected_item = mlist->getItem(index);  // Use the specified index to get the correct item
+
+	if (hlist)
+		hand_item = hlist->getItem(0);
+
+	// Determine the effective tool/item
+	ItemStack &effective_item = (selected_item.name.empty() ? hand_item : selected_item);
+	const ItemDefinition &selected_def = effective_item.getDefinition(getGameDef(L)->idef());
+
+	PointedThing pointed;
+	pointed.type = POINTEDTHING_NODE;
+	pointed.node_abovesurface = pos + v3s16(0, 1, 0);
+	pointed.node_undersurface = pos;
+
+	// Add node to client map
+	content_t id;
+	bool found = nodedef->getId(selected_def.node_placement_prediction, id);
+	if (!found) {
+		client->interact(INTERACT_PLACE, pointed, index);
+		return 0;
+	}
+
+	MapNode n(id, 0, 0);
+	client->addNode(pos, n);
+	client->interact(INTERACT_PLACE, pointed, index);
+	return 0;
+}
+
+
+
 // dig_node(pos)
 int ModApiClient::l_dig_node(lua_State *L)
 {
@@ -1014,6 +1065,7 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(send_damage);
 	API_FCT(set_fast_speed);
 	API_FCT(place_node);
+	API_FCT(place_node_at_index);
 	API_FCT(dig_node);
 	API_FCT(interact);
 	API_FCT(get_inventory);

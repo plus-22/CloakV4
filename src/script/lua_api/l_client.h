@@ -99,6 +99,9 @@ private:
 	// place_node(pos)
 	static int l_place_node(lua_State *L);
 
+	// place_node_at_index(pos, index)
+	static int l_place_node_at_index(lua_State *L);
+
 	// dig_node(pos)
 	static int l_dig_node(lua_State *L);
 
