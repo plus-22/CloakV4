@@ -16,6 +16,22 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
+local function get_background()
+	if core.settings:get("background") then
+		if core.settings:get("background") == "tree" then 
+			return "tree.png"
+		end
+		if core.settings:get("background") == "sky" then
+			return "sky_bg.png"
+		end
+		if core.settings:get("background") == "ocean" then
+			return "ocean.png"
+		end
+	end 
+
+	return "menu_bg.png"
+end
+
 mm_game_theme = {}
 
 --------------------------------------------------------------------------------
@@ -153,7 +169,7 @@ end
 --------------------------------------------------------------------------------
 function mm_game_theme.set_menu_bg()
 	-- Use universal fallback texture in textures/base/pack
-	local minimalpath = defaulttexturedir .. "menu_bg.png"
+	local minimalpath = defaulttexturedir .. get_background()
 	core.set_background("background", minimalpath, false, 128)
 end
 

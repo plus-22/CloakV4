@@ -328,6 +328,18 @@ bool RenderingEngine::setWindowIcon()
 	return m_device->setWindowIcon(img.get());
 }
 
+inline std::string get_background()
+{
+	if (g_settings->get("background") == "sky") {
+		return "sky_bg.png";
+	} else if (g_settings->get("background") == "tree") {
+		return "tree.png";
+	} else if (g_settings->get("background") == "ocean") {
+		return "ocean.png";
+	}
+
+	return "menu_bg.png";
+}
 /*
 	Draws a screen with a single text on it.
 	Text will be removed when the screen is drawn the next time.
@@ -356,7 +368,7 @@ void RenderingEngine::draw_load_screen(const std::wstring &text,
 			g_menucloudsmgr->drawAll();
 		} else {
 			// draw menu background
-			video::ITexture *menu_bg_img = tsrc->getTexture("menu_bg.png");
+			video::ITexture *menu_bg_img = tsrc->getTexture(get_background());
 			video::ITexture *menu_header_img = tsrc->getTexture("menu_header.png");
 			if (menu_header_img || menu_bg_img) {
 				const core::dimension2d<u32> &bg_size = menu_bg_img->getSize();

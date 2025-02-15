@@ -163,6 +163,7 @@ autojump (Automatic jumping) bool false
 #    On touchscreens, this only affects digging.
 safe_dig_and_place (Safe digging and placing) bool false
 
+background (Change background) enum default default,ocean,tree,sky
 [*Keyboard and Mouse]
 
 #    Invert vertical mouse movement.

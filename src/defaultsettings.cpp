@@ -254,6 +254,7 @@ void set_default_settings()
 	settings->setDefault("autoaim.y_offset", "0");
 	settings->setDefault("fov_setting", "true");
 	settings->setDefault("fov.step", "1.0f");
+	settings->setDefault("background", "default");
 
 	settings->setDefault("esp.player.drawType", "0");
 	settings->setDefault("esp.player.edgeOpacity", "255");
