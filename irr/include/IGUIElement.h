@@ -325,7 +325,7 @@ public:
 	}
 
 	//! Moves this element.
-	virtual void move(core::position2d<s32> absoluteMovement)
+	virtual void move(core::position2d<s32> absoluteMovement)	
 	{
 		setRelativePosition(DesiredRect + absoluteMovement);
 	}

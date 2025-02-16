@@ -242,6 +242,7 @@ void Game::panic()
     g_settings->setBool("enable_entity_esp", false);
     g_settings->setBool("enable_entity_tracers", false);
     g_settings->setBool("enable_player_esp", false);
+    g_settings->setBool("enable_combat_target_hud", false);
     g_settings->setBool("enable_player_tracers", false);
     g_settings->setBool("enable_node_esp", false);
     g_settings->setBool("enable_node_tracers", false);

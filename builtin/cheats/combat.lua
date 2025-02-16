@@ -91,13 +91,35 @@ function core.get_send_speed(critspeed)
     end
     return critspeed
 end
+
 function extendPoint(yaw, distance)
 	local radYaw = math.rad(yaw)
 	local dir = vector.new(math.cos(radYaw), 0, math.sin(radYaw))
 	dir = vector.multiply(dir, distance)
 	return dir
 end
+
+function get_sine_color(delta_time)
+    local wave_speed = 2.0 -- Controls the speed of the color wave
+    local intensity = 127  -- Controls the intensity (how bright the color is)
+
+    local r = math.floor(127 * math.sin(delta_time * wave_speed) + intensity)
+    local g = math.floor(127 * math.sin(delta_time * wave_speed + math.pi / 3) + intensity)
+    local b = math.floor(127 * math.sin(delta_time * wave_speed + 2 * math.pi / 3) + intensity)
+
+    r = math.max(0, math.min(255, r))
+    g = math.max(0, math.min(255, g))
+    b = math.max(0, math.min(255, b))
+
+    return r, g, b
+end
+
+total_time = 0
+
 core.register_globalstep(function(dtime)
+	total_time = total_time + dtime
+	local r, g, b = get_sine_color(total_time)
+	core.set_target_esp_color({r = r, g = g, b = b})
 	if core.settings:get_bool("killaura") then
 		local target_mode = core.settings:get("targeting.target_mode")
 		local mode_text = target_mode and target_mode:gsub(" HP", "") or "Unknown"
@@ -135,6 +157,11 @@ core.register_globalstep(function(dtime)
 		local max_distance = tonumber(core.settings:get("targeting.distance")) + 0.5
 	
 		target_enemy = get_best_target(objects, target_mode, target_type, max_distance, player)
+	end
+	if not target_enemy then 
+		core.clear_combat_target() 
+	else 
+		core.set_combat_target(target_enemy:get_id()) 
 	end
 
 	if target_enemy and core.settings:get_bool("killaura") then

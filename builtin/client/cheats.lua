@@ -32,6 +32,7 @@ core.cheats = {
 		["PlayerESP"] = "enable_player_esp",
 --		["HealthESP"] = "enable_health_esp",
 		["PlayerTracers"] = "enable_player_tracers",
+		["TargetHUD"] = "enable_combat_target_hud",
 		["NodeESP"] = "enable_node_esp",
 		["NodeTracers"] = "enable_node_tracers",
 		["TunnelESP"] = "enable_tunnel_esp",
@@ -221,6 +222,7 @@ core.register_cheat_description("PlayerTracers", "Render", "enable_player_tracer
 core.register_cheat_description("TunnelESP", "Render", "enable_tunnel_esp", "See tunnels through walls")
 core.register_cheat_description("TunnelTracers", "Render", "enable_tunnel_tracers", "Draw tracers to tunnels")
 core.register_cheat_description("Xray", "Render", "xray", "Don't render specific nodes")
+core.register_cheat_description("TargetHUD", "Render", "enable_combat_target_hud", "Show currently attacking target on HUD")
 --World
 core.register_cheat_description("AutoTNT", "World", "autotnt", "Puts TNT on the ground")
 core.register_cheat_description("BlockLava", "World", "blocklava", "Replace lava with the block you're holding")

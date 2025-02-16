@@ -496,14 +496,13 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
         } else if (event.MouseInput.Event == irr::EMIE_MOUSE_MOVED && isSliding) {
             ScriptApiCheatsCheatSetting* cheatSetting = script->m_cheat_categories[draggedSliderCategoryIndex]->m_cheats[draggedSliderCheatIndex]->m_cheat_settings[draggedSliderSettingIndex];
             cheatSetting->set_value(calculateSliderValueFromPosition(cheatSliderBarRects[draggedSliderCategoryIndex][draggedSliderCheatIndex][draggedSliderSettingIndex], core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y), cheatSetting->m_min, cheatSetting->m_max, cheatSetting->m_steps));
-            
         } else if (event.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
             if (coords_sprite.isDragging) {
                 coords_sprite.x = event.MouseInput.X - offset.X;
                 coords_sprite.y = event.MouseInput.Y - offset.Y;
                 coords_sprite.save(screenWidth, screenHeight);
             }
-        } else if (event.MouseInput.Event == irr::EMIE_MOUSE_MOVED) {
+
             for (size_t i = 0; i < script->m_cheat_categories.size(); ++i) {
 
                 dropdownHovered[i] = dropdownRects[i].isPointInside(core::vector2d<s32>(event.MouseInput.X, event.MouseInput.Y));

@@ -171,8 +171,9 @@ void set_default_settings()
 	settings->setDefault("hud_flags_bypass", "true");
 	settings->setDefault("enable_entity_esp", "true");
 	settings->setDefault("enable_entity_tracers", "false");
-	settings->setDefault("enable_player_esp", "true");
+	settings->setDefault("enable_combat_target_hud", "true");
 	settings->setDefault("enable_player_esp.type", "Above Head");
+	settings->setDefault("enable_player_esp", "true");
 	settings->setDefault("enable_player_tracers", "true");
 	settings->setDefault("enable_node_esp", "false");
 	settings->setDefault("enable_node_tracers", "false");
