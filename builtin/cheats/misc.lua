@@ -44,21 +44,26 @@ core.register_cheat_setting("HP", "Misc", "auto_heal", "auto_heal.hp", {type="sl
 
 
 local function destroy_apple(pos)
-	minetest.dig_node(pos)
-  end
-  
-  minetest.register_globalstep(function()
-	if minetest.settings:get_bool("appleaura") then
-	  local player_pos = minetest.localplayer:get_pos()
-	  local apple_nodes = minetest.find_nodes_near(player_pos, tonumber(minetest.settings:get("appleaura.range")), {"default:apple"})
-  
-	  if apple_nodes then
-		for _, apple_pos in ipairs(apple_nodes) do
-		  destroy_apple(apple_pos)
-		end
-	  end
-	end
-  end)
+    minetest.dig_node(pos)
+end
+
+minetest.register_globalstep(function()
+    local player = minetest.localplayer
+    if not player then
+        return
+    end
+
+    if minetest.settings:get_bool("appleaura") then
+        local player_pos = player:get_pos()
+        local apple_nodes = minetest.find_nodes_near(player_pos, tonumber(minetest.settings:get("appleaura.range")), {"default:apple"}) -- Find apples within specified range
+
+        if apple_nodes then
+            for _, apple_pos in ipairs(apple_nodes) do
+                destroy_apple(apple_pos)
+            end
+        end
+    end
+end)
   
 
 minetest.register_cheat_with_infotext("AppleAura", "Misc", "appleaura", "")
