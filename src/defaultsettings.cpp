@@ -254,7 +254,7 @@ void set_default_settings()
 	settings->setDefault("enable_entity_esp.custom_color", "true");
 	settings->setDefault("autoaim.y_offset", "0");
 	settings->setDefault("fov_setting", "true");
-	settings->setDefault("fov.step", "1.0f");
+	settings->setDefault("fov.step", "72.0f");
 	settings->setDefault("appleaura.range", "5");
 	settings->setDefault("background", "default");
 
