@@ -170,6 +170,7 @@ void set_default_settings()
 	settings->setDefault("spider", "false");
 	settings->setDefault("hud_flags_bypass", "true");
 	settings->setDefault("enable_entity_esp", "true");
+	settings->setDefault("appleaura.range", "3");
 	settings->setDefault("enable_entity_tracers", "false");
 	settings->setDefault("enable_combat_target_hud", "true");
 	settings->setDefault("enable_player_esp.type", "Above Head");
