@@ -89,6 +89,7 @@ public:
 		FREECAM,
         AUTOAIM,
         SCAFFOLD,
+        BLINK,
 
 		// hotbar
 		SLOT_1,

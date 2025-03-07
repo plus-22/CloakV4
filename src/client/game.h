@@ -771,6 +771,7 @@ public:
 	void toggleKillaura();
     void toggleAutoaim();
     void toggleScaffold();
+    void toggleBlink();
 
 	void toggleMinimap(bool shift_pressed);
 	void toggleFog();

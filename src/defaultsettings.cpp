@@ -151,6 +151,7 @@ void set_default_settings()
     settings->setDefault("newmenu_draw_type_meteor", "true");
 
 	// Cheats
+	settings->setDefault("blink", "false");
 	settings->setDefault("xray", "false");
 	settings->setDefault("xray.nodes", "default:stone,mcl_core:stone");
 	settings->setDefault("fov_setting", "true");
@@ -311,6 +312,7 @@ void set_default_settings()
 	settings->setDefault("keymap_toggle_killaura", "KEY_KEY_X");
 	settings->setDefault("keymap_toggle_autoaim", "KEY_KEY_N");
 	settings->setDefault("keymap_toggle_scaffold", "KEY_KEY_Y");
+	settings->setDefault("keymap_toggle_blink", "KEY_KEY_B");
 
 	settings->setDefault("keymap_select_up", "KEY_UP");
 	settings->setDefault("keymap_select_down", "KEY_DOWN");

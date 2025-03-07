@@ -43,6 +43,7 @@ core.cheats = {
 		["FOV"] = "fov_setting",
 	},
 	["Interact"] = {
+		["Blink"] = "blink",
 		["FastDig"] = "fastdig",
 		["FastPlace"] = "fastplace",
 		["AutoDig"] = "autodig",
@@ -144,6 +145,7 @@ core.register_cheat_setting("Position", "Render", "cheat_hud", "cheat_hud.positi
 -- Some cheats with infotexts
 core.register_cheat_with_infotext("Step", "Movement", "step", "Mult: 0")
 core.register_cheat_with_infotext("HealthESP", "Render", "enable_health_esp", "")
+core.register_cheat_with_infotext("Blink", "Interact", "blink", "0ms")
 
 
 --Combat
@@ -158,6 +160,7 @@ core.register_cheat_description("Killaura", "Combat", "killaura", "Attacks a spe
 core.register_cheat_description("Orbit", "Combat", "orbit", "Moves around a specified target")
 --Interact
 core.register_cheat_description("FastDig", "Interact", "fastdig", "No block break cooldown")
+core.register_cheat_description("Blink", "Interact", "blink", "Delay sending of packets until this cheat is disabled.")
 core.register_cheat_description("FastPlace", "Interact", "fastplace", "No block placement cooldown")
 core.register_cheat_description("AutoDig", "Interact", "autodig", "Player can dig blocks without mouse press")
 core.register_cheat_description("AutoPlace", "Interact", "autoplace", "Auto place blocks")
@@ -239,10 +242,21 @@ core.register_cheat_description("Silence", "World", "silence", "Disables sound")
 -- Globalstep for infotexts
 local update_interval = 0.25
 local timer = 0
+local blinktime = 0
 
 minetest.register_globalstep(function(dtime)
     timer = timer + dtime
 
+	if core.settings:get_bool("blink") then
+		blinktime = blinktime + dtime
+		core.update_infotext("Blink", "Interact", "blink", math.floor(blinktime * 1000) .. "ms")
+		if blinktime > 10 then
+			core.settings:set_bool("blink", false)
+		end
+	else
+		blinktime = 0
+	end
+	
     if timer >= update_interval then
         timer = 0
 

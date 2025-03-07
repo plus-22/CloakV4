@@ -84,6 +84,7 @@ enum
 	GUI_ID_KEY_KILLAURA_BUTTON,
 	GUI_ID_KEY_AUTOAIM_BUTTON,
 	GUI_ID_KEY_SCAFFOLD_BUTTON,
+	GUI_ID_KEY_BLINK_BUTTON,
 
 	GUI_ID_KEY_SELECT_UP_BUTTON,
 	GUI_ID_KEY_SELECT_DOWN_BUTTON,
@@ -435,6 +436,7 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_KILLAURA_BUTTON,       wstrgettext("Killaura"),         "keymap_toggle_killaura");
 	this->add_key(GUI_ID_KEY_AUTOAIM_BUTTON,       wstrgettext("Autoaim"),         "keymap_toggle_autoaim");
 	this->add_key(GUI_ID_KEY_SCAFFOLD_BUTTON,       wstrgettext("Scaffold"),         "keymap_toggle_scaffold");
+	this->add_key(GUI_ID_KEY_BLINK_BUTTON,       wstrgettext("Blink"),         "keymap_toggle_blink");
 
 	this->add_key(GUI_ID_KEY_SELECT_UP_BUTTON,      wstrgettext("C. Menu Up"),       "keymap_select_up");
 	this->add_key(GUI_ID_KEY_SELECT_DOWN_BUTTON,    wstrgettext("C. Menu Down"),     "keymap_select_down");

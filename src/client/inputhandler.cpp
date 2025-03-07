@@ -88,6 +88,7 @@ void KeyCache::populate()
 	key[KeyType::KILLAURA] = getKeySetting("keymap_toggle_killaura");
     key[KeyType::AUTOAIM] = getKeySetting("keymap_toggle_autoaim");
     key[KeyType::SCAFFOLD] = getKeySetting("keymap_toggle_scaffold");
+    key[KeyType::BLINK] = getKeySetting("keymap_toggle_blink");
 
 	key[KeyType::QUICKTUNE_NEXT] = getKeySetting("keymap_quicktune_next");
 	key[KeyType::QUICKTUNE_PREV] = getKeySetting("keymap_quicktune_prev");
