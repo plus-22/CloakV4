@@ -1,5 +1,5 @@
 local heal_cooldown = 0
-
+-- AutoHeal
 core.register_globalstep(function(dtime)
 	if core.localplayer then
 		if heal_cooldown > 0 then
@@ -42,7 +42,7 @@ core.register_cheat_setting("Delay", "Misc", "auto_heal", "auto_heal.delay", {ty
 core.register_cheat_setting("Cooldown", "Misc", "auto_heal", "auto_heal.cooldown", {type="slider_float", min=0.0, max=1.5, steps=16})
 core.register_cheat_setting("HP", "Misc", "auto_heal", "auto_heal.hp", {type="slider_int", min=1, max=30, steps=30})
 
-
+-- AppleAura
 local function destroy_apple(pos)
     minetest.dig_node(pos)
 end

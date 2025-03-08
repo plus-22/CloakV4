@@ -802,6 +802,7 @@ int ModApiClient::l_get_server_url(lua_State *L)
 	return 0;
 }
 
+
 // can_attack(object_id)
 int ModApiClient::l_can_attack(lua_State *L)
 {
@@ -1089,4 +1090,5 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(update_infotexts);
 	API_FCT(get_description);
 	API_FCT(on_client_initialize);
+
 }

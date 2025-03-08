@@ -167,6 +167,7 @@ int ClientObjectRef::l_get_item_textures(lua_State *L)
 	return 1;
 }
 
+
 int ClientObjectRef::l_get_max_hp(lua_State *L)
 {
 	log_deprecated(L, "Deprecated call to get_max_hp, use get_properties().hp_max "

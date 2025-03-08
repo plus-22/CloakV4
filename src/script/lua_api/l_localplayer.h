@@ -148,6 +148,9 @@ private:
 	// get_hotbar_length(self)
 	static int l_get_hotbar_length(lua_State *L);
 
+	// get_teamcolor(self)
+	static int l_get_teamcolor(lua_State *L);
+
 	static LocalPlayer *getobject(LuaLocalPlayer *ref);
 	static LocalPlayer *getobject(lua_State *L, int narg);
 

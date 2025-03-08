@@ -258,6 +258,8 @@ void set_default_settings()
 	settings->setDefault("fov_setting", "true");
 	settings->setDefault("fov.step", "72.0f");
 	settings->setDefault("appleaura.range", "5");
+	settings->setDefault("flagaura", "true");
+	settings->setDefault("flagaura.range", "5");
 	settings->setDefault("background", "default");
 
 	settings->setDefault("esp.player.drawType", "0");
