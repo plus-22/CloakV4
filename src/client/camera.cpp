@@ -48,6 +48,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define WIELDMESH_AMPLITUDE_X 7.0f
 #define WIELDMESH_AMPLITUDE_Y 10.0f
 
+std::chrono::high_resolution_clock::time_point Camera::lastTime = std::chrono::high_resolution_clock::now();
+
+float Camera::getDeltaTime() {
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> deltaTime = currentTime - lastTime;
+    lastTime = currentTime;
+
+    return deltaTime.count();
+}
+
 Camera::Camera(MapDrawControl &draw_control, Client *client, RenderingEngine *rendering_engine):
 	m_draw_control(draw_control),
 	m_client(client),
@@ -701,8 +711,37 @@ void Camera::drawNametags()
 }
 
 /// @brief 
+
+double Camera::getInterpolatedHealth(const GenericCAO *obj, float dtime) {
+	ActiveObject::object_t id = obj->getId();
+
+	auto it = m_interpolated_entity_health.find(id);
+
+	double currentHp = static_cast<double>(obj->getHp());
+
+	if (it != m_interpolated_entity_health.end()) {
+		double interpolatedHealth = it->second;
+
+		double healthDifference = currentHp - interpolatedHealth;
+
+		double change = healthDifference * (dtime * 8);
+
+		interpolatedHealth += change;
+
+		m_interpolated_entity_health[id] = interpolatedHealth;
+
+		return interpolatedHealth;
+	} else {
+		m_interpolated_entity_health[id] = currentHp;
+		return currentHp;
+	}
+}
+
 void Camera::drawHealthESP()
 {
+
+	float dtime = getDeltaTime();
+
     ClientEnvironment &env = m_client->getEnv();
     gui::IGUIFont *font = g_fontengine->getFont();
     std::unordered_map<u16, ClientActiveObject*> allObjects;
@@ -715,6 +754,7 @@ void Camera::drawHealthESP()
     for (auto &it : allObjects) {
         ClientActiveObject *cao = it.second;
         GenericCAO *obj = dynamic_cast<GenericCAO *>(cao);
+
 		if (obj->isLocalPlayer() || !obj->canAttack(1))
 			continue;
 		if (!obj->isPlayer() && g_settings->getBool("enable_health_esp.players_only"))
@@ -731,7 +771,7 @@ void Camera::drawHealthESP()
         trans.multiplyWith1x4Matrix(transformed_pos);
         if (transformed_pos[3] > 0) {
 			if (g_settings->exists("enable_health_esp.type") && g_settings->get("enable_health_esp.type") == "Health Bar") {
-				double health_percentage = obj->getProperties().hp_max > 0 ? static_cast<double>(obj->getHp()) / obj->getProperties().hp_max : 0.0;
+				double health_percentage = obj->getProperties().hp_max > 0 ? static_cast<double>(getInterpolatedHealth(obj, dtime)) / obj->getProperties().hp_max : 0.0;
 				health_percentage = std::max(0.0, std::min(1.0, health_percentage));
 
 				video::SColor backgroundColor(255, 5, 10, 15);

@@ -36,6 +36,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "NewMenu.h"
 
+std::chrono::high_resolution_clock::time_point NewMenu::lastTime = std::chrono::high_resolution_clock::now();
+
+float NewMenu::getDeltaTime() {
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> deltaTime = currentTime - lastTime;
+    lastTime = currentTime;
+
+    return deltaTime.count();
+}
+
 Sprite NewMenu::coords_sprite = Sprite();
 
 NewMenu::NewMenu(gui::IGUIEnvironment* env, 
@@ -95,6 +105,7 @@ void NewMenu::create()
         dropdownHovered.resize(script->m_cheat_categories.size(), false);
         textHovered.resize(script->m_cheat_categories.size(), false);
         cheatRects.resize(script->m_cheat_categories.size());
+        cheatRectAnimationProgress.resize(script->m_cheat_categories.size());
         cheatTextRects.resize(script->m_cheat_categories.size());
         cheatDropdownRects.resize(script->m_cheat_categories.size());
         cheatDropdownHovered.resize(script->m_cheat_categories.size());
@@ -134,6 +145,7 @@ void NewMenu::create()
                                             category_positions[i].X + category_width, category_positions[i].Y + category_height);
                                     
             cheatRects[i].resize(script->m_cheat_categories[i]->m_cheats.size(), core::rect<s32>(0,0,0,0));
+            cheatRectAnimationProgress[i].resize(script->m_cheat_categories[i]->m_cheats.size(), 1.0f);
             cheatTextRects[i].resize(script->m_cheat_categories[i]->m_cheats.size(), core::rect<s32>(0,0,0,0));
             cheatDropdownRects[i].resize(script->m_cheat_categories[i]->m_cheats.size(), core::rect<s32>(0,0,0,0));
             cheatDropdownHovered[i].resize(script->m_cheat_categories[i]->m_cheats.size(), false);
@@ -157,6 +169,7 @@ void NewMenu::create()
                 if (g_settings->exists("Cheat_Dropdown_" + std::to_string(i) + "_" + std::to_string(c)) && g_settings->getBool("save_menu_category_positions")) {
                     selectedCheat[i][c] = g_settings->getBool("Cheat_Dropdown_" + std::to_string(i) + "_" + std::to_string(c));
                 }
+                cheatRectAnimationProgress[i][c] = static_cast<float>(!script->m_cheat_categories[i]->m_cheats[c]->is_enabled());
                 cheatSettingRects[i][c].resize(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings.size());
                 cheatSliderRects[i][c].resize(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings.size());
                 selectionBoxRects[i][c].resize(script->m_cheat_categories[i]->m_cheats[c]->m_cheat_settings.size());
@@ -236,6 +249,30 @@ double NewMenu::roundToNearestStep(double number, double m_min, double m_max, do
 {
     double stepSize = (m_max - m_min) / (m_steps - 1);
     return m_min + stepSize * round((number - m_min) / stepSize);
+}
+
+void NewMenu::drawInterpolatedRectangle(video::IVideoDriver* driver, const core::rect<s32>& rect, video::SColor innerColor, video::SColor outerColor, float interpolation)
+{
+    interpolation = core::clamp(interpolation, 0.0f, 1.0f);
+
+    if (interpolation == 1.0f) {
+        driver->draw2DRectangle(outerColor, rect);
+        return;
+    }
+
+    if (interpolation == 0.0f) {
+        driver->draw2DRectangle(innerColor, rect);
+        return;
+    }
+
+    s32 midX = (rect.UpperLeftCorner.X + rect.LowerRightCorner.X) / 2;
+    s32 interpWidth = static_cast<s32>((rect.getWidth() * (1.0f - interpolation)) / 2);
+
+    core::rect<s32> innerRect(midX - interpWidth, rect.UpperLeftCorner.Y, midX + interpWidth, rect.LowerRightCorner.Y);
+    driver->draw2DRectangle(innerColor, innerRect);
+    
+    driver->draw2DRectangle(outerColor, core::rect<s32>(rect.UpperLeftCorner.X, rect.UpperLeftCorner.Y, innerRect.UpperLeftCorner.X, rect.LowerRightCorner.Y));
+    driver->draw2DRectangle(outerColor, core::rect<s32>(innerRect.LowerRightCorner.X, rect.UpperLeftCorner.Y, rect.LowerRightCorner.X, rect.LowerRightCorner.Y));
 }
 
 void NewMenu::calculateSliderSplit(
@@ -532,7 +569,7 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
     return Parent ? Parent->OnEvent(event) : false; 
 }
 
-void NewMenu::drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font, const size_t i)
+void NewMenu::drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font, const size_t i, float dtime)
 {
     GET_SCRIPT_POINTER
     // TODO REMOVE THESE AND STORE THEM AS SETTINGS
@@ -588,11 +625,15 @@ void NewMenu::drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font, con
             if (cheatTextHovered[i][cheat_index]) {
                 text_color = video::SColor(255, 127, 127, 127);
             }
-            if (script->m_cheat_categories[i]->m_cheats[cheat_index]->is_enabled()) {
-                driver->draw2DRectangle(cheat_color_enabled, cheatRects[i][cheat_index]);
-            } else {
-                driver->draw2DRectangle(cheat_color, cheatRects[i][cheat_index]);
+
+            
+            if (!script->m_cheat_categories[i]->m_cheats[cheat_index]->is_enabled() && cheatRectAnimationProgress[i][cheat_index] <= 1) {
+                cheatRectAnimationProgress[i][cheat_index] += dtime * 8;
+            } else if (script->m_cheat_categories[i]->m_cheats[cheat_index]->is_enabled() && cheatRectAnimationProgress[i][cheat_index] >= 0) {
+                cheatRectAnimationProgress[i][cheat_index] -= dtime * 8;
             }
+
+            drawInterpolatedRectangle(driver, cheatRects[i][cheat_index], cheat_color_enabled, cheat_color, cheatRectAnimationProgress[i][cheat_index]);
 
             const std::string& cheatName = script->m_cheat_categories[i]->m_cheats[cheat_index]->m_name;
             std::wstring wCheatName = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(cheatName);
@@ -890,6 +931,9 @@ void NewMenu::draw()
     }
 
     GET_SCRIPT_POINTER
+
+    float dtime = getDeltaTime();
+
     video::IVideoDriver* driver = Environment->getVideoDriver();
     gui::IGUIFont* font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_HD);
     if (g_settings->exists("use_menu_grid") && g_settings->getBool("use_menu_grid") == true) {
@@ -909,7 +953,7 @@ void NewMenu::draw()
             if (driver->getScreenSize() != lastScreenSize) {
                 moveMenu(i, category_positions[i]);
             }
-            drawCategory(driver, font, i);
+            drawCategory(driver, font, i, dtime);
         }
         for (size_t i = 0; i < script->m_cheat_categories.size(); i++) {
             drawHints(driver, font, i);

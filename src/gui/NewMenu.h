@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <codecvt> 
 #include <locale> 
 #include "log.h"
+#include <chrono>
 
 struct Sprite
 {
@@ -80,7 +81,7 @@ public:
     virtual bool OnEvent(const irr::SEvent& event);
     virtual void draw() override;
     void drawHints(video::IVideoDriver* driver, gui::IGUIFont* font, const size_t i);
-    void drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font, const size_t category_index);
+    void drawCategory(video::IVideoDriver* driver, gui::IGUIFont* font, const size_t category_index, float dtime);
     void drawSelectionBox(video::IVideoDriver* driver, gui::IGUIFont* font, const size_t i, const size_t c, const size_t s);
     bool isOpen() { return m_is_open; }
     
@@ -91,7 +92,8 @@ private:
     double roundToNearestStep(double number, double m_min, double m_max, double m_steps);
     void calculateSliderSplit(const core::rect<s32>& sliderRect, double value, double minValue, double maxValue, core::rect<s32>& filledRect, core::rect<s32>& remainingRect);
     double calculateSliderValueFromPosition(const core::rect<s32>& sliderBarRect, const core::position2d<s32>& pointerPosition, double m_min, double m_max, double m_steps);
-
+    void drawInterpolatedRectangle(video::IVideoDriver* driver, const core::rect<s32>& rect, video::SColor innerColor, video::SColor outerColor, float interpolation);
+    
     core::vector2d<s32> offset; 
     IMenuManager* m_menumgr; 
     bool isDragging = false;
@@ -120,6 +122,7 @@ private:
     std::vector<bool> textHovered;
     std::vector<std::vector<bool>> cheatDropdownHovered;
     std::vector<std::vector<bool>> cheatTextHovered;
+    std::vector<std::vector<float>> cheatRectAnimationProgress;
     std::vector<std::vector<std::vector<bool>>> cheatSettingTextHovered;
     std::vector<std::vector<std::vector<bool>>> cheatSliderHovered;
     std::vector<std::vector<std::vector<bool>>> selectionBoxHovered;
@@ -156,6 +159,10 @@ private:
     video::SColor option_color = video::SColor(255, 2, 5, 8);
     
     s32 subCategoryHeight = category_height * 3;
+
+    static float getDeltaTime();
+
+    static std::chrono::high_resolution_clock::time_point lastTime;
 };
 
 #endif
