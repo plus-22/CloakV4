@@ -18,7 +18,7 @@ end
 
 core.register_on_receiving_chat_message(function(message)
     if core.settings:get_bool("autostaff.warn_staff") and core.localplayer:get_name() == "singleplayer" then return end
-    local cleaned_message = string.gsub(string.gsub(string.gsub(message, "␛%(T@__builtin%)", ""), "␛F", ""), "␛E", "")
+    local cleaned_message = string.gsub(string.gsub(string.gsub(message, "%(T@__builtin%)", ""), "F", ""), "E", "")
     if string.find(cleaned_message, "Privileges") then
         local player_name = string.match(cleaned_message, "of%s+(%S+)")
         if player_name then
