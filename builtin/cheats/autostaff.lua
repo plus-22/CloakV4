@@ -4,7 +4,7 @@ local isAdmin = {}
 local qtime = 0
 
 local function show_staff_warning(player_name)
-    local formspec = 
+    local formspec =
         "formspec_version[6]" ..
         "size[7,2]" ..
         "button[0.2,1.1;2,0.7;disconnect;Disconnect]" ..
@@ -17,13 +17,13 @@ end
 
 
 core.register_on_receiving_chat_message(function(message)
-    local cleaned_message = string.gsub(string.gsub(string.gsub(message, "%(T@__builtin%)", ""), "F", ""), "E", "")
+    if core.settings:get_bool("autostaff.warn_staff") and core.localplayer:get_name() == "singleplayer" then return end
+    local cleaned_message = string.gsub(string.gsub(string.gsub(message, "␛%(T@__builtin%)", ""), "␛F", ""), "␛E", "")
     if string.find(cleaned_message, "Privileges") then
         local player_name = string.match(cleaned_message, "of%s+(%S+)")
         if player_name then
             player_name = player_name:gsub(":$", "")
         end
-
         local privileges_part = string.match(cleaned_message, ":%s*(.*)")
 
         if privileges_part and player_name then
@@ -50,16 +50,17 @@ core.register_on_receiving_chat_message(function(message)
 end)
 
 core.register_globalstep(function(dtime)
+
     qtime = qtime + dtime
 
-    if qtime > 1 and core.settings:get_bool("autostaff") then
+    if qtime > 1 and core.settings:get_bool("autostaff") and not core.localplayer:get_name() == "singleplayer" then
         qtime = 0
 
         -- Refresh player list only when queue is empty
         if #player_queue == 0 then
             local current_players = core.get_player_names()
             if not current_players or #current_players == 0 then return end
-            
+
             -- Add only new players to the queue
             for _, player in ipairs(current_players) do
                 if not last_players[player] then
@@ -95,3 +96,10 @@ core.register_on_formspec_input(function(formname, fields)
         end
     end
 end)
+
+
+
+
+
+
+
