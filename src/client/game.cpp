@@ -389,9 +389,7 @@ void Game::run()
 	const bool initial_window_maximized = !g_settings->getBool("fullscreen") &&
 			g_settings->getBool("window_maximized");
 
-	while (m_rendering_engine->run()
-			&& !(*kill || g_gamecallback->shutdown_requested
-			|| (server && server->isShutdownRequested()))) {
+	while (m_rendering_engine->run() && !(*kill || g_gamecallback->shutdown_requested || (server && server->isShutdownRequested()))) {
 
 		// Calculate dtime =
 		//    m_rendering_engine->run() from this iteration
@@ -451,6 +449,13 @@ void Game::run()
 
 		if (m_does_lost_focus_pause_game && !device->isWindowFocused() && !isMenuActive()) {
 			showPauseMenu();
+		}
+
+		
+		if (!new_menu->m_initialized) {
+			new_menu->create();
+			
+			new_menu->close();
 		}
 	}
 
@@ -830,8 +835,6 @@ bool Game::initGui()
 		errorstream << *error_message << std::endl;
 		return false;
 	}
-
-
 
 	return true;
 }

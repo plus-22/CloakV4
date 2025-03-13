@@ -129,64 +129,6 @@ v2u32 RenderingCore::getVirtualSize() const
     }
 }*/
 
-void RenderingCore::drawCombatTargetHUD()
-{
-    auto driver = device->getVideoDriver();
-    ClientEnvironment &env = client->getEnv();
-
-    std::unordered_map<u16, ClientActiveObject*> allObjects;
-    env.getAllActiveObjects(allObjects);
-
-    for (auto &ao_it : allObjects) {
-        ClientActiveObject *cao = ao_it.second;
-        GenericCAO *obj = dynamic_cast<GenericCAO *>(cao);
-
-        if (!obj || combat_target == NULL || obj->getId() != combat_target)
-            continue;
-
-        // Get screen size
-        core::dimension2d<u32> screen_size = driver->getScreenSize();
-		double health_percentage = obj->getProperties().hp_max > 0 ? static_cast<double>(obj->getHp()) / obj->getProperties().hp_max : 0.0;
-		health_percentage = std::max(0.0, std::min(1.0, health_percentage));
-
-		video::SColor backgroundColor(255, 5, 10, 15);
-		video::SColor borderColor(255, 0, 0, 0);
-
-		// Health-based color interpolation
-		u8 red = static_cast<u8>(255 * (1.0f - health_percentage));
-		u8 green = static_cast<u8>(255 * health_percentage);
-		video::SColor filledColor(255, red, green, 0);
-
-		f32 scale = 1; 
-
-		// Bar dimensions
-		s32 barWidth = static_cast<s32>(150 * scale);
-		s32 barHeight = static_cast<s32>(10 * scale);
-		s32 baseBarOffset = static_cast<s32>(60 * scale);
-
-		// Calculate screen position (centered, then offset slightly to the right)
-		v2s32 screen_pos;
-		screen_pos.X = screen_size.Width / 2;
-		screen_pos.Y = screen_size.Height / 2;
-
-		// Define health bar rectangle
-		core::rect<s32> barRect(baseBarOffset, 0, baseBarOffset + barWidth, barHeight);
-		core::rect<s32> filledRect(
-			barRect.UpperLeftCorner.X,
-			barRect.UpperLeftCorner.Y,                      
-			barRect.UpperLeftCorner.X + static_cast<s32>(barRect.getWidth() * health_percentage),
-			barRect.LowerRightCorner.Y                     
-		);
-		
-
-		// Draw health bar
-		driver->draw2DRectangle(backgroundColor, barRect + screen_pos);
-		driver->draw2DRectangle(filledColor, filledRect + screen_pos);
-		driver->draw2DRectangleOutline(barRect + screen_pos, borderColor, barHeight * 0.2);
-    }
-}
-
-
 void RenderingCore::drawTracersAndESP()
 {
 	auto driver = device->getVideoDriver();
@@ -477,9 +419,6 @@ void RenderingCore::DrawHUD(PipelineContext &context)
 		context.client->getCamera()->drawNametags();
 		if (g_settings->getBool("enable_health_esp")) {
 			context.client->getCamera()->drawHealthESP();
-		}
-		if (g_settings->getBool("enable_combat_target_hud")) {
-			drawCombatTargetHUD();
 		}
 	}
 	context.device->getGUIEnvironment()->drawAll();

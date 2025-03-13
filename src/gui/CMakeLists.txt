@@ -1,6 +1,8 @@
 set(gui_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/cheatMenu.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/NewMenu.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/targetHUD.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/coordsHUD.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiAnimatedImage.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiBackgroundImage.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/guiBox.cpp

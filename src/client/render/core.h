@@ -79,7 +79,6 @@ public:
 	void draw_HUD(video::SColor _skycolor, bool _show_hud,
 			bool _draw_wield_tool, bool _draw_crosshair);
 	void drawTracersAndESP();
-	void drawCombatTargetHUD();
 	void Draw3D(PipelineContext &context);
 	void DrawWield(PipelineContext &context);
 	void DrawHUD(PipelineContext &context);
