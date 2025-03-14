@@ -92,9 +92,9 @@ void NewMenu::create()
         lastScreenSize = driver->getScreenSize();
 
         // INITIALIZE CHEAT HUD ELEMENTS
-        if (g_settings->exists("HudElement_Position1_0")) {
-            v2f position = g_settings->getV2F("HudElement_Position1_0");
-            v2f position2 = g_settings->getV2F("HudElement_Position2_0");
+        if (g_settings->exists("HudElement_Position1_target")) {
+            v2f position = g_settings->getV2F("HudElement_Position1_target");
+            v2f position2 = g_settings->getV2F("HudElement_Position2_target");
             if (g_settings->exists("use_menu_grid") && g_settings->getBool("use_menu_grid")) {
                 hudElements.push_back(new TargetHUD(core::rect<s32>(roundToGrid(position.X), roundToGrid(position.Y), roundToGrid(position2.X), roundToGrid(position2.Y))));
             } else {
@@ -104,9 +104,11 @@ void NewMenu::create()
             hudElements.push_back(new TargetHUD(core::rect<s32>(400, 400, 600, 500)));
         }
 
-        if (g_settings->exists("HudElement_Position1_1")) {
-            v2f position = g_settings->getV2F("HudElement_Position1_1");
-            v2f position2 = g_settings->getV2F("HudElement_Position2_1");
+        hudElements[0]->elementName = "target";
+
+        if (g_settings->exists("HudElement_Position1_coords")) {
+            v2f position = g_settings->getV2F("HudElement_Position1_coords");
+            v2f position2 = g_settings->getV2F("HudElement_Position2_coords");
             if (g_settings->exists("use_menu_grid") && g_settings->getBool("use_menu_grid")) {
                 hudElements.push_back(new coordsHUD(core::rect<s32>(roundToGrid(position.X), roundToGrid(position.Y), roundToGrid(position2.X), roundToGrid(position2.Y))));
             } else {
@@ -116,6 +118,7 @@ void NewMenu::create()
             hudElements.push_back(new coordsHUD(core::rect<s32>(400, 400, 600, 500)));
         }
 
+        hudElements[1]->elementName = "coords";
         editHUDbuttonBounds = core::rect<s32>(
             roundToGrid(lastScreenSize.Width - ((category_height/2) * 9)),
             roundToGrid(lastScreenSize.Height - ((category_height/2) * 3)),
@@ -635,8 +638,8 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
                     hudElements[resizingHUDElementIndex]->bounds.LowerRightCorner.Y + 5
                 );
 
-                g_settings->setV2F("HudElement_Position1_0", v2f(hudElements[resizingHUDElementIndex]->bounds.UpperLeftCorner.X, hudElements[resizingHUDElementIndex]->bounds.UpperLeftCorner.Y));
-                g_settings->setV2F("HudElement_Position2_0", v2f(hudElements[resizingHUDElementIndex]->bounds.LowerRightCorner.X, hudElements[resizingHUDElementIndex]->bounds.LowerRightCorner.Y));
+                g_settings->setV2F("HudElement_Position1_" + hudElements[resizingHUDElementIndex]->elementName, v2f(hudElements[resizingHUDElementIndex]->bounds.UpperLeftCorner.X, hudElements[resizingHUDElementIndex]->bounds.UpperLeftCorner.Y));
+                g_settings->setV2F("HudElement_Position2_" + hudElements[resizingHUDElementIndex]->elementName, v2f(hudElements[resizingHUDElementIndex]->bounds.LowerRightCorner.X, hudElements[resizingHUDElementIndex]->bounds.LowerRightCorner.Y));
             } else if (isDraggingHUDElement) {
                 s32 rectWidth = hudElements[draggingHUDElementIndex]->bounds.getWidth();
                 s32 rectHeight = hudElements[draggingHUDElementIndex]->bounds.getHeight();
@@ -661,8 +664,8 @@ bool NewMenu::OnEvent(const irr::SEvent& event)
                     hudElements[draggingHUDElementIndex]->bounds.LowerRightCorner.X + 5,
                     hudElements[draggingHUDElementIndex]->bounds.LowerRightCorner.Y + 5
                 );
-                g_settings->setV2F("HudElement_Position1_0", v2f(hudElements[draggingHUDElementIndex]->bounds.UpperLeftCorner.X, hudElements[draggingHUDElementIndex]->bounds.UpperLeftCorner.Y));
-                g_settings->setV2F("HudElement_Position2_0", v2f(hudElements[draggingHUDElementIndex]->bounds.LowerRightCorner.X, hudElements[draggingHUDElementIndex]->bounds.LowerRightCorner.Y));
+                g_settings->setV2F("HudElement_Position1_" + hudElements[draggingHUDElementIndex]->elementName, v2f(hudElements[draggingHUDElementIndex]->bounds.UpperLeftCorner.X, hudElements[draggingHUDElementIndex]->bounds.UpperLeftCorner.Y));
+                g_settings->setV2F("HudElement_Position2_" + hudElements[draggingHUDElementIndex]->elementName, v2f(hudElements[draggingHUDElementIndex]->bounds.LowerRightCorner.X, hudElements[draggingHUDElementIndex]->bounds.LowerRightCorner.Y));
             }
             
             for (auto element : hudElements) {

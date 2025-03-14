@@ -24,4 +24,5 @@ public:
     core::rect<s32> resizeBounds;
     bool isHovered = false;
     bool isResizeHovered = false;
+    std::string elementName;
 };
