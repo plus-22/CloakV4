@@ -17,7 +17,8 @@ end
 
 
 core.register_on_receiving_chat_message(function(message)
-    if core.settings:get_bool("autostaff.warn_staff") and core.localplayer:get_name() == "singleplayer" then return end
+    if not core.settings:get_bool("autostaff.warn_staff") then return end
+    if core.localplayer:get_name() == "singleplayer" then return end
     local cleaned_message = string.gsub(string.gsub(string.gsub(message, "␛%(T@__builtin%)", ""), "␛F", ""), "␛E", "")
     if string.find(cleaned_message, "Privileges") then
         local player_name = string.match(cleaned_message, "of%s+(%S+)")
@@ -52,11 +53,11 @@ end)
 core.register_globalstep(function(dtime)
 
     qtime = qtime + dtime
-    local player = core.localplayer
-    if not player then return end
-    if qtime > 1 and core.settings:get_bool("autostaff") and not player:get_name() == "singleplayer" then
+    if qtime > 1 and core.settings:get_bool("autostaff") then
         qtime = 0
-
+	 local po = core.localplayer
+    	 if not po then return end
+         if po:get_name() == "singleplayer" then return end
         -- Refresh player list only when queue is empty
         if #player_queue == 0 then
             local current_players = core.get_player_names()
