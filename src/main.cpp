@@ -134,7 +134,7 @@ FileLogOutput file_log_output;
 static OptionList allowed_options;
 
 int main(int argc, char *argv[])
-{, 
+{ 
 	int retval;
 	debug_set_exception_handler();
 
