@@ -176,8 +176,7 @@ core.register_globalstep(function(dtime)
 					return
 				end
 			end]]--
-
-			player:punch(target_enemy:get_id())
+				player:punch(target_enemy:get_id())
 		end
 	end
 
@@ -219,12 +218,21 @@ core.register_globalstep(function(dtime)
 		local x = vector.length(vec)
 		qtime = qtime + dtime
 		if qtime > 0.1 then
+			if not core.settings:get_bool("free_move") then
 			core.set_keypress("jump", true)
 			core.set_keypress("left", true)
 			core.after(0.099, function()
 				core.set_keypress("jump", false)
 				core.set_keypress("left", false)
 			end)
+			else
+				--core.set_keypress("jump", true)
+				core.set_keypress("left", true)
+				core.after(0.099, function()
+					core.set_keypress("jump", false)
+					core.set_keypress("left", false)
+				end)
+			end
 			qtime = 0
 		end
 	end
